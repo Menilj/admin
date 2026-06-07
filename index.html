@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | CampusVault & Amos Services</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --bg: #f1f5f9; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
+            --primary: #1e3a5f; --accent: #0ea5e9; --emerald: #10b981; --gold: #f59e0b;
+            --rose: #f43f5e; --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
+            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.08); --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.1);
+            --radius: 12px; --radius-lg: 16px; --radius-xl: 20px; --transition: 0.3s ease;
+            --font: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; }
+
+        /* LOGIN SCREEN */
+        .login-overlay {
+            position:fixed; inset:0; background:linear-gradient(135deg,#0f172a,#1e3a5f);
+            display:flex; align-items:center; justify-content:center; z-index:9999;
+        }
+        .login-card {
+            background:#fff; border-radius:var(--radius-xl); padding:40px; width:100%;
+            max-width:400px; box-shadow:0 25px 60px rgba(0,0,0,0.3); text-align:center;
+        }
+        .login-card h2 {
+            font-weight:800; font-size:1.8rem; color:var(--primary); margin-bottom:6px;
+        }
+        .login-card p {
+            color:var(--text-secondary); margin-bottom:28px; font-size:0.95rem;
+        }
+        .google-btn {
+            width:100%; padding:14px; border-radius:25px; background:#fff; color:#3c4043;
+            font-weight:600; font-size:1rem; border:2px solid var(--border); cursor:pointer;
+            transition:var(--transition); display:flex; align-items:center; justify-content:center;
+            gap:10px; box-shadow:var(--shadow-sm);
+        }
+        .google-btn:hover {
+            background:#f8f9fa; border-color:#dadce0; box-shadow:var(--shadow);
+        }
+        .google-btn:disabled {
+            opacity:0.6; cursor:not-allowed;
+        }
+        .google-btn img { width:20px; height:20px; }
+        .login-error {
+            color:var(--rose); font-size:0.85rem; margin-top:16px; display:none;
+        }
+
+        /* DASHBOARD */
+        .dashboard { display:none; }
+        .dashboard.active { display:block; }
+        .topbar {
+            background:#fff; border-bottom:1px solid var(--border); padding:0 24px; height:64px;
+            display:flex; align-items:center; justify-content:space-between; position:sticky; top:0;
+            z-index:100; box-shadow:var(--shadow-sm);
+        }
+        .topbar .logo {
+            font-weight:800; font-size:1.3rem; color:var(--primary); display:flex;
+            align-items:center; gap:8px; text-decoration:none;
+        }
+        .topbar .logo:hover { opacity:0.8; }
+        .user-info { display:flex; align-items:center; gap:12px; }
+        .user-info .user-name { font-weight:600; font-size:0.9rem; }
+        .user-info .user-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; }
+        .topbar .logout-btn {
+            background:transparent; border:2px solid var(--border); padding:6px 16px;
+            border-radius:20px; font-weight:600; cursor:pointer; font-family:var(--font);
+            display:flex; align-items:center; gap:6px; font-size:0.85rem;
+        }
+        .topbar .logout-btn:hover { border-color:var(--rose); color:var(--rose); }
+        .container { max-width:1300px; margin:0 auto; padding:24px; }
+        .metrics-grid {
+            display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+            gap:16px; margin-bottom:32px;
+        }
+        .metric-card {
+            background:#fff; border-radius:var(--radius-lg); padding:20px;
+            border:1px solid var(--border); box-shadow:var(--shadow-sm); transition:var(--transition);
+        }
+        .metric-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+        .metric-card .metric-icon { font-size:1.6rem; margin-bottom:8px; }
+        .metric-card .metric-value { font-size:2rem; font-weight:800; letter-spacing:-1px; }
+        .metric-card .metric-label { color:var(--text-secondary); font-size:0.85rem; }
+        .section-title {
+            font-size:1.3rem; font-weight:700; margin-bottom:16px; display:flex;
+            align-items:center; gap:8px;
+        }
+        .table-wrapper {
+            background:#fff; border-radius:var(--radius-lg); border:1px solid var(--border);
+            overflow-x:auto; box-shadow:var(--shadow-sm); margin-bottom:32px;
+        }
+        table { width:100%; border-collapse:collapse; min-width:800px; font-size:0.9rem; }
+        th {
+            background:#f8fafc; padding:14px 16px; text-align:left; font-weight:600;
+            color:var(--text-secondary); border-bottom:2px solid var(--border);
+        }
+        td { padding:12px 16px; border-bottom:1px solid var(--border); }
+        .badge {
+            padding:4px 12px; border-radius:15px; font-weight:600; font-size:0.75rem;
+            display:inline-block;
+        }
+        .badge-active { background:#d1fae5; color:#065f46; }
+        .badge-collected { background:#e2e8f0; color:#475569; }
+        .badge-new { background:#dbeafe; color:#1e40af; }
+        .action-btn {
+            background:var(--bg); border:none; padding:6px 12px; border-radius:8px;
+            cursor:pointer; font-size:0.8rem; font-weight:600; margin-right:4px;
+            transition:var(--transition); font-family:var(--font);
+            display:inline-flex; align-items:center; gap:4px;
+        }
+        .action-btn.mark-collected { background:#d1fae5; color:#065f46; }
+        .action-btn.delete { background:#fee2e2; color:#991b1b; }
+        .empty-state { text-align:center; padding:40px; color:var(--text-secondary); }
+        .tab-nav { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+        .tab-btn {
+            padding:10px 20px; border-radius:20px; background:#fff;
+            border:2px solid var(--border); font-weight:600; cursor:pointer;
+            transition:var(--transition); font-family:var(--font);
+        }
+        .tab-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+        .tab-content { display:none; }
+        .tab-content.active { display:block; animation:fadeIn 0.3s ease; }
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+        @media (max-width:600px) {
+            .metrics-grid { grid-template-columns:1fr 1fr; }
+            .container { padding:16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== LOGIN SCREEN (GOOGLE ONLY) ========== -->
+    <div class="login-overlay" id="loginScreen">
+        <div class="login-card">
+            <h2><i class="fas fa-lock"></i> Admin Portal</h2>
+            <p>CampusVault & Amos Services</p>
+
+            <!-- Google Sign-In Button -->
+            <button class="google-btn" id="googleSignInBtn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" width="20" height="20">
+                <span id="googleBtnText">Sign in with Google</span>
+            </button>
+
+            <p class="login-error" id="loginError"></p>
+        </div>
+    </div>
+
+    <!-- ========== DASHBOARD ========== -->
+    <div class="dashboard" id="dashboard">
+        <div class="topbar">
+            <a href="./index.html" class="logo">
+                <i class="fas fa-shield-halved"></i> CampusVault Admin
+            </a>
+            <div class="user-info">
+                <img class="user-avatar" id="userAvatar" src="" alt="" style="display:none;">
+                <span class="user-name" id="userNameDisplay">Admin</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Metrics -->
+            <div class="metrics-grid" id="metricsContainer"></div>
+
+            <!-- Tabs -->
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('storage')">
+                    <i class="fas fa-box-archive"></i> Storage
+                </button>
+                <button class="tab-btn" onclick="switchTab('sells')">
+                    <i class="fas fa-tag"></i> Seller Submissions
+                </button>
+                <button class="tab-btn" onclick="switchTab('deliveries')">
+                    <i class="fas fa-truck-fast"></i> Deliveries
+                </button>
+                <button class="tab-btn" onclick="switchTab('inquiries')">
+                    <i class="fas fa-comment-dots"></i> Inquiries
+                </button>
+                <button class="tab-btn" onclick="switchTab('accommodation')">
+                    <i class="fas fa-house"></i> Housing
+                </button>
+            </div>
+
+            <!-- Storage Tab -->
+            <div class="tab-content active" id="tab-storage">
+                <div class="section-title"><i class="fas fa-box-archive"></i> Luggage Storage Bookings</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Booking ID</th><th>Tracking ID</th><th>Customer</th><th>Phone</th><th>Check-In</th><th>Collection</th><th>Items</th><th>Category</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="storageTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="storageEmpty" class="empty-state" style="display:none;">No storage bookings yet.</div>
+            </div>
+
+            <!-- Seller Submissions Tab -->
+            <div class="tab-content" id="tab-sells">
+                <div class="section-title"><i class="fas fa-tag"></i> Sell Submissions</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Submission ID</th><th>Item Name</th><th>Condition</th><th>Price (KES)</th><th>Location</th><th>Date</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="sellsTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="sellsEmpty" class="empty-state" style="display:none;">No sell submissions yet.</div>
+            </div>
+
+            <!-- Deliveries Tab -->
+            <div class="tab-content" id="tab-deliveries">
+                <div class="section-title"><i class="fas fa-truck-fast"></i> Delivery Requests</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Request ID</th><th>Customer</th><th>Phone</th><th>Service</th><th>Details</th><th>Date</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="deliveriesTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state">Demo data (delivery requests from WhatsApp).</div>
+            </div>
+
+            <!-- Inquiries Tab -->
+            <div class="tab-content" id="tab-inquiries">
+                <div class="section-title"><i class="fas fa-comment-dots"></i> Customer Inquiries</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>From</th><th>Phone</th><th>Message</th><th>Date</th></tr>
+                        </thead>
+                        <tbody id="inquiriesTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state">Demo data (contact form messages).</div>
+            </div>
+
+            <!-- Accommodation Tab -->
+            <div class="tab-content" id="tab-accommodation">
+                <div class="section-title"><i class="fas fa-house"></i> Accommodation Requests</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>ID</th><th>Customer</th><th>Phone</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th></tr>
+                        </thead>
+                        <tbody id="accommodationTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state">Demo data (housing requests).</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ YOUR FIREBASE CONFIG ============
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuCd89dawEHOGrKmcCimw3pBErKYJU_VI",
+            authDomain: "campusvault-connect.firebaseapp.com",
+            databaseURL: "https://campusvault-connect-default-rtdb.firebaseio.com",
+            projectId: "campusvault-connect",
+            storageBucket: "campusvault-connect.firebasestorage.app",
+            messagingSenderId: "185904648786",
+            appId: "1:185904648786:web:390764d552d388b6e2058b",
+            measurementId: "G-JNQL5Z531C"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+        const bookingsRef = db.ref('bookings');
+        const sellsRef = db.ref('sells');
+
+        // ============ ALLOWED ADMIN EMAILS ============
+        const ALLOWED_ADMIN_EMAILS = [
+            'kasaineisack@gmail.com'   // ← Replace with your email(s)
+        ];
+
+        // ============ DOM ELEMENTS ============
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboard = document.getElementById('dashboard');
+        const googleBtn = document.getElementById('googleSignInBtn');
+        const googleBtnText = document.getElementById('googleBtnText');
+        const loginError = document.getElementById('loginError');
+
+        // ============ GOOGLE SIGN-IN ============
+        googleBtn.addEventListener('click', () => {
+            googleBtn.disabled = true;
+            googleBtnText.textContent = 'Signing in...';
+            loginError.style.display = 'none';
+
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    console.log('✅ Google sign-in:', user.email);
+                    if (ALLOWED_ADMIN_EMAILS.includes(user.email)) {
+                        showDashboard(user);
+                    } else {
+                        auth.signOut();
+                        showError(user.email + ' is not authorized as admin.');
+                        resetGoogleButton();
+                    }
+                })
+                .catch((error) => {
+                    console.error('❌ Sign-in error:', error.code, error.message);
+                    if (error.code === 'auth/configuration-not-found') {
+                        showError('Google Sign-In is not enabled. Go to Firebase Console → Authentication → Sign-in method → Google → Enable and Save.');
+                    } else if (error.code === 'auth/popup-closed-by-user') {
+                        showError('Sign-in cancelled. Please try again.');
+                    } else if (error.code === 'auth/popup-blocked') {
+                        showError('Popup blocked. Allow popups for this site.');
+                    } else if (error.code === 'auth/unauthorized-domain') {
+                        showError('This domain is not authorized. Add it in Authentication → Settings → Authorized domains.');
+                    } else {
+                        showError('Sign-in failed: ' + error.message);
+                    }
+                    resetGoogleButton();
+                });
+        });
+
+        function resetGoogleButton() {
+            googleBtn.disabled = false;
+            googleBtnText.textContent = 'Sign in with Google';
+        }
+
+        function showError(msg) {
+            loginError.textContent = msg;
+            loginError.style.display = 'block';
+        }
+
+        function showDashboard(user) {
+            loginScreen.style.display = 'none';
+            dashboard.classList.add('active');
+            sessionStorage.setItem('admin_logged_in', 'true');
+
+            if (user) {
+                document.getElementById('userNameDisplay').textContent = user.displayName || user.email;
+                if (user.photoURL) {
+                    const avatar = document.getElementById('userAvatar');
+                    avatar.src = user.photoURL;
+                    avatar.style.display = 'block';
+                }
+            }
+            loadDashboard();
+        }
+
+        // ============ LOGOUT ============
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    sessionStorage.removeItem('admin_logged_in');
+                    location.reload();
+                })
+                .catch(() => {
+                    sessionStorage.removeItem('admin_logged_in');
+                    location.reload();
+                });
+        }
+
+        // ============ AUTO-LOGIN CHECK ============
+        auth.onAuthStateChanged((user) => {
+            if (user && ALLOWED_ADMIN_EMAILS.includes(user.email)) {
+                showDashboard(user);
+            } else if (user && !ALLOWED_ADMIN_EMAILS.includes(user.email)) {
+                auth.signOut();
+                loginScreen.style.display = 'flex';
+                dashboard.classList.remove('active');
+                showError(user.email + ' is not authorized.');
+            } else if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                // (fallback only for previous manual sessions – we keep it for compatibility)
+                loginScreen.style.display = 'none';
+                dashboard.classList.add('active');
+                document.getElementById('userNameDisplay').textContent = 'Admin';
+                loadDashboard();
+            } else {
+                loginScreen.style.display = 'flex';
+                dashboard.classList.remove('active');
+            }
+        });
+
+        // ============ DASHBOARD DATA ============
+        function loadDashboard() {
+            bookingsRef.on('value', snapshot => {
+                const bookings = snapshot.val() ? Object.values(snapshot.val()) : [];
+                updateMetrics(bookings);
+                renderStorageTable(bookings);
+            });
+            sellsRef.on('value', snapshot => {
+                const sells = snapshot.val() ? Object.values(snapshot.val()) : [];
+                updateSellsMetrics(sells);
+                renderSellsTable(sells);
+            });
+            renderMockTables();
+        }
+
+        function updateMetrics(bookings) {
+            const total = bookings.length;
+            const active = bookings.filter(b => b.status === 'active').length;
+            const revenue = total * 500;
+            document.getElementById('metricsContainer').innerHTML = `
+                <div class="metric-card"><div class="metric-icon">📦</div><div class="metric-value">${total}</div><div class="metric-label">Total Bookings</div></div>
+                <div class="metric-card"><div class="metric-icon">🟢</div><div class="metric-value">${active}</div><div class="metric-label">Active Storage</div></div>
+                <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-value">KES ${revenue.toLocaleString()}</div><div class="metric-label">Revenue (est.)</div></div>
+            `;
+        }
+
+        function updateSellsMetrics(sells) {
+            document.getElementById('metricsContainer').innerHTML += `
+                <div class="metric-card"><div class="metric-icon">📝</div><div class="metric-value">${sells.length}</div><div class="metric-label">Pending Seller Submissions</div></div>
+            `;
+        }
+
+        function renderStorageTable(bookings) {
+            const tbody = document.getElementById('storageTableBody');
+            const empty = document.getElementById('storageEmpty');
+            if (bookings.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+            empty.style.display = 'none';
+            tbody.innerHTML = bookings.map(b => `
+                <tr>
+                    <td><strong>${b.bookingId}</strong></td><td><code>${b.trackingId}</code></td>
+                    <td>${b.name}</td><td>${b.phone}</td>
+                    <td>${b.checkIn}</td><td>${b.collect}</td><td>${b.itemCount}</td><td>${b.category}</td>
+                    <td><span class="badge ${b.status === 'active' ? 'badge-active' : 'badge-collected'}">${b.status}</span></td>
+                    <td>
+                        ${b.status === 'active' ? `<button class="action-btn mark-collected" onclick="markCollected('${b.bookingId}')"><i class="fas fa-check"></i> Mark Collected</button>` : ''}
+                        <button class="action-btn delete" onclick="deleteBooking('${b.bookingId}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function renderSellsTable(sells) {
+            const tbody = document.getElementById('sellsTableBody');
+            const empty = document.getElementById('sellsEmpty');
+            if (sells.length === 0) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+            empty.style.display = 'none';
+            tbody.innerHTML = sells.map(s => `
+                <tr>
+                    <td><strong>${s.id}</strong></td><td>${s.itemName}</td><td>${s.condition}</td>
+                    <td>KES ${parseInt(s.price).toLocaleString()}</td><td>${s.location}</td>
+                    <td>${s.timestamp ? new Date(s.timestamp).toLocaleDateString() : 'N/A'}</td>
+                    <td><button class="action-btn delete" onclick="deleteSell('${s.id}')"><i class="fas fa-trash"></i></button></td>
+                </tr>`).join('');
+        }
+
+        function markCollected(id) { bookingsRef.child(id).update({ status: 'collected' }); }
+        function deleteBooking(id) { if (confirm('Delete booking permanently?')) bookingsRef.child(id).remove(); }
+        function deleteSell(id) { if (confirm('Delete sell submission?')) sellsRef.child(id).remove(); }
+
+        function renderMockTables() {
+            document.getElementById('deliveriesTableBody').innerHTML = [
+                { id: 'DEL-001', name: 'Brian K.', phone: '0712...', service: 'Food Delivery', details: 'Pizza to Hostel 4', date: '2026-06-05', status: 'Completed' },
+                { id: 'DEL-002', name: 'Faith M.', phone: '0798...', service: 'Parcel', details: 'Textbook', date: '2026-06-06', status: 'Pending' }
+            ].map(d => `<tr><td>${d.id}</td><td>${d.name}</td><td>${d.phone}</td><td>${d.service}</td><td>${d.details}</td><td>${d.date}</td><td><span class="badge ${d.status === 'Completed' ? 'badge-active' : 'badge-new'}">${d.status}</span></td></tr>`).join('');
+
+            document.getElementById('inquiriesTableBody').innerHTML = [
+                { id: 'INQ-001', name: 'Sharon N.', phone: '0711...', message: 'Can I store a fridge?', date: '2026-06-04' },
+                { id: 'INQ-002', name: 'David L.', phone: '0722...', message: 'Need bedsitter under 5k', date: '2026-06-05' }
+            ].map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td>${i.phone}</td><td>${i.message}</td><td>${i.date}</td></tr>`).join('');
+
+            document.getElementById('accommodationTableBody').innerHTML = [
+                { id: 'ACC-001', name: 'John K.', phone: '0744...', type: 'Bedsitter', location: 'KU', budget: 5000, date: '2026-06-05' }
+            ].map(a => `<tr><td>${a.id}</td><td>${a.name}</td><td>${a.phone}</td><td>${a.type}</td><td>${a.location}</td><td>KES ${a.budget.toLocaleString()}</td><td>${a.date}</td></tr>`).join('');
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
