@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal | CampusVault</title>
-    <meta name="robots" content="noindex, nofollow">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg: #f1f5f9; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
@@ -25,6 +27,7 @@
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; transition: background 0.3s, color 0.3s; }
+
         /* Login */
         .login-overlay { position:fixed; inset:0; background:linear-gradient(135deg,#0b1e33,#1e3a5f); display:flex; align-items:center; justify-content:center; z-index:9999; }
         .login-card { background: var(--surface); border-radius:20px; padding:32px; width:90%; max-width:400px; text-align:center; box-shadow:0 25px 50px rgba(0,0,0,0.3); }
@@ -36,7 +39,6 @@
         .dashboard { display:none; }
         .dashboard.active { display:flex; min-height:100vh; }
 
-        /* Sidebar */
         .sidebar { width:var(--sidebar-width); background:linear-gradient(180deg, #0b1e33, #1e293b); color:#fff; position:fixed; top:0; left:0; height:100vh; z-index:200; transition: transform 0.3s ease; box-shadow:4px 0 20px rgba(0,0,0,0.2); overflow-y:auto; }
         .sidebar .brand { padding:24px 20px; font-weight:800; font-size:1.4rem; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,0.1); }
         .sidebar .brand i { color:var(--accent); }
@@ -53,7 +55,6 @@
         .main { flex:1; margin-left:var(--sidebar-width); padding:24px; transition: margin-left 0.3s ease; min-height:100vh; }
         .topbar-mobile { display:none; background:var(--surface); padding:12px 16px; border-bottom:1px solid var(--border); justify-content:space-between; align-items:center; position:sticky; top:0; z-index:50; box-shadow:var(--shadow); }
         .hamburger { background:none; border:none; font-size:1.5rem; color:var(--text); cursor:pointer; }
-
         .theme-toggle { background: var(--bg); border:1px solid var(--border); border-radius:20px; padding:8px 14px; display:flex; align-items:center; gap:6px; cursor:pointer; transition:var(--transition); font-size:0.9rem; color:var(--text-secondary); font-weight:500; }
         .theme-toggle i { font-size:1rem; }
         .theme-toggle:hover { background: var(--border); }
@@ -80,56 +81,97 @@
         .card { background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--border); overflow:hidden; margin-bottom:24px; }
         .card-header { padding:16px 20px; border-bottom:1px solid var(--border); font-weight:700; display:flex; align-items:center; gap:8px; }
 
-        .storage-controls { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px; border-bottom: 1px solid var(--border); align-items: center; }
-        .search-box { flex: 1; min-width: 180px; position: relative; }
-        .search-box input { width: 100%; padding: 10px 14px 10px 40px; border-radius: 30px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: var(--font); }
-        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
-        .filter-buttons { display: flex; gap: 6px; }
-        .filter-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); color: var(--text-secondary); cursor: pointer; font-weight: 500; transition: var(--transition); font-size: 0.85rem; }
-        .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-        /* Desktop table */
-        .desktop-table { display: block; }
-        .mobile-cards { display: none; }
-
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; position: relative; max-height: 60vh; overflow-y: auto; }
+        .table-responsive {
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+            position: relative; max-height: 60vh; overflow-y: auto;
+        }
         .table-responsive::-webkit-scrollbar { width:6px; height:6px; }
         .table-responsive::-webkit-scrollbar-track { background: transparent; }
         .table-responsive::-webkit-scrollbar-thumb { background: #94a3b8; border-radius:3px; }
         .table-responsive::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        .table-responsive::after { content: ''; position: absolute; right:0; top:0; bottom:0; width:20px; background: linear-gradient(to right, transparent, rgba(0,0,0,0.05)); pointer-events: none; opacity:0; transition: opacity 0.2s; }
+        .table-responsive::after {
+            content: ''; position: absolute; right:0; top:0; bottom:0; width:20px;
+            background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
+            pointer-events: none; opacity:0; transition: opacity 0.2s;
+        }
         .table-responsive.overflowing::after { opacity:1; }
 
+        .desktop-table { display: block; }
+        .mobile-cards { display: none; }
+
         table { width:100%; border-collapse:collapse; font-size:0.9rem; white-space: nowrap; }
-        th { background:var(--bg); padding:10px 12px; text-align:left; font-weight:600; color:var(--text-secondary); border-bottom:2px solid var(--border); position: sticky; top:0; z-index:1; }
-        td { padding:10px 12px; border-bottom:1px solid var(--border); }
+        th { background:var(--bg); padding:14px 16px; text-align:left; font-weight:600; color:var(--text-secondary); border-bottom:2px solid var(--border); position: sticky; top:0; z-index:1; }
+        td { padding:12px 16px; border-bottom:1px solid var(--border); }
         tr:hover td { background:var(--bg); }
         .badge { padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; }
         .badge-active { background:#d1fae5; color:#065f46; }
         .badge-collected { background:#e2e8f0; color:#475569; }
-        .action-btn { padding:5px 10px; border:none; border-radius:6px; cursor:pointer; font-size:0.75rem; margin-right:4px; font-weight:600; }
+        .action-btn { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-size:0.8rem; margin-right:4px; font-weight:600; }
         .mark-collected { background:#d1fae5; color:#065f46; }
         .delete { background:#fee2e2; color:#991b1b; }
-
-        /* Mobile cards */
-        .storage-cards { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
-        .booking-card { background: var(--surface); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .booking-card .card-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
-        .booking-card .card-label { font-weight: 600; color: var(--text-secondary); font-size: 0.8rem; }
-        .booking-card .card-value { font-size: 0.9rem; }
-        .booking-card .card-actions { margin-top: 12px; display: flex; gap: 8px; }
-
-        @media (max-width: 768px) {
-            .desktop-table { display: none; }
-            .mobile-cards { display: block; }
-        }
-
+        .edit { background:#dbeafe; color:#1e40af; }
         .admin-form { display:flex; gap:8px; margin-bottom:16px; }
         .admin-form input { flex:1; padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg); color:var(--text); }
         .admin-form button { background:var(--primary); color:#fff; border:none; padding:10px 20px; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; }
         .admin-list { display:flex; flex-direction:column; gap:8px; }
         .admin-item { display:flex; justify-content:space-between; align-items:center; background:var(--surface); padding:12px 16px; border-radius:var(--radius-sm); border:1px solid var(--border); }
         .admin-item button { background:#fee2e2; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; }
+
+        /* Compact product modal */
+        .modal-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px);
+            display:flex; align-items:center; justify-content:center; z-index:2000;
+        }
+        .product-modal {
+            background: var(--surface); border-radius: var(--radius); padding: 20px;
+            width: 90%; max-width: 420px; position: relative;
+            animation: slideUp 0.3s; color: var(--text);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .product-modal h3 { font-size: 1.2rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .compact-form { display: flex; flex-direction: column; gap: 12px; }
+        .form-row { display: flex; gap: 10px; align-items: flex-start; }
+        .image-column { flex-shrink: 0; width: 90px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .image-thumb {
+            width: 80px; height: 80px; border: 2px dashed var(--border);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; overflow: hidden; background: var(--bg); transition: border-color 0.2s;
+        }
+        .image-thumb:hover { border-color: var(--accent); }
+        .image-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .image-thumb i { font-size: 1.6rem; color: var(--text-secondary); }
+        .image-column .url-toggle { font-size: 0.7rem; color: var(--accent); cursor: pointer; text-decoration: underline; text-align: center; }
+        .url-input-mini { width: 100%; margin-top: 4px; display: none; }
+        .url-input-mini input { width: 100%; padding: 6px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.75rem; }
+        .fields-column { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .form-group-mini { display: flex; flex-direction: column; }
+        .form-group-mini label { font-size: 0.8rem; font-weight: 500; margin-bottom: 3px; color: var(--text-secondary); }
+        .form-group-mini input, .form-group-mini select {
+            padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border);
+            background: var(--bg); color: var(--text); font-size: 0.85rem; width: 100%;
+        }
+        .checkbox-mini { display: flex; align-items: center; gap: 6px; margin: 6px 0; font-size: 0.85rem; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+
+        @media (max-width: 480px) {
+            .form-row { flex-direction: column; align-items: stretch; }
+            .image-column { width: 100%; flex-direction: row; justify-content: flex-start; gap: 12px; }
+            .image-thumb { width: 60px; height: 60px; }
+            .url-input-mini { flex: 1; }
+        }
+
+        .data-cards { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+        .data-card { background: var(--surface); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .data-card .card-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+        .data-card .card-label { font-weight: 600; color: var(--text-secondary); font-size: 0.8rem; }
+        .data-card .card-value { font-size: 0.9rem; }
+        .data-card .card-actions { margin-top: 12px; display: flex; gap: 8px; }
+
+        @media (max-width: 768px) {
+            .desktop-table { display: none; }
+            .mobile-cards { display: block; }
+        }
     </style>
 </head>
 <body>
@@ -155,6 +197,7 @@
                 <a href="#" data-tab="inquiries"><i class="fas fa-comment-dots"></i> Inquiries</a>
                 <a href="#" data-tab="accommodation"><i class="fas fa-house"></i> Housing</a>
                 <a href="#" data-tab="admins"><i class="fas fa-users-cog"></i> Admins</a>
+                <a href="#" data-tab="products"><i class="fas fa-store-alt"></i> Products</a>
             </nav>
             <div class="sidebar-footer">
                 <div class="user-info">
@@ -179,20 +222,13 @@
 
             <div class="tab-content active" id="tab-storage">
                 <div class="card">
-                    <div class="card-header"><i class="fas fa-box-archive"></i> Storage Bookings</div>
-                    <div class="storage-controls">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="storageSearch" placeholder="Search...">
-                        </div>
-                        <div class="filter-buttons">
-                            <button class="filter-btn active" data-filter="all">All</button>
-                            <button class="filter-btn" data-filter="active">Active</button>
-                            <button class="filter-btn" data-filter="collected">Collected</button>
+                    <div class="card-header">
+                        <i class="fas fa-box-archive"></i> Storage Bookings
+                        <div style="display:flex; gap:8px; margin-left:auto;">
+                            <button class="btn btn-outline btn-sm" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+                            <button class="btn btn-outline btn-sm" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
                         </div>
                     </div>
-
-                    <!-- Desktop Table -->
                     <div class="desktop-table">
                         <div class="table-responsive" id="storageTableWrapper">
                             <table>
@@ -201,21 +237,170 @@
                             </table>
                         </div>
                     </div>
-
-                    <!-- Mobile Cards -->
                     <div class="mobile-cards">
-                        <div class="storage-cards" id="storageCardsContainer"></div>
+                        <div class="data-cards" id="storageCardsContainer"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Other tabs unchanged -->
-            <div class="tab-content" id="tab-sells"><div class="card"><div class="card-header"><i class="fas fa-tag"></i> Seller Submissions</div><div class="table-responsive" id="sellsTableWrapper"><table><thead><tr><th>ID</th><th>Item</th><th>Condition</th><th>Price</th><th>Location</th><th>Date</th><th>Actions</th></tr></thead><tbody id="sellsTableBody"></tbody></table></div></div></div>
-            <div class="tab-content" id="tab-deliveries"><div class="card"><div class="card-header"><i class="fas fa-truck-fast"></i> Delivery Requests</div><div class="table-responsive" id="deliveriesTableWrapper"><table><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Service</th><th>Details</th><th>Date</th><th>Status</th></tr></thead><tbody id="deliveriesTableBody"></tbody></table></div></div></div>
-            <div class="tab-content" id="tab-inquiries"><div class="card"><div class="card-header"><i class="fas fa-comment-dots"></i> Customer Inquiries</div><div class="table-responsive" id="inquiriesTableWrapper"><table><thead><tr><th>ID</th><th>From</th><th>Phone</th><th>Message</th><th>Date</th></tr></thead><tbody id="inquiriesTableBody"></tbody></table></div></div></div>
-            <div class="tab-content" id="tab-accommodation"><div class="card"><div class="card-header"><i class="fas fa-house"></i> Accommodation Requests</div><div class="table-responsive"><table><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th></tr></thead><tbody id="accommodationTableBody"></tbody></table></div></div></div>
-            <div class="tab-content" id="tab-admins"><div class="card"><div class="card-header"><i class="fas fa-users-cog"></i> Manage Admin Emails</div><div style="padding:20px;"><div class="admin-form"><input type="email" id="newAdminEmail" placeholder="Enter admin email"><button onclick="addAdmin()">Add Admin</button></div><div class="admin-list" id="adminList"></div></div></div></div>
+            <div class="tab-content" id="tab-sells">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-tag"></i> Seller Submissions</div>
+                    <div class="desktop-table">
+                        <div class="table-responsive" id="sellsTableWrapper">
+                            <table>
+                                <thead><tr><th>ID</th><th>Item</th><th>Condition</th><th>Price</th><th>Location</th><th>Date</th><th>Actions</th></tr></thead>
+                                <tbody id="sellsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mobile-cards">
+                        <div class="data-cards" id="sellsCardsContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-deliveries">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-truck-fast"></i> Delivery Requests</div>
+                    <div class="desktop-table">
+                        <div class="table-responsive" id="deliveriesTableWrapper">
+                            <table>
+                                <thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Service</th><th>Details</th><th>Date</th><th>Status</th></tr></thead>
+                                <tbody id="deliveriesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mobile-cards">
+                        <div class="data-cards" id="deliveriesCardsContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-inquiries">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-comment-dots"></i> Customer Inquiries</div>
+                    <div class="desktop-table">
+                        <div class="table-responsive" id="inquiriesTableWrapper">
+                            <table>
+                                <thead><tr><th>ID</th><th>From</th><th>Phone</th><th>Message</th><th>Date</th></tr></thead>
+                                <tbody id="inquiriesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mobile-cards">
+                        <div class="data-cards" id="inquiriesCardsContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-accommodation">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-house"></i> Accommodation Requests</div>
+                    <div class="desktop-table">
+                        <div class="table-responsive" id="accommodationTableWrapper">
+                            <table>
+                                <thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th></tr></thead>
+                                <tbody id="accommodationTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mobile-cards">
+                        <div class="data-cards" id="accommodationCardsContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-admins">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-users-cog"></i> Manage Admin Emails</div>
+                    <div style="padding:20px;">
+                        <div class="admin-form">
+                            <input type="email" id="newAdminEmail" placeholder="Enter admin email">
+                            <button onclick="addAdmin()">Add Admin</button>
+                        </div>
+                        <div class="admin-list" id="adminList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-products">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-store-alt"></i> Manage Products</div>
+                    <div style="padding:16px;">
+                        <button class="btn btn-primary" onclick="openProductModal()"><i class="fas fa-plus"></i> Add Product</button>
+                    </div>
+                    <div class="desktop-table">
+                        <div class="table-responsive" id="productsTableWrapper">
+                            <table>
+                                <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Condition</th><th>Price (KES)</th><th>Available</th><th>Actions</th></tr></thead>
+                                <tbody id="productsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mobile-cards">
+                        <div class="data-cards" id="productsCardsContainer"></div>
+                    </div>
+                </div>
+            </div>
         </main>
+    </div>
+
+    <!-- ══════════ COMPACT PRODUCT MODAL ══════════ -->
+    <div class="modal-overlay" id="productModal" style="display:none;" onclick="closeModalBg(event,'productModal')">
+        <div class="product-modal" onclick="event.stopPropagation()">
+            <span class="modal-close" onclick="closeModal('productModal')" style="position:absolute; top:12px; right:12px; background:var(--bg); border:none; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; color:var(--text-secondary);">&times;</span>
+            <h3 id="productModalTitle"><i class="fas fa-box-open"></i> Add Product</h3>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="editProductId">
+                <div class="compact-form">
+                    <div class="form-row">
+                        <div class="image-column">
+                            <div class="image-thumb" onclick="document.getElementById('prodImage').click()" title="Click to upload">
+                                <input type="file" id="prodImage" accept="image/*" style="display:none" onchange="previewImage(event)">
+                                <div id="imagePreview"><i class="fas fa-camera"></i></div>
+                            </div>
+                            <span class="url-toggle" onclick="toggleImageUrlMini()">URL</span>
+                            <div class="url-input-mini" id="imageUrlContainer">
+                                <input type="text" id="imageUrl" placeholder="Paste image URL" oninput="previewImageUrl()">
+                            </div>
+                        </div>
+                        <div class="fields-column">
+                            <div class="form-group-mini">
+                                <label for="prodName">Product Name *</label>
+                                <input type="text" id="prodName" placeholder="e.g. iPhone 12 Pro" required>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <div class="form-group-mini" style="flex:1;">
+                                    <label for="prodCategory">Category</label>
+                                    <select id="prodCategory" required>
+                                        <option value="">--</option><option>Phones</option><option>Laptops</option><option>Furniture</option>
+                                        <option>Electronics</option><option>Kitchen</option><option>Accessories</option><option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-mini" style="flex:1;">
+                                    <label for="prodCondition">Cond.</label>
+                                    <select id="prodCondition" required>
+                                        <option value="">--</option><option>New</option><option>Used</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group-mini">
+                                <label for="prodPrice">Price (KES) *</label>
+                                <input type="number" id="prodPrice" placeholder="e.g. 55000" required>
+                            </div>
+                            <label class="checkbox-mini">
+                                <input type="checkbox" id="prodAvailable" checked> Available for sale
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeModal('productModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Save</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -237,68 +422,51 @@
         const deliveriesRef = db.ref('deliveryRequests');
         const inquiriesRef = db.ref('inquiries');
         const accommodationRef = db.ref('accommodationRequests');
+        const productsRef = db.ref('products');
 
         adminsRef.once('value').then(snap => { if (!snap.exists()) adminsRef.set({ 'kasaineisack@gmail,com': true }); });
         let currentAdmins = {};
         let allBookings = [];
-        let currentFilter = 'all';
-        let currentSearch = '';
 
         // Theme
         function setTheme(isDark) {
-            if (isDark) {
-                document.body.classList.add('dark');
-                document.querySelectorAll('.theme-toggle i').forEach(icon => icon.className = 'fas fa-sun');
-                document.querySelectorAll('.theme-toggle span').forEach(span => span.textContent = 'Light');
-            } else {
-                document.body.classList.remove('dark');
-                document.querySelectorAll('.theme-toggle i').forEach(icon => icon.className = 'fas fa-moon');
-                document.querySelectorAll('.theme-toggle span').forEach(span => span.textContent = 'Dark');
-            }
+            document.body.classList.toggle('dark', isDark);
+            document.querySelectorAll('.theme-toggle i').forEach(icon => icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon');
+            document.querySelectorAll('.theme-toggle span').forEach(span => span.textContent = isDark ? 'Light' : 'Dark');
             localStorage.setItem('campusvault-admin-theme', isDark ? 'dark' : 'light');
         }
-        const savedTheme = localStorage.getItem('campusvault-admin-theme');
-        setTheme(savedTheme === 'dark');
-        document.getElementById('themeToggleMobile').addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
-        document.getElementById('themeToggleDesktop').addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
-        function handleResponsiveLayout() {
+        setTheme(localStorage.getItem('campusvault-admin-theme') === 'dark');
+        document.getElementById('themeToggleMobile').onclick = () => setTheme(!document.body.classList.contains('dark'));
+        document.getElementById('themeToggleDesktop').onclick = () => setTheme(!document.body.classList.contains('dark'));
+        window.addEventListener('resize', () => {
             document.getElementById('desktopThemeToggleWrapper').style.display = window.innerWidth <= 768 ? 'none' : 'flex';
-        }
-        window.addEventListener('resize', handleResponsiveLayout);
-        handleResponsiveLayout();
+        });
+        document.getElementById('desktopThemeToggleWrapper').style.display = window.innerWidth <= 768 ? 'none' : 'flex';
 
         // Auth
-        document.getElementById('googleSignInBtn').addEventListener('click', () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(result => {
-                const email = result.user.email;
+        document.getElementById('googleSignInBtn').onclick = () => {
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(result => {
                 adminsRef.once('value').then(snap => {
-                    if (snap.val() && snap.val()[email.replace(/\./g, ',')]) showDashboard(result.user);
-                    else { auth.signOut(); document.getElementById('loginError').textContent = email + ' not authorized.'; document.getElementById('loginError').style.display = 'block'; }
+                    if (snap.val()?.[result.user.email.replace(/\./g, ',')]) showDashboard(result.user);
+                    else { auth.signOut(); document.getElementById('loginError').textContent = result.user.email + ' not authorized.'; document.getElementById('loginError').style.display = 'block'; }
                 });
             }).catch(err => { document.getElementById('loginError').textContent = err.message; document.getElementById('loginError').style.display = 'block'; });
-        });
-
+        };
         function showDashboard(user) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').classList.add('active');
             sessionStorage.setItem('admin_logged_in','true');
             if (user) {
                 document.getElementById('userNameDisplay').textContent = user.displayName || user.email;
-                if (user.photoURL) {
-                    document.getElementById('userAvatar').src = user.photoURL;
-                    document.getElementById('userAvatar').style.display = 'block';
-                }
+                if (user.photoURL) { document.getElementById('userAvatar').src = user.photoURL; document.getElementById('userAvatar').style.display = 'block'; }
             }
             loadDashboard();
-            setupStorageControls();
         }
         function logout() { auth.signOut().then(() => location.reload()); }
-
         auth.onAuthStateChanged(user => {
             if (user) {
                 adminsRef.once('value').then(snap => {
-                    if (snap.val() && snap.val()[user.email.replace(/\./g, ',')]) showDashboard(user);
+                    if (snap.val()?.[user.email.replace(/\./g, ',')]) showDashboard(user);
                     else { auth.signOut(); location.reload(); }
                 });
             } else {
@@ -307,9 +475,10 @@
             }
         });
 
+        // Sidebar & tabs
         const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
-        document.getElementById('hamburgerBtn').addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
-        function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+        document.getElementById('hamburgerBtn').onclick = () => { sidebar.classList.add('open'); overlay.classList.add('active'); };
+        window.closeSidebar = () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); };
         document.querySelectorAll('.sidebar nav a').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -322,142 +491,44 @@
             document.getElementById('tab-'+tab).classList.add('active');
             document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
             document.querySelector(`.sidebar nav a[data-tab="${tab}"]`).classList.add('active');
+            setTimeout(checkAllTableOverflows, 50);
         }
+        function checkTableOverflow(wrapper) {
+            if (!wrapper) return;
+            wrapper.classList.toggle('overflowing', wrapper.scrollWidth > wrapper.clientWidth);
+        }
+        function checkAllTableOverflows() { document.querySelectorAll('.table-responsive').forEach(checkTableOverflow); }
+        window.addEventListener('resize', checkAllTableOverflows);
 
         function loadDashboard() {
             bookingsRef.on('value', snap => {
                 allBookings = snap.val() ? Object.values(snap.val()) : [];
                 updateMetrics(allBookings);
-                applyStorageFilters();
+                renderStorageTable(allBookings);
+                renderStorageCards(allBookings);
             });
             sellsRef.on('value', snap => {
                 const sells = snap.val() ? Object.values(snap.val()) : [];
-                renderSellsTable(sells);
+                renderSellsTable(sells); renderSellsCards(sells);
             });
             deliveriesRef.on('value', snap => {
                 const deliveries = snap.val() ? Object.values(snap.val()) : [];
-                renderDeliveriesTable(deliveries);
+                renderDeliveriesTable(deliveries); renderDeliveriesCards(deliveries);
             });
             inquiriesRef.on('value', snap => {
                 const inquiries = snap.val() ? Object.values(snap.val()) : [];
-                renderInquiriesTable(inquiries);
+                renderInquiriesTable(inquiries); renderInquiriesCards(inquiries);
             });
             accommodationRef.on('value', snap => {
                 const requests = snap.val() ? Object.values(snap.val()) : [];
-                renderAccommodationTable(requests);
+                renderAccommodationTable(requests); renderAccommodationCards(requests);
             });
             adminsRef.on('value', snap => { currentAdmins = snap.val() || {}; renderAdminList(); });
-        }
-
-        function setupStorageControls() {
-            const searchInput = document.getElementById('storageSearch');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            searchInput.addEventListener('input', (e) => { currentSearch = e.target.value.toLowerCase(); applyStorageFilters(); });
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentFilter = btn.dataset.filter;
-                    applyStorageFilters();
-                });
+            productsRef.on('value', snap => {
+                const products = snap.val() || {};
+                renderProductsTable(products); renderProductsCards(products);
             });
-        }
-
-        function applyStorageFilters() {
-            let filtered = [...allBookings];
-            if (currentFilter === 'active') filtered = filtered.filter(b => b.status === 'active');
-            else if (currentFilter === 'collected') filtered = filtered.filter(b => b.status !== 'active');
-            if (currentSearch) {
-                filtered = filtered.filter(b => {
-                    const searchStr = (b.name + ' ' + b.bookingId + ' ' + b.trackingId).toLowerCase();
-                    return searchStr.includes(currentSearch);
-                });
-            }
-            renderStorageTable(filtered);
-            renderStorageCards(filtered);
-        }
-
-        function renderStorageTable(bookings) {
-            const tbody = document.getElementById('storageTableBody');
-            if (bookings.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:20px;">No bookings found.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = bookings.map(b=>{
-                const collectedAt = b.collectedAt ? new Date(b.collectedAt).toLocaleString() : '—';
-                const statusBadge = `<span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span>`;
-                const deliveryText = b.deliveryMethod ? (b.deliveryMethod==='self'?'Self':'Pickup') : '—';
-                const scheduledText = b.scheduledDateTime ? new Date(b.scheduledDateTime).toLocaleString() : '—';
-                const actions = b.status === 'active' ?
-                    `<button class="action-btn mark-collected" onclick="markCollected('${b.bookingId}')"><i class="fas fa-check"></i> Collected</button>` : '';
-                return `<tr>
-                    <td><strong>${b.bookingId}</strong></td><td>${b.name}</td><td>${b.phone}</td>
-                    <td>${b.itemCount} (${b.category})</td><td>${b.checkIn}</td><td>${b.collect}</td>
-                    <td>${deliveryText}</td><td>${scheduledText}</td><td>${statusBadge}</td>
-                    <td>${collectedAt}</td>
-                    <td>${actions}<button class="action-btn delete" onclick="deleteBooking('${b.bookingId}')"><i class="fas fa-trash"></i></button></td>
-                </tr>`;
-            }).join('');
-        }
-
-        function renderStorageCards(bookings) {
-            const container = document.getElementById('storageCardsContainer');
-            if (bookings.length === 0) {
-                container.innerHTML = '<p style="text-align:center; padding:20px;">No bookings found.</p>';
-                return;
-            }
-            container.innerHTML = bookings.map(b=>{
-                const collectedAt = b.collectedAt ? new Date(b.collectedAt).toLocaleString() : '—';
-                const statusBadge = `<span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span>`;
-                const deliveryText = b.deliveryMethod ? (b.deliveryMethod==='self'?'Self':'Pickup') : '—';
-                const scheduledText = b.scheduledDateTime ? new Date(b.scheduledDateTime).toLocaleString() : '—';
-                const actions = b.status === 'active'
-                    ? `<button class="action-btn mark-collected" onclick="markCollected('${b.bookingId}')"><i class="fas fa-check"></i> Collected</button>`
-                    : '';
-                return `
-                <div class="booking-card">
-                    <div class="card-row">
-                        <span class="card-label">Booking ID</span>
-                        <span class="card-value"><strong>${b.bookingId}</strong></span>
-                    </div>
-                    <div class="card-row">
-                        <span class="card-label">Customer</span>
-                        <span class="card-value">${b.name}</span>
-                    </div>
-                    <div class="card-row">
-                        <span class="card-label">Phone</span>
-                        <span class="card-value">${b.phone}</span>
-                    </div>
-                    <div class="card-row">
-                        <span class="card-label">Items</span>
-                        <span class="card-value">${b.itemCount} (${b.category})</span>
-                    </div>
-                    <div class="card-row">
-                        <span class="card-label">Check‑in</span>
-                        <span class="card-value">${b.checkIn}</span>
-                    </div>
-                    <div class="card-row">
-                        <span class="card-label">Collection Due</span>
-                        <span class="card-value">${b.collect}</span>
-                    </div>
-                    <div class="card-row">
-                        <span class="card-label">Delivery</span>
-                        <span class="card-value">${deliveryText} ${scheduledText !== '—' ? 'on ' + scheduledText : ''}</span>
-                    </div>
-                    <div class="card-row">
-                        <span class="card-label">Status</span>
-                        <span class="card-value">${statusBadge}</span>
-                    </div>
-                    <div class="card-row">
-                        <span class="card-label">Collected At</span>
-                        <span class="card-value">${collectedAt}</span>
-                    </div>
-                    <div class="card-actions">
-                        ${actions}
-                        <button class="action-btn delete" onclick="deleteBooking('${b.bookingId}')"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>`;
-            }).join('');
+            setTimeout(checkAllTableOverflows, 100);
         }
 
         function updateMetrics(bookings) {
@@ -469,44 +540,285 @@
             `;
         }
 
-        function renderSellsTable(sells) {
-            document.getElementById('sellsTableBody').innerHTML = sells.length ? sells.map(s=>`
-                <tr><td>${s.id}</td><td>${s.itemName}</td><td>${s.condition}</td><td>KES ${parseInt(s.price).toLocaleString()}</td><td>${s.location}</td><td>${s.timestamp?new Date(s.timestamp).toLocaleDateString():''}</td><td><button class="action-btn delete" onclick="deleteSell('${s.id}')"><i class="fas fa-trash"></i></button></td></tr>
-            `).join('') : '<tr><td colspan="7" style="text-align:center; padding:20px;">No submissions yet.</td></tr>';
+        // Export
+        function exportPDF() {
+            if (!allBookings.length) return alert('No bookings to export.');
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(18).text('CampusVault – Storage Bookings', 14, 22);
+            doc.setFontSize(11).text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+            doc.autoTable({
+                head: [['Booking ID','Customer','Phone','Items','Category','Check‑in','Collection Due','Delivery','Scheduled','Status','Collected At']],
+                body: allBookings.map(b => [b.bookingId, b.name, b.phone, b.itemCount, b.category, b.checkIn, b.collect, b.deliveryMethod||'—', b.scheduledDateTime?new Date(b.scheduledDateTime).toLocaleString():'—', b.status, b.collectedAt?new Date(b.collectedAt).toLocaleString():'—']),
+                startY: 38, theme: 'striped', headStyles: { fillColor: [30,58,95] }, styles: { fontSize: 9, cellPadding: 2 }
+            });
+            doc.save(`storage-bookings-${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+        function exportExcel() {
+            if (!allBookings.length) return alert('No bookings to export.');
+            const data = allBookings.map(b => ({
+                'Booking ID': b.bookingId, Customer: b.name, Phone: b.phone, Items: b.itemCount, Category: b.category,
+                'Check‑in': b.checkIn, 'Collection Due': b.collect, 'Delivery Method': b.deliveryMethod||'—',
+                Scheduled: b.scheduledDateTime?new Date(b.scheduledDateTime).toLocaleString():'—',
+                Status: b.status, 'Collected At': b.collectedAt?new Date(b.collectedAt).toLocaleString():'—'
+            }));
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Bookings');
+            ws['!cols'] = Object.keys(data[0]).map(k => ({ wch: Math.max(k.length, 12) }));
+            XLSX.writeFile(wb, `storage-bookings-${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
-        function renderDeliveriesTable(deliveries) {
-            const tbody = document.getElementById('deliveriesTableBody');
-            if (deliveries.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No requests yet.</td></tr>'; return; }
-            tbody.innerHTML = deliveries.map(d => `<tr><td>${d.id}</td><td>${d.name}</td><td>${d.phone}</td><td>${d.service}</td><td>${d.details}</td><td>${d.timestamp ? new Date(d.timestamp).toLocaleString() : ''}</td><td><span class="badge badge-active">Pending</span></td></tr>`).join('');
+        // Storage rendering
+        function renderStorageTable(bookings) {
+            const tbody = document.getElementById('storageTableBody');
+            if (!bookings.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:20px;">No bookings found.</td></tr>'; return; }
+            tbody.innerHTML = bookings.map(b=>`
+                <tr>
+                    <td><strong>${b.bookingId}</strong></td><td>${b.name}</td><td>${b.phone}</td>
+                    <td>${b.itemCount} (${b.category})</td><td>${b.checkIn}</td><td>${b.collect}</td>
+                    <td>${b.deliveryMethod? (b.deliveryMethod==='self'?'Self':'Pickup') :'—'}</td>
+                    <td>${b.scheduledDateTime? new Date(b.scheduledDateTime).toLocaleString() :'—'}</td>
+                    <td><span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span></td>
+                    <td>${b.collectedAt? new Date(b.collectedAt).toLocaleString() :'—'}</td>
+                    <td>
+                        ${b.status==='active'? `<button class="action-btn mark-collected" onclick="markCollected('${b.bookingId}')"><i class="fas fa-check"></i> Collected</button>` : ''}
+                        <button class="action-btn delete" onclick="deleteBooking('${b.bookingId}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`).join('');
+            setTimeout(() => checkTableOverflow(document.getElementById('storageTableWrapper')), 50);
         }
-
-        function renderInquiriesTable(inquiries) {
-            const tbody = document.getElementById('inquiriesTableBody');
-            if (inquiries.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No inquiries yet.</td></tr>'; return; }
-            tbody.innerHTML = inquiries.map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td>${i.phone}</td><td>${i.message}</td><td>${i.timestamp ? new Date(i.timestamp).toLocaleString() : ''}</td></tr>`).join('');
+        function renderStorageCards(bookings) {
+            const container = document.getElementById('storageCardsContainer');
+            if (!bookings.length) { container.innerHTML = '<p style="text-align:center; padding:20px;">No bookings found.</p>'; return; }
+            container.innerHTML = bookings.map(b=>{
+                const statusBadge = `<span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span>`;
+                const deliveryText = b.deliveryMethod? (b.deliveryMethod==='self'?'Self':'Pickup') :'—';
+                const scheduledText = b.scheduledDateTime? new Date(b.scheduledDateTime).toLocaleString() :'—';
+                return `
+                <div class="data-card">
+                    <div class="card-row"><span class="card-label">Booking ID</span><span class="card-value"><strong>${b.bookingId}</strong></span></div>
+                    <div class="card-row"><span class="card-label">Customer</span><span class="card-value">${b.name}</span></div>
+                    <div class="card-row"><span class="card-label">Phone</span><span class="card-value">${b.phone}</span></div>
+                    <div class="card-row"><span class="card-label">Items</span><span class="card-value">${b.itemCount} (${b.category})</span></div>
+                    <div class="card-row"><span class="card-label">Check‑in</span><span class="card-value">${b.checkIn}</span></div>
+                    <div class="card-row"><span class="card-label">Collection Due</span><span class="card-value">${b.collect}</span></div>
+                    <div class="card-row"><span class="card-label">Delivery</span><span class="card-value">${deliveryText} ${scheduledText!=='—'? 'on '+scheduledText:''}</span></div>
+                    <div class="card-row"><span class="card-label">Status</span><span class="card-value">${statusBadge}</span></div>
+                    <div class="card-row"><span class="card-label">Collected At</span><span class="card-value">${b.collectedAt? new Date(b.collectedAt).toLocaleString():'—'}</span></div>
+                    <div class="card-actions">
+                        ${b.status==='active'? `<button class="action-btn mark-collected" onclick="markCollected('${b.bookingId}')"><i class="fas fa-check"></i> Collected</button>` : ''}
+                        <button class="action-btn delete" onclick="deleteBooking('${b.bookingId}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
         }
-
-        function renderAccommodationTable(requests) {
-            const tbody = document.getElementById('accommodationTableBody');
-            if (requests.length===0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No requests yet.</td></tr>'; return; }
-            tbody.innerHTML = requests.map(r=>`<tr><td>${r.id}</td><td>${r.name}</td><td>${r.phone}</td><td>${r.type}</td><td>${r.location}</td><td>${r.budget?`KES ${r.budget}`:'—'}</td><td>${r.timestamp?new Date(r.timestamp).toLocaleDateString():''}</td></tr>`).join('');
-        }
-
-        function markCollected(id) {
-            if (confirm('Mark as collected? This records the current date/time.')) {
-                bookingsRef.child(id).update({ status: 'collected', collectedAt: new Date().toISOString() });
-            }
-        }
+        function markCollected(id) { if(confirm('Mark as collected?')) bookingsRef.child(id).update({status:'collected', collectedAt:new Date().toISOString()}); }
         function deleteBooking(id) { if(confirm('Delete booking?')) bookingsRef.child(id).remove(); }
         function deleteSell(id) { if(confirm('Delete submission?')) sellsRef.child(id).remove(); }
 
-        function renderAdminList() {
-            const emails = Object.keys(currentAdmins).map(k=>k.replace(',','.'));
-            document.getElementById('adminList').innerHTML = emails.map(email=>`<div class="admin-item"><span>${email}</span><button onclick="removeAdmin('${email}')"><i class="fas fa-trash"></i> Remove</button></div>`).join('');
+        // Sells
+        function renderSellsTable(sells) {
+            document.getElementById('sellsTableBody').innerHTML = sells.length ? sells.map(s=>`
+                <tr><td>${s.id}</td><td>${s.itemName}</td><td>${s.condition}</td><td>KES ${parseInt(s.price).toLocaleString()}</td><td>${s.location}</td><td>${s.timestamp?new Date(s.timestamp).toLocaleDateString():''}</td><td><button class="action-btn delete" onclick="deleteSell('${s.id}')"><i class="fas fa-trash"></i></button></td></tr>`).join('') : '<tr><td colspan="7" style="text-align:center; padding:20px;">No submissions yet.</td></tr>';
         }
-        function addAdmin() { const email = document.getElementById('newAdminEmail').value.trim(); if (!email) return; adminsRef.child(email.replace(/\./g,',')).set(true); document.getElementById('newAdminEmail').value = ''; }
-        function removeAdmin(email) { if (confirm(`Remove ${email}?`)) adminsRef.child(email.replace(/\./g,',')).remove(); }
+        function renderSellsCards(sells) {
+            const container = document.getElementById('sellsCardsContainer');
+            if (!sells.length) { container.innerHTML = '<p style="text-align:center; padding:20px;">No submissions yet.</p>'; return; }
+            container.innerHTML = sells.map(s=>`
+                <div class="data-card">
+                    <div class="card-row"><span class="card-label">ID</span><span class="card-value"><strong>${s.id}</strong></span></div>
+                    <div class="card-row"><span class="card-label">Item</span><span class="card-value">${s.itemName}</span></div>
+                    <div class="card-row"><span class="card-label">Condition</span><span class="card-value">${s.condition}</span></div>
+                    <div class="card-row"><span class="card-label">Price</span><span class="card-value">KES ${parseInt(s.price).toLocaleString()}</span></div>
+                    <div class="card-row"><span class="card-label">Location</span><span class="card-value">${s.location}</span></div>
+                    <div class="card-row"><span class="card-label">Date</span><span class="card-value">${s.timestamp?new Date(s.timestamp).toLocaleDateString():''}</span></div>
+                    <div class="card-actions"><button class="action-btn delete" onclick="deleteSell('${s.id}')"><i class="fas fa-trash"></i></button></div>
+                </div>`).join('');
+        }
+
+        // Deliveries, Inquiries, Accommodation rendering (same pattern – included for completeness)
+        function renderDeliveriesTable(deliveries) {
+            document.getElementById('deliveriesTableBody').innerHTML = deliveries.length ? deliveries.map(d=>`<tr><td>${d.id}</td><td>${d.name}</td><td>${d.phone}</td><td>${d.service}</td><td>${d.details}</td><td>${d.timestamp?new Date(d.timestamp).toLocaleString():''}</td><td><span class="badge badge-active">Pending</span></td></tr>`).join('') : '<tr><td colspan="7" style="text-align:center; padding:20px;">No requests yet.</td></tr>';
+        }
+        function renderDeliveriesCards(deliveries) {
+            document.getElementById('deliveriesCardsContainer').innerHTML = deliveries.length ? deliveries.map(d=>`
+                <div class="data-card">
+                    <div class="card-row"><span class="card-label">ID</span><span class="card-value"><strong>${d.id}</strong></span></div>
+                    <div class="card-row"><span class="card-label">Customer</span><span class="card-value">${d.name}</span></div>
+                    <div class="card-row"><span class="card-label">Phone</span><span class="card-value">${d.phone}</span></div>
+                    <div class="card-row"><span class="card-label">Service</span><span class="card-value">${d.service}</span></div>
+                    <div class="card-row"><span class="card-label">Details</span><span class="card-value">${d.details}</span></div>
+                    <div class="card-row"><span class="card-label">Date</span><span class="card-value">${d.timestamp?new Date(d.timestamp).toLocaleString():''}</span></div>
+                    <div class="card-row"><span class="card-label">Status</span><span class="card-value"><span class="badge badge-active">Pending</span></span></div>
+                </div>`).join('') : '<p style="text-align:center; padding:20px;">No requests yet.</p>';
+        }
+        function renderInquiriesTable(inquiries) {
+            document.getElementById('inquiriesTableBody').innerHTML = inquiries.length ? inquiries.map(i=>`<tr><td>${i.id}</td><td>${i.name}</td><td>${i.phone}</td><td>${i.message}</td><td>${i.timestamp?new Date(i.timestamp).toLocaleString():''}</td></tr>`).join('') : '<tr><td colspan="5" style="text-align:center; padding:20px;">No inquiries yet.</td></tr>';
+        }
+        function renderInquiriesCards(inquiries) {
+            document.getElementById('inquiriesCardsContainer').innerHTML = inquiries.length ? inquiries.map(i=>`
+                <div class="data-card">
+                    <div class="card-row"><span class="card-label">ID</span><span class="card-value"><strong>${i.id}</strong></span></div>
+                    <div class="card-row"><span class="card-label">From</span><span class="card-value">${i.name}</span></div>
+                    <div class="card-row"><span class="card-label">Phone</span><span class="card-value">${i.phone}</span></div>
+                    <div class="card-row"><span class="card-label">Message</span><span class="card-value">${i.message}</span></div>
+                    <div class="card-row"><span class="card-label">Date</span><span class="card-value">${i.timestamp?new Date(i.timestamp).toLocaleString():''}</span></div>
+                </div>`).join('') : '<p style="text-align:center; padding:20px;">No inquiries yet.</p>';
+        }
+        function renderAccommodationTable(requests) {
+            document.getElementById('accommodationTableBody').innerHTML = requests.length ? requests.map(r=>`<tr><td>${r.id}</td><td>${r.name}</td><td>${r.phone}</td><td>${r.type}</td><td>${r.location}</td><td>${r.budget?`KES ${r.budget}`:'—'}</td><td>${r.timestamp?new Date(r.timestamp).toLocaleDateString():''}</td></tr>`).join('') : '<tr><td colspan="7" style="text-align:center; padding:20px;">No requests yet.</td></tr>';
+        }
+        function renderAccommodationCards(requests) {
+            document.getElementById('accommodationCardsContainer').innerHTML = requests.length ? requests.map(r=>`
+                <div class="data-card">
+                    <div class="card-row"><span class="card-label">ID</span><span class="card-value"><strong>${r.id}</strong></span></div>
+                    <div class="card-row"><span class="card-label">Customer</span><span class="card-value">${r.name}</span></div>
+                    <div class="card-row"><span class="card-label">Phone</span><span class="card-value">${r.phone}</span></div>
+                    <div class="card-row"><span class="card-label">Type</span><span class="card-value">${r.type}</span></div>
+                    <div class="card-row"><span class="card-label">Location</span><span class="card-value">${r.location}</span></div>
+                    <div class="card-row"><span class="card-label">Budget</span><span class="card-value">${r.budget?`KES ${r.budget}`:'—'}</span></div>
+                    <div class="card-row"><span class="card-label">Date</span><span class="card-value">${r.timestamp?new Date(r.timestamp).toLocaleDateString():''}</span></div>
+                </div>`).join('') : '<p style="text-align:center; padding:20px;">No requests yet.</p>';
+        }
+
+        // Admins
+        function renderAdminList() {
+            document.getElementById('adminList').innerHTML = Object.keys(currentAdmins).map(k=>k.replace(',','.')).map(email=>`<div class="admin-item"><span>${email}</span><button onclick="removeAdmin('${email}')"><i class="fas fa-trash"></i> Remove</button></div>`).join('');
+        }
+        window.addAdmin = () => { const email = document.getElementById('newAdminEmail').value.trim(); if(email) adminsRef.child(email.replace(/\./g,',')).set(true), document.getElementById('newAdminEmail').value=''; };
+        window.removeAdmin = (email) => { if(confirm(`Remove ${email}?`)) adminsRef.child(email.replace(/\./g,',')).remove(); };
+
+        // ─── Product Management (compact modal) ───
+        function toggleImageUrlMini() {
+            document.getElementById('imageUrlContainer').style.display = document.getElementById('imageUrlContainer').style.display === 'block' ? 'none' : 'block';
+        }
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => { preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`; };
+                reader.readAsDataURL(file);
+                document.getElementById('imageUrl').value = '';
+                document.getElementById('imageUrlContainer').style.display = 'none';
+            } else preview.innerHTML = '<i class="fas fa-camera"></i>';
+        }
+        function previewImageUrl() {
+            const url = document.getElementById('imageUrl').value.trim();
+            const preview = document.getElementById('imagePreview');
+            if (url) {
+                preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.onerror=null;this.innerHTML='<i class=\\'fas fa-exclamation-circle\\'></i>';">`;
+                document.getElementById('prodImage').value = '';
+            } else preview.innerHTML = '<i class="fas fa-camera"></i>';
+        }
+
+        function openProductModal(id = null) {
+            document.getElementById('productModal').style.display = 'flex';
+            document.getElementById('imagePreview').innerHTML = '<i class="fas fa-camera"></i>';
+            document.getElementById('imageUrl').value = '';
+            document.getElementById('imageUrlContainer').style.display = 'none';
+            if (id) {
+                document.getElementById('productModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Product';
+                document.getElementById('editProductId').value = id;
+                productsRef.child(id).once('value', snap => {
+                    const p = snap.val();
+                    document.getElementById('prodName').value = p.name||'';
+                    document.getElementById('prodCategory').value = p.category||'';
+                    document.getElementById('prodCondition').value = p.condition||'';
+                    document.getElementById('prodPrice').value = p.price||'';
+                    document.getElementById('prodAvailable').checked = p.available!==false;
+                    if (p.image) {
+                        if (p.image.startsWith('http')) { document.getElementById('imageUrl').value = p.image; previewImageUrl(); }
+                        else document.getElementById('imagePreview').innerHTML = `<img src="${p.image}" alt="Preview">`;
+                    }
+                });
+            } else {
+                document.getElementById('productModalTitle').innerHTML = '<i class="fas fa-box-open"></i> Add Product';
+                document.getElementById('editProductId').value = '';
+                document.getElementById('productForm').reset();
+                document.getElementById('prodAvailable').checked = true;
+            }
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('editProductId').value;
+            const name = document.getElementById('prodName').value.trim();
+            const category = document.getElementById('prodCategory').value;
+            const condition = document.getElementById('prodCondition').value;
+            const price = document.getElementById('prodPrice').value;
+            const available = document.getElementById('prodAvailable').checked;
+            const imageFile = document.getElementById('prodImage').files[0];
+            const imageUrl = document.getElementById('imageUrl').value.trim();
+            if (!name || !category || !condition || !price) return alert('Fill all required fields');
+
+            const productData = { name, category, condition, price: parseInt(price), available, timestamp: new Date().toISOString() };
+            const finalize = (data) => {
+                if (id) {
+                    if (!imageFile && !imageUrl) {
+                        productsRef.child(id).once('value', snap => { let old = snap.val()||{}; if(old.image) data.image = old.image; productsRef.child(id).update(data); });
+                    } else productsRef.child(id).update(data);
+                } else productsRef.push(data);
+                document.getElementById('productModal').style.display = 'none';
+                document.getElementById('productForm').reset();
+            };
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = ev => { productData.image = ev.target.result; finalize(productData); };
+                reader.readAsDataURL(imageFile);
+            } else {
+                if (imageUrl) productData.image = imageUrl;
+                finalize(productData);
+            }
+        }
+        window.deleteProduct = (id) => { if(confirm('Delete product?')) productsRef.child(id).remove(); };
+        window.toggleAvailability = (id, current) => productsRef.child(id).update({ available: !current });
+
+        function renderProductsTable(products) {
+            const entries = Object.entries(products);
+            const tbody = document.getElementById('productsTableBody');
+            if (!entries.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No products added yet.</td></tr>'; return; }
+            tbody.innerHTML = entries.map(([id, p])=> {
+                const imgTag = p.image ? `<img src="${p.image}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;" alt="${p.name}">` : '<div style="width:50px;height:50px;background:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📦</div>';
+                return `<tr>
+                    <td>${imgTag}</td><td>${p.name}</td><td>${p.category}</td><td>${p.condition}</td>
+                    <td>KES ${p.price.toLocaleString()}</td>
+                    <td><span class="badge ${p.available?'badge-active':'badge-collected'}">${p.available?'Yes':'No'}</span></td>
+                    <td>
+                        <button class="action-btn edit" onclick="openProductModal('${id}')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="action-btn" onclick="toggleAvailability('${id}',${p.available})">${p.available?'Unavailable':'Available'}</button>
+                        <button class="action-btn delete" onclick="deleteProduct('${id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+            setTimeout(() => checkTableOverflow(document.getElementById('productsTableWrapper')), 50);
+        }
+        function renderProductsCards(products) {
+            const container = document.getElementById('productsCardsContainer');
+            const entries = Object.entries(products);
+            if (!entries.length) { container.innerHTML = '<p style="text-align:center; padding:20px;">No products added yet.</p>'; return; }
+            container.innerHTML = entries.map(([id, p])=> {
+                const imgTag = p.image ? `<img src="${p.image}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;border:1px solid var(--border);" alt="${p.name}">` : '<div style="width:50px;height:50px;background:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📦</div>';
+                return `
+                <div class="data-card">
+                    <div class="card-row"><span class="card-label">Image</span><span class="card-value">${imgTag}</span></div>
+                    <div class="card-row"><span class="card-label">Name</span><span class="card-value">${p.name}</span></div>
+                    <div class="card-row"><span class="card-label">Category</span><span class="card-value">${p.category}</span></div>
+                    <div class="card-row"><span class="card-label">Condition</span><span class="card-value">${p.condition}</span></div>
+                    <div class="card-row"><span class="card-label">Price</span><span class="card-value">KES ${p.price.toLocaleString()}</span></div>
+                    <div class="card-row"><span class="card-label">Available</span><span class="card-value"><span class="badge ${p.available?'badge-active':'badge-collected'}">${p.available?'Yes':'No'}</span></span></div>
+                    <div class="card-actions">
+                        <button class="action-btn edit" onclick="openProductModal('${id}')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="action-btn" onclick="toggleAvailability('${id}',${p.available})">${p.available?'Unavailable':'Available'}</button>
+                        <button class="action-btn delete" onclick="deleteProduct('${id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+        window.closeModalBg = (e, id) => { if(e.target === e.currentTarget) closeModal(id); };
     </script>
 </body>
 </html>
