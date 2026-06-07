@@ -12,64 +12,24 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <style>
         :root {
-            --bg: #f1f5f9;
-            --surface: #ffffff;
-            --text: #0f172a;
-            --text-secondary: #475569;
-            --primary: #1e3a5f;
-            --accent: #0ea5e9;
-            --emerald: #10b981;
-            --rose: #f43f5e;
-            --border: #e2e8f0;
-            --shadow: 0 2px 4px rgba(0,0,0,0.04);
-            --shadow-md: 0 6px 12px rgba(0,0,0,0.06);
-            --shadow-lg: 0 12px 24px rgba(0,0,0,0.08);
-            --radius: 10px;
-            --radius-sm: 6px;
-            --transition: 0.2s ease;
-            --sidebar-width: 250px;
+            --bg: #f1f5f9; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
+            --primary: #1e3a5f; --accent: #0ea5e9; --emerald: #10b981; --rose: #f43f5e;
+            --border: #e2e8f0; --shadow: 0 2px 4px rgba(0,0,0,0.04); --shadow-md: 0 6px 12px rgba(0,0,0,0.06);
+            --radius: 10px; --radius-sm: 6px; --transition: 0.2s ease; --sidebar-width: 250px;
             --font: 'Inter', sans-serif;
         }
-
         body.dark {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --text: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --primary: #38bdf8;
-            --accent: #0ea5e9;
-            --emerald: #34d399;
-            --rose: #fb7185;
-            --border: #475569;
-            --shadow: 0 2px 4px rgba(0,0,0,0.2);
-            --shadow-md: 0 6px 12px rgba(0,0,0,0.3);
-            --shadow-lg: 0 12px 24px rgba(0,0,0,0.4);
+            --bg: #0f172a; --surface: #1e293b; --text: #f1f5f9; --text-secondary: #cbd5e1;
+            --primary: #38bdf8; --accent: #0ea5e9; --emerald: #34d399; --rose: #fb7185;
+            --border: #475569; --shadow: 0 2px 4px rgba(0,0,0,0.2); --shadow-md: 0 6px 12px rgba(0,0,0,0.3);
         }
-
         * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: var(--font);
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            transition: background 0.3s, color 0.3s;
-        }
-        .login-overlay {
-            position:fixed; inset:0; background:linear-gradient(135deg,#0b1e33,#1e3a5f);
-            display:flex; align-items:center; justify-content:center; z-index:9999;
-        }
-        .login-card {
-            background: var(--surface);
-            border-radius:20px; padding:32px; width:90%; max-width:400px;
-            text-align:center; box-shadow:0 25px 50px rgba(0,0,0,0.3);
-        }
+        body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; transition: background 0.3s, color 0.3s; }
+        /* Login */
+        .login-overlay { position:fixed; inset:0; background:linear-gradient(135deg,#0b1e33,#1e3a5f); display:flex; align-items:center; justify-content:center; z-index:9999; }
+        .login-card { background: var(--surface); border-radius:20px; padding:32px; width:90%; max-width:400px; text-align:center; box-shadow:0 25px 50px rgba(0,0,0,0.3); }
         .login-card h2 { font-weight:800; font-size:2rem; color:var(--primary); }
-        .google-btn {
-            width:100%; padding:14px; border-radius:30px; border:2px solid var(--border);
-            background:var(--surface); font-weight:600; display:flex; align-items:center;
-            justify-content:center; gap:10px; cursor:pointer; transition:var(--transition);
-            margin-top:24px; color:var(--text);
-        }
+        .google-btn { width:100%; padding:14px; border-radius:30px; border:2px solid var(--border); background:var(--surface); font-weight:600; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:var(--transition); margin-top:24px; color:var(--text); }
         .google-btn:hover { background: var(--bg); border-color: var(--primary); }
         .login-error { color:var(--rose); margin-top:12px; display:none; }
 
@@ -77,87 +37,39 @@
         .dashboard.active { display:flex; min-height:100vh; }
 
         /* Sidebar */
-        .sidebar {
-            width:var(--sidebar-width); background:linear-gradient(180deg, #0b1e33, #1e293b);
-            color:#fff; position:fixed; top:0; left:0; height:100vh; z-index:200;
-            transition: transform 0.3s ease; box-shadow:4px 0 20px rgba(0,0,0,0.2);
-            overflow-y:auto;
-        }
-        .sidebar .brand {
-            padding:24px 20px; font-weight:800; font-size:1.4rem; display:flex;
-            align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,0.1);
-        }
+        .sidebar { width:var(--sidebar-width); background:linear-gradient(180deg, #0b1e33, #1e293b); color:#fff; position:fixed; top:0; left:0; height:100vh; z-index:200; transition: transform 0.3s ease; box-shadow:4px 0 20px rgba(0,0,0,0.2); overflow-y:auto; }
+        .sidebar .brand { padding:24px 20px; font-weight:800; font-size:1.4rem; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,0.1); }
         .sidebar .brand i { color:var(--accent); }
-        .sidebar nav { flex:1; padding:20px 12px; }
-        .sidebar nav a {
-            display:flex; align-items:center; gap:12px; padding:12px 16px;
-            border-radius:var(--radius); color:#cbd5e1; text-decoration:none;
-            font-weight:500; transition:var(--transition); margin-bottom:4px; font-size:1rem;
-        }
-        .sidebar nav a:hover, .sidebar nav a.active {
-            background:rgba(255,255,255,0.1); color:#fff;
-        }
-        .sidebar nav a i { width:20px; text-align:center; }
+        .sidebar nav { padding:20px 12px; }
+        .sidebar nav a { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:var(--radius); color:#cbd5e1; text-decoration:none; font-weight:500; transition:var(--transition); margin-bottom:4px; font-size:1rem; }
+        .sidebar nav a:hover, .sidebar nav a.active { background:rgba(255,255,255,0.1); color:#fff; }
+        .sidebar nav a i { width:20px; }
         .sidebar-footer { padding:20px; border-top:1px solid rgba(255,255,255,0.1); }
         .user-info { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
         .user-avatar { width:40px; height:40px; border-radius:50%; border:2px solid var(--accent); }
-        .logout-btn {
-            width:100%; background:rgba(255,255,255,0.1); border:none; color:#fff;
-            padding:10px; border-radius:var(--radius-sm); cursor:pointer; font-weight:600;
-        }
+        .logout-btn { width:100%; background:rgba(255,255,255,0.1); border:none; color:#fff; padding:10px; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; }
         .logout-btn:hover { background:rgba(255,255,255,0.2); }
 
-        /* Main content */
-        .main {
-            flex:1; margin-left:var(--sidebar-width); padding:24px;
-            transition: margin-left 0.3s ease;
-        }
-        .topbar-mobile {
-            display:none; background:var(--surface); padding:12px 16px;
-            border-bottom:1px solid var(--border); justify-content:space-between;
-            align-items:center; position:sticky; top:0; z-index:50; box-shadow:var(--shadow);
-        }
+        .main { flex:1; margin-left:var(--sidebar-width); padding:24px; transition: margin-left 0.3s ease; min-height:100vh; }
+        .topbar-mobile { display:none; background:var(--surface); padding:12px 16px; border-bottom:1px solid var(--border); justify-content:space-between; align-items:center; position:sticky; top:0; z-index:50; box-shadow:var(--shadow); }
         .hamburger { background:none; border:none; font-size:1.5rem; color:var(--text); cursor:pointer; }
 
-        /* Responsive sidebar */
+        .theme-toggle { background: var(--bg); border:1px solid var(--border); border-radius:20px; padding:8px 14px; display:flex; align-items:center; gap:6px; cursor:pointer; transition:var(--transition); font-size:0.9rem; color:var(--text-secondary); font-weight:500; }
+        .theme-toggle i { font-size:1rem; }
+        .theme-toggle:hover { background: var(--border); }
+
         @media (max-width:768px) {
             .sidebar { transform:translateX(-100%); }
             .sidebar.open { transform:translateX(0); }
             .main { margin-left:0; }
             .topbar-mobile { display:flex; }
-            .sidebar-overlay {
-                display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
-                z-index:150;
-            }
+            .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:150; }
             .sidebar-overlay.active { display:block; }
         }
 
-        /* Theme toggle */
-        .theme-toggle {
-            background: var(--bg);
-            border:1px solid var(--border);
-            border-radius:20px; padding:6px 14px;
-            display:flex; align-items:center; gap:8px;
-            cursor:pointer; transition:var(--transition);
-            font-size:0.9rem; color:var(--text-secondary); font-weight:500;
-        }
-        .theme-toggle i { font-size:1rem; }
-        .theme-toggle:hover { background: var(--border); }
-
-        /* Metrics */
-        .metrics-grid {
-            display:grid; grid-template-columns:repeat(auto-fit, minmax(170px,1fr));
-            gap:16px; margin-bottom:28px;
-        }
-        .metric-card {
-            background:var(--surface); border-radius:var(--radius); padding:20px;
-            box-shadow:var(--shadow); display:flex; align-items:center; gap:14px;
-        }
-        .metric-icon {
-            width:48px; height:48px; border-radius:var(--radius-sm);
-            display:flex; align-items:center; justify-content:center;
-            font-size:1.2rem; background:rgba(14,165,233,0.1); color:var(--accent);
-        }
+        .metrics-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:16px; margin-bottom:28px; }
+        .metric-card { background:var(--surface); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); display:flex; align-items:center; gap:14px; }
+        .metric-icon { width:48px; height:48px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:1.2rem; background:rgba(14,165,233,0.1); color:var(--accent); }
         .metric-value { font-size:1.8rem; font-weight:800; }
         .metric-label { color:var(--text-secondary); font-size:0.85rem; }
 
@@ -165,73 +77,62 @@
         .tab-content.active { display:block; animation:fadeIn 0.3s; }
         @keyframes fadeIn { from{opacity:0;} }
 
-        .card {
-            background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow);
-            border:1px solid var(--border); overflow:hidden; margin-bottom:24px;
-        }
-        .card-header {
-            padding:16px 20px; border-bottom:1px solid var(--border);
-            font-weight:700; display:flex; align-items:center; gap:8px;
-        }
+        .card { background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--border); overflow:hidden; margin-bottom:24px; }
+        .card-header { padding:16px 20px; border-bottom:1px solid var(--border); font-weight:700; display:flex; align-items:center; gap:8px; }
 
-        /* Scroll improvements */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            position: relative;
-        }
-        .table-responsive::-webkit-scrollbar { height: 6px; }
+        .storage-controls { display: flex; gap: 10px; flex-wrap: wrap; padding: 16px 20px; border-bottom: 1px solid var(--border); align-items: center; }
+        .search-box { flex: 1; min-width: 180px; position: relative; }
+        .search-box input { width: 100%; padding: 10px 14px 10px 40px; border-radius: 30px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: var(--font); }
+        .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+        .filter-buttons { display: flex; gap: 6px; }
+        .filter-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); color: var(--text-secondary); cursor: pointer; font-weight: 500; transition: var(--transition); font-size: 0.85rem; }
+        .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        /* Desktop table */
+        .desktop-table { display: block; }
+        .mobile-cards { display: none; }
+
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; position: relative; max-height: 60vh; overflow-y: auto; }
+        .table-responsive::-webkit-scrollbar { width:6px; height:6px; }
         .table-responsive::-webkit-scrollbar-track { background: transparent; }
-        .table-responsive::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+        .table-responsive::-webkit-scrollbar-thumb { background: #94a3b8; border-radius:3px; }
         .table-responsive::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        .table-responsive::after {
-            content: '';
-            position: absolute;
-            right: 0; top: 0; bottom: 0;
-            width: 20px;
-            background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .table-responsive.overflowing::after { opacity: 1; }
+        .table-responsive::after { content: ''; position: absolute; right:0; top:0; bottom:0; width:20px; background: linear-gradient(to right, transparent, rgba(0,0,0,0.05)); pointer-events: none; opacity:0; transition: opacity 0.2s; }
+        .table-responsive.overflowing::after { opacity:1; }
 
         table { width:100%; border-collapse:collapse; font-size:0.9rem; white-space: nowrap; }
-        th {
-            background:var(--bg); padding:14px 16px; text-align:left;
-            font-weight:600; color:var(--text-secondary); border-bottom:2px solid var(--border);
-        }
-        td { padding:12px 16px; border-bottom:1px solid var(--border); }
+        th { background:var(--bg); padding:10px 12px; text-align:left; font-weight:600; color:var(--text-secondary); border-bottom:2px solid var(--border); position: sticky; top:0; z-index:1; }
+        td { padding:10px 12px; border-bottom:1px solid var(--border); }
         tr:hover td { background:var(--bg); }
         .badge { padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:600; }
         .badge-active { background:#d1fae5; color:#065f46; }
         .badge-collected { background:#e2e8f0; color:#475569; }
-        .action-btn {
-            padding:6px 12px; border:none; border-radius:6px; cursor:pointer;
-            font-size:0.8rem; margin-right:4px; font-weight:600;
-        }
+        .action-btn { padding:5px 10px; border:none; border-radius:6px; cursor:pointer; font-size:0.75rem; margin-right:4px; font-weight:600; }
         .mark-collected { background:#d1fae5; color:#065f46; }
         .delete { background:#fee2e2; color:#991b1b; }
+
+        /* Mobile cards */
+        .storage-cards { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+        .booking-card { background: var(--surface); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .booking-card .card-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+        .booking-card .card-label { font-weight: 600; color: var(--text-secondary); font-size: 0.8rem; }
+        .booking-card .card-value { font-size: 0.9rem; }
+        .booking-card .card-actions { margin-top: 12px; display: flex; gap: 8px; }
+
+        @media (max-width: 768px) {
+            .desktop-table { display: none; }
+            .mobile-cards { display: block; }
+        }
+
         .admin-form { display:flex; gap:8px; margin-bottom:16px; }
-        .admin-form input {
-            flex:1; padding:10px 14px; border-radius:var(--radius-sm);
-            border:1px solid var(--border); background:var(--bg); color:var(--text);
-        }
-        .admin-form button {
-            background:var(--primary); color:#fff; border:none; padding:10px 20px;
-            border-radius:var(--radius-sm); cursor:pointer; font-weight:600;
-        }
+        .admin-form input { flex:1; padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg); color:var(--text); }
+        .admin-form button { background:var(--primary); color:#fff; border:none; padding:10px 20px; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; }
         .admin-list { display:flex; flex-direction:column; gap:8px; }
-        .admin-item {
-            display:flex; justify-content:space-between; align-items:center;
-            background:var(--surface); padding:12px 16px; border-radius:var(--radius-sm);
-            border:1px solid var(--border);
-        }
+        .admin-item { display:flex; justify-content:space-between; align-items:center; background:var(--surface); padding:12px 16px; border-radius:var(--radius-sm); border:1px solid var(--border); }
         .admin-item button { background:#fee2e2; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; }
     </style>
 </head>
 <body>
-    <!-- Login screen -->
     <div class="login-overlay" id="loginScreen">
         <div class="login-card">
             <h2><i class="fas fa-shield-halved"></i> Admin</h2>
@@ -243,7 +144,6 @@
         </div>
     </div>
 
-    <!-- Dashboard -->
     <div class="dashboard" id="dashboard">
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
         <aside class="sidebar" id="sidebar">
@@ -269,93 +169,52 @@
             <div class="topbar-mobile">
                 <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
                 <span style="font-weight:700;">CampusVault Admin</span>
-                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i> <span id="themeLabel">Dark</span></button>
+                <button class="theme-toggle" id="themeToggleMobile"><i class="fas fa-moon"></i> <span>Dark</span></button>
             </div>
-
-            <div style="display:flex; justify-content:flex-end; margin-bottom:16px;" id="desktopThemeToggle">
-                <button class="theme-toggle" id="themeToggleDesktop"><i class="fas fa-moon"></i> <span id="themeLabelDesktop">Dark</span></button>
+            <div style="display:flex; justify-content:flex-end; margin-bottom:16px;" id="desktopThemeToggleWrapper">
+                <button class="theme-toggle" id="themeToggleDesktop"><i class="fas fa-moon"></i> <span>Dark</span></button>
             </div>
 
             <div class="metrics-grid" id="metricsContainer"></div>
 
-            <!-- Storage Tab -->
             <div class="tab-content active" id="tab-storage">
                 <div class="card">
                     <div class="card-header"><i class="fas fa-box-archive"></i> Storage Bookings</div>
-                    <div class="table-responsive" id="storageTableWrapper">
-                        <table>
-                            <thead><tr><th>Booking ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Check‑in</th><th>Collection Due</th><th>Delivery</th><th>Scheduled</th><th>Status</th><th>Collected At</th><th>Actions</th></tr></thead>
-                            <tbody id="storageTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Seller Submissions Tab -->
-            <div class="tab-content" id="tab-sells">
-                <div class="card">
-                    <div class="card-header"><i class="fas fa-tag"></i> Seller Submissions</div>
-                    <div class="table-responsive" id="sellsTableWrapper">
-                        <table>
-                            <thead><tr><th>ID</th><th>Item</th><th>Condition</th><th>Price</th><th>Location</th><th>Date</th><th>Actions</th></tr></thead>
-                            <tbody id="sellsTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Deliveries Tab -->
-            <div class="tab-content" id="tab-deliveries">
-                <div class="card">
-                    <div class="card-header"><i class="fas fa-truck-fast"></i> Delivery Requests</div>
-                    <div class="table-responsive" id="deliveriesTableWrapper">
-                        <table>
-                            <thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Service</th><th>Details</th><th>Date</th><th>Status</th></tr></thead>
-                            <tbody id="deliveriesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Inquiries Tab -->
-            <div class="tab-content" id="tab-inquiries">
-                <div class="card">
-                    <div class="card-header"><i class="fas fa-comment-dots"></i> Customer Inquiries</div>
-                    <div class="table-responsive" id="inquiriesTableWrapper">
-                        <table>
-                            <thead><tr><th>ID</th><th>From</th><th>Phone</th><th>Message</th><th>Date</th></tr></thead>
-                            <tbody id="inquiriesTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Accommodation Tab -->
-            <div class="tab-content" id="tab-accommodation">
-                <div class="card">
-                    <div class="card-header"><i class="fas fa-house"></i> Accommodation Requests</div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th></tr></thead>
-                            <tbody id="accommodationTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admins Tab -->
-            <div class="tab-content" id="tab-admins">
-                <div class="card">
-                    <div class="card-header"><i class="fas fa-users-cog"></i> Manage Admin Emails</div>
-                    <div style="padding:20px;">
-                        <div class="admin-form">
-                            <input type="email" id="newAdminEmail" placeholder="Enter admin email">
-                            <button onclick="addAdmin()">Add Admin</button>
+                    <div class="storage-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="storageSearch" placeholder="Search...">
                         </div>
-                        <div class="admin-list" id="adminList"></div>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="active">Active</button>
+                            <button class="filter-btn" data-filter="collected">Collected</button>
+                        </div>
+                    </div>
+
+                    <!-- Desktop Table -->
+                    <div class="desktop-table">
+                        <div class="table-responsive" id="storageTableWrapper">
+                            <table>
+                                <thead><tr><th>Booking ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Check‑in</th><th>Collection Due</th><th>Delivery</th><th>Scheduled</th><th>Status</th><th>Collected At</th><th>Actions</th></tr></thead>
+                                <tbody id="storageTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Cards -->
+                    <div class="mobile-cards">
+                        <div class="storage-cards" id="storageCardsContainer"></div>
                     </div>
                 </div>
             </div>
+
+            <!-- Other tabs unchanged -->
+            <div class="tab-content" id="tab-sells"><div class="card"><div class="card-header"><i class="fas fa-tag"></i> Seller Submissions</div><div class="table-responsive" id="sellsTableWrapper"><table><thead><tr><th>ID</th><th>Item</th><th>Condition</th><th>Price</th><th>Location</th><th>Date</th><th>Actions</th></tr></thead><tbody id="sellsTableBody"></tbody></table></div></div></div>
+            <div class="tab-content" id="tab-deliveries"><div class="card"><div class="card-header"><i class="fas fa-truck-fast"></i> Delivery Requests</div><div class="table-responsive" id="deliveriesTableWrapper"><table><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Service</th><th>Details</th><th>Date</th><th>Status</th></tr></thead><tbody id="deliveriesTableBody"></tbody></table></div></div></div>
+            <div class="tab-content" id="tab-inquiries"><div class="card"><div class="card-header"><i class="fas fa-comment-dots"></i> Customer Inquiries</div><div class="table-responsive" id="inquiriesTableWrapper"><table><thead><tr><th>ID</th><th>From</th><th>Phone</th><th>Message</th><th>Date</th></tr></thead><tbody id="inquiriesTableBody"></tbody></table></div></div></div>
+            <div class="tab-content" id="tab-accommodation"><div class="card"><div class="card-header"><i class="fas fa-house"></i> Accommodation Requests</div><div class="table-responsive"><table><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th></tr></thead><tbody id="accommodationTableBody"></tbody></table></div></div></div>
+            <div class="tab-content" id="tab-admins"><div class="card"><div class="card-header"><i class="fas fa-users-cog"></i> Manage Admin Emails</div><div style="padding:20px;"><div class="admin-form"><input type="email" id="newAdminEmail" placeholder="Enter admin email"><button onclick="addAdmin()">Add Admin</button></div><div class="admin-list" id="adminList"></div></div></div></div>
         </main>
     </div>
 
@@ -379,11 +238,13 @@
         const inquiriesRef = db.ref('inquiries');
         const accommodationRef = db.ref('accommodationRequests');
 
-        // Seed default admin
         adminsRef.once('value').then(snap => { if (!snap.exists()) adminsRef.set({ 'kasaineisack@gmail,com': true }); });
         let currentAdmins = {};
+        let allBookings = [];
+        let currentFilter = 'all';
+        let currentSearch = '';
 
-        // Theme management
+        // Theme
         function setTheme(isDark) {
             if (isDark) {
                 document.body.classList.add('dark');
@@ -396,14 +257,17 @@
             }
             localStorage.setItem('campusvault-admin-theme', isDark ? 'dark' : 'light');
         }
-
         const savedTheme = localStorage.getItem('campusvault-admin-theme');
         setTheme(savedTheme === 'dark');
-
-        document.getElementById('themeToggle').addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+        document.getElementById('themeToggleMobile').addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
         document.getElementById('themeToggleDesktop').addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+        function handleResponsiveLayout() {
+            document.getElementById('desktopThemeToggleWrapper').style.display = window.innerWidth <= 768 ? 'none' : 'flex';
+        }
+        window.addEventListener('resize', handleResponsiveLayout);
+        handleResponsiveLayout();
 
-        // Google Sign‑In
+        // Auth
         document.getElementById('googleSignInBtn').addEventListener('click', () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).then(result => {
@@ -427,6 +291,7 @@
                 }
             }
             loadDashboard();
+            setupStorageControls();
         }
         function logout() { auth.signOut().then(() => location.reload()); }
 
@@ -442,7 +307,6 @@
             }
         });
 
-        // Sidebar & Tabs
         const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
         document.getElementById('hamburgerBtn').addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
         function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
@@ -458,43 +322,25 @@
             document.getElementById('tab-'+tab).classList.add('active');
             document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
             document.querySelector(`.sidebar nav a[data-tab="${tab}"]`).classList.add('active');
-            setTimeout(checkAllTableOverflows, 50);
         }
 
-        // Scroll overflow detection
-        function checkTableOverflow(wrapper) {
-            if (!wrapper) return;
-            const table = wrapper.querySelector('table');
-            if (table && wrapper.scrollWidth > wrapper.clientWidth) wrapper.classList.add('overflowing');
-            else wrapper.classList.remove('overflowing');
-        }
-        function checkAllTableOverflows() {
-            document.querySelectorAll('.table-responsive').forEach(w => checkTableOverflow(w));
-        }
-        window.addEventListener('resize', checkAllTableOverflows);
-
-        // Dashboard data
         function loadDashboard() {
             bookingsRef.on('value', snap => {
-                const bookings = snap.val() ? Object.values(snap.val()) : [];
-                updateMetrics(bookings);
-                renderStorageTable(bookings);
-                setTimeout(() => checkTableOverflow(document.getElementById('storageTableWrapper')), 50);
+                allBookings = snap.val() ? Object.values(snap.val()) : [];
+                updateMetrics(allBookings);
+                applyStorageFilters();
             });
             sellsRef.on('value', snap => {
                 const sells = snap.val() ? Object.values(snap.val()) : [];
                 renderSellsTable(sells);
-                setTimeout(() => checkTableOverflow(document.getElementById('sellsTableWrapper')), 50);
             });
             deliveriesRef.on('value', snap => {
                 const deliveries = snap.val() ? Object.values(snap.val()) : [];
                 renderDeliveriesTable(deliveries);
-                setTimeout(() => checkTableOverflow(document.getElementById('deliveriesTableWrapper')), 50);
             });
             inquiriesRef.on('value', snap => {
                 const inquiries = snap.val() ? Object.values(snap.val()) : [];
                 renderInquiriesTable(inquiries);
-                setTimeout(() => checkTableOverflow(document.getElementById('inquiriesTableWrapper')), 50);
             });
             accommodationRef.on('value', snap => {
                 const requests = snap.val() ? Object.values(snap.val()) : [];
@@ -503,17 +349,41 @@
             adminsRef.on('value', snap => { currentAdmins = snap.val() || {}; renderAdminList(); });
         }
 
-        function updateMetrics(bookings) {
-            const total = bookings.length, active = bookings.filter(b=>b.status==='active').length;
-            document.getElementById('metricsContainer').innerHTML = `
-                <div class="metric-card"><div class="metric-icon"><i class="fas fa-box"></i></div><div><div class="metric-value">${total}</div><div class="metric-label">Total Bookings</div></div></div>
-                <div class="metric-card"><div class="metric-icon"><i class="fas fa-circle-check"></i></div><div><div class="metric-value">${active}</div><div class="metric-label">Active Storage</div></div></div>
-                <div class="metric-card"><div class="metric-icon"><i class="fas fa-coins"></i></div><div><div class="metric-value">KES ${(total*500).toLocaleString()}</div><div class="metric-label">Revenue (est.)</div></div></div>
-            `;
+        function setupStorageControls() {
+            const searchInput = document.getElementById('storageSearch');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            searchInput.addEventListener('input', (e) => { currentSearch = e.target.value.toLowerCase(); applyStorageFilters(); });
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    applyStorageFilters();
+                });
+            });
+        }
+
+        function applyStorageFilters() {
+            let filtered = [...allBookings];
+            if (currentFilter === 'active') filtered = filtered.filter(b => b.status === 'active');
+            else if (currentFilter === 'collected') filtered = filtered.filter(b => b.status !== 'active');
+            if (currentSearch) {
+                filtered = filtered.filter(b => {
+                    const searchStr = (b.name + ' ' + b.bookingId + ' ' + b.trackingId).toLowerCase();
+                    return searchStr.includes(currentSearch);
+                });
+            }
+            renderStorageTable(filtered);
+            renderStorageCards(filtered);
         }
 
         function renderStorageTable(bookings) {
-            document.getElementById('storageTableBody').innerHTML = bookings.map(b=>{
+            const tbody = document.getElementById('storageTableBody');
+            if (bookings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:20px;">No bookings found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = bookings.map(b=>{
                 const collectedAt = b.collectedAt ? new Date(b.collectedAt).toLocaleString() : '—';
                 const statusBadge = `<span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span>`;
                 const deliveryText = b.deliveryMethod ? (b.deliveryMethod==='self'?'Self':'Pickup') : '—';
@@ -528,52 +398,99 @@
                     <td>${actions}<button class="action-btn delete" onclick="deleteBooking('${b.bookingId}')"><i class="fas fa-trash"></i></button></td>
                 </tr>`;
             }).join('');
-            setTimeout(() => checkTableOverflow(document.getElementById('storageTableWrapper')), 50);
+        }
+
+        function renderStorageCards(bookings) {
+            const container = document.getElementById('storageCardsContainer');
+            if (bookings.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding:20px;">No bookings found.</p>';
+                return;
+            }
+            container.innerHTML = bookings.map(b=>{
+                const collectedAt = b.collectedAt ? new Date(b.collectedAt).toLocaleString() : '—';
+                const statusBadge = `<span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span>`;
+                const deliveryText = b.deliveryMethod ? (b.deliveryMethod==='self'?'Self':'Pickup') : '—';
+                const scheduledText = b.scheduledDateTime ? new Date(b.scheduledDateTime).toLocaleString() : '—';
+                const actions = b.status === 'active'
+                    ? `<button class="action-btn mark-collected" onclick="markCollected('${b.bookingId}')"><i class="fas fa-check"></i> Collected</button>`
+                    : '';
+                return `
+                <div class="booking-card">
+                    <div class="card-row">
+                        <span class="card-label">Booking ID</span>
+                        <span class="card-value"><strong>${b.bookingId}</strong></span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Customer</span>
+                        <span class="card-value">${b.name}</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Phone</span>
+                        <span class="card-value">${b.phone}</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Items</span>
+                        <span class="card-value">${b.itemCount} (${b.category})</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Check‑in</span>
+                        <span class="card-value">${b.checkIn}</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Collection Due</span>
+                        <span class="card-value">${b.collect}</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Delivery</span>
+                        <span class="card-value">${deliveryText} ${scheduledText !== '—' ? 'on ' + scheduledText : ''}</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Status</span>
+                        <span class="card-value">${statusBadge}</span>
+                    </div>
+                    <div class="card-row">
+                        <span class="card-label">Collected At</span>
+                        <span class="card-value">${collectedAt}</span>
+                    </div>
+                    <div class="card-actions">
+                        ${actions}
+                        <button class="action-btn delete" onclick="deleteBooking('${b.bookingId}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function updateMetrics(bookings) {
+            const total = bookings.length, active = bookings.filter(b=>b.status==='active').length;
+            document.getElementById('metricsContainer').innerHTML = `
+                <div class="metric-card"><div class="metric-icon"><i class="fas fa-box"></i></div><div><div class="metric-value">${total}</div><div class="metric-label">Total Bookings</div></div></div>
+                <div class="metric-card"><div class="metric-icon"><i class="fas fa-circle-check"></i></div><div><div class="metric-value">${active}</div><div class="metric-label">Active Storage</div></div></div>
+                <div class="metric-card"><div class="metric-icon"><i class="fas fa-coins"></i></div><div><div class="metric-value">KES ${(total*500).toLocaleString()}</div><div class="metric-label">Revenue (est.)</div></div></div>
+            `;
         }
 
         function renderSellsTable(sells) {
-            document.getElementById('sellsTableBody').innerHTML = sells.map(s=>`
+            document.getElementById('sellsTableBody').innerHTML = sells.length ? sells.map(s=>`
                 <tr><td>${s.id}</td><td>${s.itemName}</td><td>${s.condition}</td><td>KES ${parseInt(s.price).toLocaleString()}</td><td>${s.location}</td><td>${s.timestamp?new Date(s.timestamp).toLocaleDateString():''}</td><td><button class="action-btn delete" onclick="deleteSell('${s.id}')"><i class="fas fa-trash"></i></button></td></tr>
-            `).join('');
-            setTimeout(() => checkTableOverflow(document.getElementById('sellsTableWrapper')), 50);
+            `).join('') : '<tr><td colspan="7" style="text-align:center; padding:20px;">No submissions yet.</td></tr>';
         }
 
         function renderDeliveriesTable(deliveries) {
             const tbody = document.getElementById('deliveriesTableBody');
-            if (deliveries.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No delivery requests yet.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = deliveries.map(d => `
-                <tr>
-                    <td>${d.id}</td><td>${d.name}</td><td>${d.phone}</td>
-                    <td>${d.service}</td><td>${d.details}</td>
-                    <td>${d.timestamp ? new Date(d.timestamp).toLocaleString() : ''}</td>
-                    <td><span class="badge badge-active">Pending</span></td>
-                </tr>
-            `).join('');
+            if (deliveries.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No requests yet.</td></tr>'; return; }
+            tbody.innerHTML = deliveries.map(d => `<tr><td>${d.id}</td><td>${d.name}</td><td>${d.phone}</td><td>${d.service}</td><td>${d.details}</td><td>${d.timestamp ? new Date(d.timestamp).toLocaleString() : ''}</td><td><span class="badge badge-active">Pending</span></td></tr>`).join('');
         }
 
         function renderInquiriesTable(inquiries) {
             const tbody = document.getElementById('inquiriesTableBody');
-            if (inquiries.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No inquiries yet.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = inquiries.map(i => `
-                <tr>
-                    <td>${i.id}</td><td>${i.name}</td><td>${i.phone}</td>
-                    <td>${i.message}</td><td>${i.timestamp ? new Date(i.timestamp).toLocaleString() : ''}</td>
-                </tr>
-            `).join('');
+            if (inquiries.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No inquiries yet.</td></tr>'; return; }
+            tbody.innerHTML = inquiries.map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td>${i.phone}</td><td>${i.message}</td><td>${i.timestamp ? new Date(i.timestamp).toLocaleString() : ''}</td></tr>`).join('');
         }
 
         function renderAccommodationTable(requests) {
             const tbody = document.getElementById('accommodationTableBody');
             if (requests.length===0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No requests yet.</td></tr>'; return; }
-            tbody.innerHTML = requests.map(r=>`
-                <tr><td>${r.id}</td><td>${r.name}</td><td>${r.phone}</td><td>${r.type}</td><td>${r.location}</td><td>${r.budget?`KES ${r.budget}`:'—'}</td><td>${r.timestamp?new Date(r.timestamp).toLocaleDateString():''}</td></tr>
-            `).join('');
+            tbody.innerHTML = requests.map(r=>`<tr><td>${r.id}</td><td>${r.name}</td><td>${r.phone}</td><td>${r.type}</td><td>${r.location}</td><td>${r.budget?`KES ${r.budget}`:'—'}</td><td>${r.timestamp?new Date(r.timestamp).toLocaleDateString():''}</td></tr>`).join('');
         }
 
         function markCollected(id) {
@@ -586,19 +503,10 @@
 
         function renderAdminList() {
             const emails = Object.keys(currentAdmins).map(k=>k.replace(',','.'));
-            document.getElementById('adminList').innerHTML = emails.map(email=>`
-                <div class="admin-item"><span>${email}</span><button onclick="removeAdmin('${email}')"><i class="fas fa-trash"></i> Remove</button></div>
-            `).join('');
+            document.getElementById('adminList').innerHTML = emails.map(email=>`<div class="admin-item"><span>${email}</span><button onclick="removeAdmin('${email}')"><i class="fas fa-trash"></i> Remove</button></div>`).join('');
         }
-        function addAdmin() {
-            const email = document.getElementById('newAdminEmail').value.trim();
-            if (!email) return;
-            adminsRef.child(email.replace(/\./g,',')).set(true);
-            document.getElementById('newAdminEmail').value = '';
-        }
-        function removeAdmin(email) {
-            if (confirm(`Remove ${email}?`)) adminsRef.child(email.replace(/\./g,',')).remove();
-        }
+        function addAdmin() { const email = document.getElementById('newAdminEmail').value.trim(); if (!email) return; adminsRef.child(email.replace(/\./g,',')).set(true); document.getElementById('newAdminEmail').value = ''; }
+        function removeAdmin(email) { if (confirm(`Remove ${email}?`)) adminsRef.child(email.replace(/\./g,',')).remove(); }
     </script>
 </body>
 </html>
