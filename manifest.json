@@ -1,6 +1,6 @@
 {
   "name": "Campus Vault",
-  "short_name": "CampVault",
+  "short_name": "CampVault_Admin",
   "description": "The Campus Vault Admin Portal is a centralized control dashboard for Users administrators to secure and manage  data.",
   "start_url": ".",
   "display": "standalone",
