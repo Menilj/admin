@@ -6,12 +6,8 @@
     <title>Admin Portal | CampusVault</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-
-  
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="apple-touch-icon.png">
-    
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -20,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        /* ========== CSS unchanged (same as previous complete code) ========== */
         :root {
             --bg: #f1f5f9; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
             --primary: #1e3a5f; --accent: #0ea5e9; --emerald: #10b981; --rose: #f43f5e;
@@ -124,6 +121,7 @@
         .delete { background:#fee2e2; color:#991b1b; }
         .edit { background:#dbeafe; color:#1e40af; }
         .whatsapp { background:#25D366; color:#fff; }
+        .reopen-btn { background:#fbbf24; color:#000; }
         .admin-form { display:flex; gap:8px; margin-bottom:16px; }
         .admin-form input { flex:1; padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg); color:var(--text); }
         .admin-form button { background:var(--primary); color:#fff; border:none; padding:10px 20px; border-radius:var(--radius-sm); cursor:pointer; font-weight:600; }
@@ -204,22 +202,49 @@
         <!-- Staff Management -->
         <div class="tab-content" id="tab-staff"><div class="card"><div class="card-header"><i class="fas fa-users"></i> Staff Whitelist</div><div style="padding:20px;"><div class="admin-form"><input type="email" id="newStaffEmail" placeholder="staff@example.com"><button onclick="addStaff()">Add Staff</button></div><div id="staffList" class="admin-list"></div></div></div></div>
 
-        <!-- Pending Approvals -->
-        <div class="tab-content" id="tab-pending"><div class="card"><div class="card-header"><i class="fas fa-pen-ruler"></i> Edit Requests</div><div class="table-responsive" id="editRequestsTable"></div></div><div class="card"><div class="card-header"><i class="fas fa-signature"></i> Collection Requests</div><div class="table-responsive" id="collectionRequestsTable"></div></div></div>
+        <!-- Pending Approvals (FIXED MOBILE VIEWS) -->
+        <div class="tab-content" id="tab-pending">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-pen-ruler"></i> Edit Requests</div>
+                <div class="desktop-table"><div class="table-responsive" id="editRequestsTable"></div></div>
+                <div class="mobile-cards"><div id="editRequestsCards"></div></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-signature"></i> Collection Requests</div>
+                <div class="desktop-table"><div class="table-responsive" id="collectionRequestsTable"></div></div>
+                <div class="mobile-cards"><div id="collectionRequestsCards"></div></div>
+            </div>
+        </div>
 
-        <!-- Digital Records -->
-        <div class="tab-content" id="tab-records"><div class="card"><div class="card-header"><span><i class="fas fa-file-pdf"></i> Generated Records</span><button class="btn btn-outline btn-sm" onclick="loadDigitalRecords()">Refresh</button></div><div class="table-responsive" id="digitalRecordsTable"></div></div></div>
+        <!-- Digital Records (FIXED MOBILE VIEW) -->
+        <div class="tab-content" id="tab-records">
+            <div class="card">
+                <div class="card-header"><span><i class="fas fa-file-pdf"></i> Generated Records</span><button class="btn btn-outline btn-sm" onclick="loadDigitalRecords()">Refresh</button></div>
+                <div class="desktop-table"><div class="table-responsive" id="digitalRecordsTable"></div></div>
+                <div class="mobile-cards"><div id="digitalRecordsCards"></div></div>
+            </div>
+        </div>
 
-        <!-- Reviews -->
-        <div class="tab-content" id="tab-reviews"><div class="card"><div class="card-header"><i class="fas fa-star"></i> Customer Reviews</div><div class="table-responsive" id="reviewsTable"></div></div></div>
+        <!-- Reviews (FIXED MOBILE VIEW) -->
+        <div class="tab-content" id="tab-reviews">
+            <div class="card"><div class="card-header"><i class="fas fa-star"></i> Customer Reviews</div>
+                <div class="desktop-table"><div class="table-responsive" id="reviewsTable"></div></div>
+                <div class="mobile-cards"><div id="reviewsCards"></div></div>
+            </div>
+        </div>
 
-        <!-- Staff Logs -->
-        <div class="tab-content" id="tab-logs"><div class="card"><div class="card-header"><i class="fas fa-list-ul"></i> All Staff Activity</div><div class="table-responsive" id="staffLogsTable"></div></div></div>
+        <!-- Staff Logs (FIXED MOBILE VIEW) -->
+        <div class="tab-content" id="tab-logs">
+            <div class="card"><div class="card-header"><i class="fas fa-list-ul"></i> All Staff Activity</div>
+                <div class="desktop-table"><div class="table-responsive" id="staffLogsTable"></div></div>
+                <div class="mobile-cards"><div id="staffLogsCards"></div></div>
+            </div>
+        </div>
 
-        <!-- Seller Submissions -->
+        <!-- Seller Submissions (already had mobile view) -->
         <div class="tab-content" id="tab-sells"><div class="card"><div class="card-header">Seller Submissions</div><div class="desktop-table"><div class="table-responsive"><table><thead><tr><th>ID</th><th>Item</th><th>Condition</th><th>Price</th><th>Location</th><th>Date</th><th>Actions</th></tr></thead><tbody id="sellsTableBody"></tbody></table></div></div><div class="mobile-cards"><div id="sellsCardsContainer"></div></div></div></div>
 
-        <!-- Deliveries (FIXED) -->
+        <!-- Deliveries (already had mobile view) -->
         <div class="tab-content" id="tab-deliveries">
             <div class="card">
                 <div class="card-header">Delivery Requests</div>
@@ -247,7 +272,7 @@
             </div>
         </div>
 
-        <!-- Inquiries (FIXED) -->
+        <!-- Inquiries (already had mobile view) -->
         <div class="tab-content" id="tab-inquiries">
             <div class="card">
                 <div class="card-header">Inquiries</div>
@@ -274,18 +299,18 @@
             </div>
         </div>
 
-        <!-- Housing -->
+        <!-- Housing (already had mobile view) -->
         <div class="tab-content" id="tab-accommodation"><div class="card"><div class="card-header">Housing Requests</div><div class="desktop-table"><div class="table-responsive"><table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th><th>Actions</th></tr></thead><tbody id="accommodationTableBody"></tbody></table></div></div><div class="mobile-cards"><div id="accommodationCardsContainer"></div></div></div></div>
 
-        <!-- Admins -->
+        <!-- Admins (unchanged list) -->
         <div class="tab-content" id="tab-admins"><div class="card"><div class="card-header">Admin Emails</div><div style="padding:20px;"><div class="admin-form"><input type="email" id="newAdminEmail" placeholder="admin@example.com"><button onclick="addAdmin()">Add Admin</button></div><div id="adminList" class="admin-list"></div></div></div></div>
 
-        <!-- Products -->
+        <!-- Products (already had mobile view) -->
         <div class="tab-content" id="tab-products"><div class="card"><div class="card-header">Products <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add Product</button></div><div class="desktop-table"><div class="table-responsive"><table><thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Condition</th><th>Price</th><th>Available</th><th>Actions</th></tr></thead><tbody id="productsTableBody"></tbody></table></div></div><div class="mobile-cards"><div id="productsCardsContainer"></div></div></div></div>
     </main>
 </div>
 
-<!-- Product Modal with image upload -->
+<!-- Product Modal with image upload (unchanged) -->
 <div class="modal-overlay" id="productModal" style="display:none;" onclick="closeModalBg(event,'productModal')">
     <div class="modal-content" onclick="event.stopPropagation()">
         <span class="modal-close" onclick="closeModal('productModal')" style="float:right; cursor:pointer;">&times;</span>
@@ -312,7 +337,7 @@
     </div>
 </div>
 
-<!-- Backup Modal -->
+<!-- Backup Modal (unchanged) -->
 <div class="modal-overlay" id="backupModal" style="display:none;" onclick="closeModalBg(event,'backupModal')">
     <div class="modal-content" onclick="event.stopPropagation()">
         <span class="modal-close" onclick="closeModal('backupModal')" style="float:right; cursor:pointer;">&times;</span>
@@ -329,13 +354,13 @@
         <div class="format-selector"><span>Format:</span><select id="backupFormat"><option value="pdf">PDF</option><option value="excel">Excel</option></select></div>
         <div class="flex-between">
             <button class="btn btn-outline" onclick="closeModal('backupModal')">Cancel</button>
-            <!-- FIXED: Added id for JavaScript reference -->
             <button class="btn btn-primary" id="backupStartBtn" onclick="startBackup()">Generate</button>
         </div>
     </div>
 </div>
 
 <script>
+    // ===================== Firebase config & initialization =====================
     const firebaseConfig = {
         apiKey: "AIzaSyCuCd89dawEHOGrKmcCimw3pBErKYJU_VI",
         authDomain: "campusvault-connect.firebaseapp.com",
@@ -352,23 +377,22 @@
     const productsRef = db.ref('products'), pendingApprovalsRef = db.ref('pending_approvals'), digitalRecordsRef = db.ref('digital_records'), reviewsRef = db.ref('reviews'), staffLogsRef = db.ref('staff_logs');
     let currentUser = null, currentAdmins = {}, allBookings = [], productsData = {};
 
-    // Theme & UI Helpers
+    // ===================== Theme & UI Helpers =====================
     function setTheme(dark){ document.body.classList.toggle('dark',dark); localStorage.setItem('adminTheme',dark?'dark':'light'); document.querySelectorAll('.theme-toggle i').forEach(i=>i.className=dark?'fas fa-sun':'fas fa-moon'); document.querySelectorAll('.theme-toggle span').forEach(s=>s.textContent=dark?'Light':'Dark'); }
     setTheme(localStorage.getItem('adminTheme')!=='light');
     document.getElementById('themeToggleMobile').onclick=()=>setTheme(!document.body.classList.contains('dark'));
-    
 
     function showToast(msg, icon='✅'){ let t=document.createElement('div'); t.className='toast'; t.innerHTML=icon+' '+msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3500); }
     function closeModal(id){ document.getElementById(id).style.display='none'; }
     function closeModalBg(e,id){ if(e.target===e.currentTarget) closeModal(id); }
 
-    // Authentication
+    // ===================== Authentication =====================
     document.getElementById('googleSignInBtn').onclick=()=>{ auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(result=>{ adminsRef.child(result.user.email.replace(/\./g,',')).once('value').then(snap=>{ if(snap.exists()) showDashboard(result.user); else { auth.signOut(); document.getElementById('loginError').textContent='Unauthorized admin.'; document.getElementById('loginError').style.display='block'; } }); }).catch(err=>{ document.getElementById('loginError').textContent=err.message; document.getElementById('loginError').style.display='block'; }); };
     function showDashboard(user){ document.getElementById('loginScreen').style.display='none'; document.getElementById('dashboard').classList.add('active'); currentUser=user; document.getElementById('userNameDisplay').textContent=user.displayName||user.email; if(user.photoURL) document.getElementById('userAvatar').src=user.photoURL, document.getElementById('userAvatar').style.display='block'; loadDashboard(); }
     function logout(){ auth.signOut().then(()=>location.reload()); }
     auth.onAuthStateChanged(user=>{ if(user){ adminsRef.child(user.email.replace(/\./g,',')).once('value').then(snap=>{ if(snap.exists()) showDashboard(user); else auth.signOut(); }); } else { document.getElementById('loginScreen').style.display='flex'; document.getElementById('dashboard').classList.remove('active'); } });
 
-    // Navigation
+    // ===================== Navigation =====================
     const sidebar=document.getElementById('sidebar'), overlay=document.getElementById('sidebarOverlay');
     document.getElementById('hamburgerBtn').onclick=()=>{ sidebar.classList.add('open'); overlay.classList.add('active'); };
     window.closeSidebar=()=>{ sidebar.classList.remove('open'); overlay.classList.remove('active'); };
@@ -377,57 +401,316 @@
     function cleanPhoneNumber(phone){ if(!phone) return ''; let cleaned=phone.replace(/\D/g,''); if(cleaned.startsWith('0')) cleaned='254'+cleaned.substring(1); return cleaned; }
     function sendWhatsApp(phone,message){ let cleaned=cleanPhoneNumber(phone); if(!cleaned){ alert('No valid phone'); return; } window.open(`https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`,'_blank'); }
 
-    // Storage Bookings
-    function renderStorageTable(bookings){ let tbody=document.getElementById('storageTableBody'); if(!bookings.length){ tbody.innerHTML='<tr><td colspan="9">No bookings</td></tr>'; return; } tbody.innerHTML=bookings.map(b=>`<tr><td><strong>${b.bookingId||b._key}</strong></td><td>${b.name||'—'}</td><td>${b.phone||'—'}</td><td>${b.itemCount||'?'} (${b.category||'—'})</td><td>${b.checkIn||'—'}</td><td>${b.collect||'—'}</td><td>${b.assigned_to||'Unassigned'}</td><td><span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span></td><td><button class="action-btn whatsapp" onclick="sendWhatsApp('${b.phone}','Booking ${b.bookingId}')"><i class="fab fa-whatsapp"></i></button><button class="action-btn edit" onclick="reassignBooking('${b._key}')">Reassign</button><button class="action-btn" onclick="clearAssignment('${b._key}')">Clear</button><button class="action-btn delete" onclick="deleteBooking('${b._key}')">Delete</button></td></tr>`).join(''); }
-    function renderStorageCards(bookings){ let container=document.getElementById('storageCardsContainer'); if(!bookings.length){ container.innerHTML='<p>No bookings</p>'; return; } container.innerHTML=bookings.map(b=>`<div class="data-card"><div class="card-row"><span class="card-label">ID</span><span>${b.bookingId}</span></div><div class="card-row"><span class="card-label">Customer</span><span>${b.name}</span></div><div class="card-row"><span class="card-label">Status</span><span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span></div><div class="card-actions"><button class="action-btn whatsapp" onclick="sendWhatsApp('${b.phone}','Booking ${b.bookingId}')">Chat</button><button class="action-btn edit" onclick="reassignBooking('${b._key}')">Reassign</button><button class="action-btn delete" onclick="deleteBooking('${b._key}')">Delete</button></div></div>`).join(''); }
+    // ===================== STORAGE BOOKINGS (message without ✅ symbols) =====================
+    function renderStorageTable(bookings){
+        let tbody=document.getElementById('storageTableBody');
+        if(!bookings.length){ tbody.innerHTML='<tr><td colspan="9">No bookings</td></tr>'; return; }
+        tbody.innerHTML=bookings.map(b=>{
+            const bookingId = b.bookingId || b._key;
+            const trackingId = b.trackingId || b.bookingId || b._key;
+            const message = `CAMPUS VAULT BOOKING CONFIRMATION\n\nHello ${b.name},\n\nYour luggage storage reservation has been successfully received.\n\n📌 Booking ID: ${bookingId}\n🔍 Tracking ID: ${trackingId}\n\nPlease keep these details safely as they will be required when collecting your items.\n\nBooking is FREE\nPayment is made upon collection\nItems are labelled, documented, and securely stored\nA signed storage agreement will be completed during handover\n\nIf you require pickup assistance, kindly contact us before your preferred pickup time.\n\n📲 WhatsApp: 0116375166\n\nThank you for choosing Campus Vault. Your Belongings. Our Responsibility. 🔒`;
+            return `<tr>
+                <td><strong>${bookingId}</strong></td>
+                <td>${b.name||'—'}</td>
+                <td>${b.phone||'—'}</td>
+                <td>${b.itemCount||'?'} (${b.category||'—'})</td>
+                <td>${b.checkIn||'—'}</td>
+                <td>${b.collect||'—'}</td>
+                <td>${b.assigned_to||'Unassigned'}</td>
+                <td><span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span></td>
+                <td>
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${b.phone}', \`${message.replace(/`/g,'\\`')}\`)"><i class="fab fa-whatsapp"></i></button>
+                    <button class="action-btn edit" onclick="reassignBooking('${b._key}')">Reassign</button>
+                    <button class="action-btn" onclick="clearAssignment('${b._key}')">Clear</button>
+                    ${b.status === 'collected' ? `<button class="action-btn reopen-btn" onclick="reverseCollection('${b._key}')">Re‑open</button>` : ''}
+                    <button class="action-btn delete" onclick="deleteBooking('${b._key}')">Delete</button>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function renderStorageCards(bookings){
+        let container=document.getElementById('storageCardsContainer');
+        if(!bookings.length){ container.innerHTML='<p>No bookings</p>'; return; }
+        container.innerHTML=bookings.map(b=>{
+            const bookingId = b.bookingId || b._key;
+            const trackingId = b.trackingId || b.bookingId || b._key;
+            const message = `CAMPUS VAULT BOOKING CONFIRMATION\n\nHello ${b.name},\n\nYour luggage storage reservation has been successfully received.\n\n📌 Booking ID: ${bookingId}\n🔍 Tracking ID: ${trackingId}\n\nPlease keep these details safely as they will be required when collecting your items.\n\nBooking is FREE\nPayment is made upon collection\nItems are labelled, documented, and securely stored\nA signed storage agreement will be completed during handover\n\nIf you require pickup assistance, kindly contact us before your preferred pickup time.\n\n📲 WhatsApp: 0116375166\n\nThank you for choosing Campus Vault. Your Belongings. Our Responsibility. 🔒`;
+            return `<div class="data-card">
+                <div class="card-row"><span class="card-label">ID</span><span>${bookingId}</span></div>
+                <div class="card-row"><span class="card-label">Customer</span><span>${b.name}</span></div>
+                <div class="card-row"><span class="card-label">Status</span><span class="badge ${b.status==='active'?'badge-active':'badge-collected'}">${b.status}</span></div>
+                <div class="card-actions">
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${b.phone}', \`${message.replace(/`/g,'\\`')}\`)">Chat</button>
+                    <button class="action-btn edit" onclick="reassignBooking('${b._key}')">Reassign</button>
+                    ${b.status === 'collected' ? `<button class="action-btn reopen-btn" onclick="reverseCollection('${b._key}')">Re‑open</button>` : ''}
+                    <button class="action-btn delete" onclick="deleteBooking('${b._key}')">Delete</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
     window.reassignBooking=(key)=>{ let staff=prompt('Enter staff email:'); if(staff) bookingsRef.child(key).update({assigned_to:staff, assigned_at:new Date().toISOString()}); };
     window.clearAssignment=(key)=> bookingsRef.child(key).update({assigned_to:null, assigned_at:null});
     window.deleteBooking=(key)=>{ if(confirm('Delete booking?')) bookingsRef.child(key).remove(); };
 
-    // Staff Management
+    window.reverseCollection = (key) => {
+        if (confirm('Re‑open this booking? The status will be set back to active and collection data will be cleared. This action is logged.')) {
+            bookingsRef.child(key).update({
+                status: 'active',
+                collectedAt: null,
+                staffSignature: null,
+                customerSignature: null,
+                pending_collection: false,
+                disputeNote: `Collection reversed by admin (${currentUser.email}) on ${new Date().toISOString()}`
+            });
+            staffLogsRef.push({
+                staffEmail: currentUser.email,
+                action: 'reverse_collection',
+                bookingId: key,
+                timestamp: new Date().toISOString(),
+                details: 'Admin reversed a collection – booking re‑opened.'
+            });
+            showToast('Booking re‑opened successfully');
+        }
+    };
+
+    // ===================== Staff Management =====================
     async function loadStaff(){ let snap=await staffRef.once('value'); let staff=snap.val()||{}; document.getElementById('staffList').innerHTML=Object.keys(staff).map(k=>`<div class="admin-item"><span>${k.replace(/\./g,'.')}</span><button onclick="removeStaff('${k}')">Remove</button></div>`).join('')||'<p>No staff added.</p>'; }
     window.addStaff=()=>{ let email=document.getElementById('newStaffEmail').value.trim(); if(email) staffRef.child(email.replace(/\./g,',')).set(true), document.getElementById('newStaffEmail').value='', showToast(`Staff ${email} added`); };
     window.removeStaff=(key)=>{ if(confirm('Remove staff?')) staffRef.child(key).remove(); };
 
-    // Pending Approvals
-    function loadEditRequests(){ pendingApprovalsRef.orderByChild('type').equalTo('edit').once('value',snap=>{ let html='<table><thead><tr><th>Booking</th><th>Requester</th><th>Changes</th><th>Actions</th></tr></thead><tbody>'; snap.forEach(req=>{ let r=req.val(); html+=`<tr><td>${r.bookingId||r.bookingKey}</td><td>${r.requester}</td><td><button class="action-btn edit" onclick="viewEditDetails('${req.key}')">View</button></td><td><button class="action-btn btn-primary" onclick="approveEdit('${req.key}')">Approve</button> <button class="action-btn delete" onclick="rejectEdit('${req.key}')">Reject</button></td></tr>`; }); html+='</tbody></table>'; document.getElementById('editRequestsTable').innerHTML=html||'<p>No edit requests</p>'; }); }
+    // ===================== Pending Approvals (now with mobile cards) =====================
+    function loadEditRequests(){
+        pendingApprovalsRef.orderByChild('type').equalTo('edit').once('value',snap=>{
+            let htmlTable='<table><thead><tr><th>Booking</th><th>Requester</th><th>Changes</th><th>Actions</th></tr></thead><tbody>';
+            let htmlCards='';
+            snap.forEach(req=>{
+                let r=req.val();
+                htmlTable+=`<tr><td>${r.bookingId||r.bookingKey}</td><td>${r.requester}</td><td><button class="action-btn edit" onclick="viewEditDetails('${req.key}')">View</button></td><td><button class="action-btn btn-primary" onclick="approveEdit('${req.key}')">Approve</button> <button class="action-btn delete" onclick="rejectEdit('${req.key}')">Reject</button></td></tr>`;
+                htmlCards+=`<div class="data-card">
+                    <div class="card-row"><span class="card-label">Booking</span><span>${r.bookingId||r.bookingKey}</span></div>
+                    <div class="card-row"><span class="card-label">Requester</span><span>${r.requester}</span></div>
+                    <div class="card-actions">
+                        <button class="action-btn edit" onclick="viewEditDetails('${req.key}')">View</button>
+                        <button class="action-btn btn-primary" onclick="approveEdit('${req.key}')">Approve</button>
+                        <button class="action-btn delete" onclick="rejectEdit('${req.key}')">Reject</button>
+                    </div>
+                </div>`;
+            });
+            htmlTable+='</tbody></table>';
+            document.getElementById('editRequestsTable').innerHTML=htmlTable||'<p>No edit requests</p>';
+            document.getElementById('editRequestsCards').innerHTML=htmlCards||'<p>No edit requests</p>';
+        });
+    }
+
     window.viewEditDetails=async(key)=>{ let snap=await pendingApprovalsRef.child(key).once('value'); let r=snap.val(); alert(`Original: ${JSON.stringify(r.originalData)}\nRequested: ${JSON.stringify(r.requestedData)}`); };
     window.approveEdit=async(key)=>{ let snap=await pendingApprovalsRef.child(key).once('value'); let req=snap.val(); await bookingsRef.child(req.bookingKey).update(req.requestedData); await bookingsRef.child(req.bookingKey).update({pending_edit:false}); await pendingApprovalsRef.child(key).remove(); await generateDigitalRecord('edit',req.bookingKey,{changes:req.requestedData, approvedBy:currentUser.email}); showToast('Edit approved'); };
     window.rejectEdit=async(key)=>{ let snap=await pendingApprovalsRef.child(key).once('value'); let req=snap.val(); await bookingsRef.child(req.bookingKey).update({pending_edit:false}); await pendingApprovalsRef.child(key).remove(); showToast('Edit rejected'); };
-    function loadCollectionRequests(){ pendingApprovalsRef.orderByChild('type').equalTo('collection').once('value',snap=>{ let html='<table><thead><tr><th>Booking</th><th>Requester</th><th>Signatures</th><th>Actions</th></tr></thead><tbody>'; snap.forEach(req=>{ let r=req.val(); html+=`<tr><td>${r.bookingId}</td><td>${r.requester}</td><td><button class="action-btn edit" onclick="viewSignatures('${req.key}')">View</button></td><td><button class="action-btn btn-primary" onclick="approveCollection('${req.key}')">Approve</button> <button class="action-btn delete" onclick="rejectCollection('${req.key}')">Reject</button></td></tr>`; }); html+='</tbody></table>'; document.getElementById('collectionRequestsTable').innerHTML=html||'<p>No collection requests</p>'; }); }
+
+    function loadCollectionRequests(){
+        pendingApprovalsRef.orderByChild('type').equalTo('collection').once('value',snap=>{
+            let htmlTable='<table><thead><tr><th>Booking</th><th>Requester</th><th>Signatures</th><th>Actions</th></tr></thead><tbody>';
+            let htmlCards='';
+            snap.forEach(req=>{
+                let r=req.val();
+                htmlTable+=`<tr><td>${r.bookingId}</td><td>${r.requester}</td><td><button class="action-btn edit" onclick="viewSignatures('${req.key}')">View</button></td><td><button class="action-btn btn-primary" onclick="approveCollection('${req.key}')">Approve</button> <button class="action-btn delete" onclick="rejectCollection('${req.key}')">Reject</button></td></tr>`;
+                htmlCards+=`<div class="data-card">
+                    <div class="card-row"><span class="card-label">Booking</span><span>${r.bookingId}</span></div>
+                    <div class="card-row"><span class="card-label">Requester</span><span>${r.requester}</span></div>
+                    <div class="card-actions">
+                        <button class="action-btn edit" onclick="viewSignatures('${req.key}')">View</button>
+                        <button class="action-btn btn-primary" onclick="approveCollection('${req.key}')">Approve</button>
+                        <button class="action-btn delete" onclick="rejectCollection('${req.key}')">Reject</button>
+                    </div>
+                </div>`;
+            });
+            htmlTable+='</tbody></table>';
+            document.getElementById('collectionRequestsTable').innerHTML=htmlTable||'<p>No collection requests</p>';
+            document.getElementById('collectionRequestsCards').innerHTML=htmlCards||'<p>No collection requests</p>';
+        });
+    }
+
     window.viewSignatures=async(key)=>{ let snap=await pendingApprovalsRef.child(key).once('value'); let r=snap.val(); let win=window.open(); win.document.write(`<h3>Staff Signature</h3><img src="${r.staffSignature}" style="max-width:300px"><h3>Customer Signature</h3><img src="${r.customerSignature}" style="max-width:300px">`); };
     window.approveCollection=async(key)=>{ let snap=await pendingApprovalsRef.child(key).once('value'); let req=snap.val(); await bookingsRef.child(req.bookingId).update({status:'collected', collectedAt:new Date().toISOString(), staffSignature:req.staffSignature, customerSignature:req.customerSignature, pending_collection:false}); await pendingApprovalsRef.child(key).remove(); await generateDigitalRecord('collection',req.bookingId,{note:'Collection approved', approvedBy:currentUser.email}); showToast('Collection approved'); };
     window.rejectCollection=async(key)=>{ let snap=await pendingApprovalsRef.child(key).once('value'); let req=snap.val(); await bookingsRef.child(req.bookingId).update({pending_collection:false}); await pendingApprovalsRef.child(key).remove(); showToast('Collection rejected'); };
 
-    // Digital Records
+    // ===================== Digital Records (now with mobile cards) =====================
     async function generateDigitalRecord(type, bookingId, extra){ let bookingSnap=await bookingsRef.child(bookingId).once('value'); let booking=bookingSnap.val(); let recordId=`${type}_${Date.now()}`; let record={recordId, type, bookingId, customerName:booking?.name||'N/A', phone:booking?.phone||'N/A', approvedBy:extra.approvedBy, timestamp:new Date().toISOString(), data:extra}; await digitalRecordsRef.child(recordId).set(record); downloadPDF(record); }
     function downloadPDF(record){ let {jsPDF}=window.jspdf; let doc=new jsPDF(); doc.text(`CampusVault Record: ${record.type.toUpperCase()}`,10,10); doc.text(`Booking ID: ${record.bookingId}`,10,20); doc.text(`Customer: ${record.customerName}`,10,30); doc.text(`Approved by: ${record.approvedBy}`,10,40); doc.text(`Date: ${new Date(record.timestamp).toLocaleString()}`,10,50); if(record.type==='edit' && record.data.changes){ doc.text('Changes applied:',10,65); let y=75; for(let [k,v] of Object.entries(record.data.changes)){ doc.text(`${k}: ${v}`,10,y); y+=8; } } else { doc.text('Collection approved with digital signatures.',10,65); } doc.save(`${record.type}_${record.bookingId}.pdf`); }
-    async function loadDigitalRecords(){ let snap=await digitalRecordsRef.once('value'); let records=[]; snap.forEach(c=>records.push(c.val())); let html='<table><thead><tr><th>ID</th><th>Type</th><th>Booking</th><th>Customer</th><th>Approved By</th><th>Date</th><th>PDF</th></tr></thead><tbody>'+records.map(r=>`<tr><td>${r.recordId}</td><td>${r.type}</td><td>${r.bookingId}</td><td>${r.customerName}</td><td>${r.approvedBy}</td><td>${new Date(r.timestamp).toLocaleString()}</td><td><button class="action-btn" onclick="downloadExistingRecord('${r.recordId}')">Download</button></td></tr>`).join('')+'</tbody></table>'; document.getElementById('digitalRecordsTable').innerHTML=html||'<p>No records</p>'; }
+    async function loadDigitalRecords(){
+        let snap=await digitalRecordsRef.once('value');
+        let records=[]; snap.forEach(c=>records.push(c.val()));
+        let tableHtml='<table><thead><tr><th>ID</th><th>Type</th><th>Booking</th><th>Customer</th><th>Approved By</th><th>Date</th><th>PDF</th></tr></thead><tbody>'+records.map(r=>`<tr><td>${r.recordId}</td><td>${r.type}</td><td>${r.bookingId}</td><td>${r.customerName}</td><td>${r.approvedBy}</td><td>${new Date(r.timestamp).toLocaleString()}</td><td><button class="action-btn" onclick="downloadExistingRecord('${r.recordId}')">Download</button></td></tr>`).join('')+'</tbody></table>';
+        document.getElementById('digitalRecordsTable').innerHTML=tableHtml||'<p>No records</p>';
+        let cardsHtml=records.map(r=>`<div class="data-card">
+            <div class="card-row"><span class="card-label">ID</span><span>${r.recordId}</span></div>
+            <div class="card-row"><span class="card-label">Type</span><span>${r.type}</span></div>
+            <div class="card-row"><span class="card-label">Booking</span><span>${r.bookingId}</span></div>
+            <div class="card-row"><span class="card-label">Customer</span><span>${r.customerName}</span></div>
+            <div class="card-row"><span class="card-label">Date</span><span>${new Date(r.timestamp).toLocaleString()}</span></div>
+            <div class="card-actions"><button class="action-btn" onclick="downloadExistingRecord('${r.recordId}')">Download PDF</button></div>
+        </div>`).join('');
+        document.getElementById('digitalRecordsCards').innerHTML=cardsHtml||'<p>No records</p>';
+    }
     window.downloadExistingRecord=async(id)=>{ let snap=await digitalRecordsRef.child(id).once('value'); downloadPDF(snap.val()); };
 
-    // Reviews
-    async function loadReviews(){ let snap=await reviewsRef.once('value'); let revs=[]; snap.forEach(c=>revs.push({key:c.key,...c.val()})); let html='<table><thead><tr><th>Customer</th><th>Rating</th><th>Comment</th><th>Date</th><th>Action</th></tr></thead><tbody>'+revs.map(r=>`<tr><td>${r.name}</td><td>${'⭐'.repeat(r.rating||0)}</td><td>${r.comment}</td><td>${new Date(r.timestamp).toLocaleString()}</td><td><button class="action-btn delete" onclick="deleteReview('${r.key}')">Delete</button></td></tr>`).join('')+'</tbody></table>'; document.getElementById('reviewsTable').innerHTML=html||'<p>No reviews</p>'; }
+    // ===================== Reviews (now with mobile cards) =====================
+    async function loadReviews(){
+        let snap=await reviewsRef.once('value');
+        let revs=[]; snap.forEach(c=>revs.push({key:c.key,...c.val()}));
+        let tableHtml='<table><thead><tr><th>Customer</th><th>Rating</th><th>Comment</th><th>Date</th><th>Action</th></tr></thead><tbody>'+revs.map(r=>`<tr><td>${r.name}</td><td>${'⭐'.repeat(r.rating||0)}</td><td>${r.comment}</td><td>${new Date(r.timestamp).toLocaleString()}</td><td><button class="action-btn delete" onclick="deleteReview('${r.key}')">Delete</button></td></tr>`).join('')+'</tbody></table>';
+        document.getElementById('reviewsTable').innerHTML=tableHtml||'<p>No reviews</p>';
+        let cardsHtml=revs.map(r=>`<div class="data-card">
+            <div class="card-row"><span class="card-label">Customer</span><span>${r.name}</span></div>
+            <div class="card-row"><span class="card-label">Rating</span><span>${'⭐'.repeat(r.rating||0)}</span></div>
+            <div class="card-row"><span class="card-label">Comment</span><span>${r.comment}</span></div>
+            <div class="card-row"><span class="card-label">Date</span><span>${new Date(r.timestamp).toLocaleString()}</span></div>
+            <div class="card-actions"><button class="action-btn delete" onclick="deleteReview('${r.key}')">Delete</button></div>
+        </div>`).join('');
+        document.getElementById('reviewsCards').innerHTML=cardsHtml||'<p>No reviews</p>';
+    }
     window.deleteReview=async(key)=>{ await reviewsRef.child(key).remove(); showToast('Review deleted'); };
 
-    // Staff Logs
-    async function loadStaffLogs(){ let snap=await staffLogsRef.orderByChild('timestamp').limitToLast(100).once('value'); let logs=[]; snap.forEach(c=>logs.unshift(c.val())); let html='<table><thead><tr><th>Staff</th><th>Action</th><th>Booking</th><th>Details</th><th>Timestamp</th></tr></thead><tbody>'+logs.map(l=>`<tr><td>${l.staffEmail}</td><td>${l.action}</td><td>${l.bookingId||'—'}</td><td>${l.details||'—'}</td><td>${new Date(l.timestamp).toLocaleString()}</td></tr>`).join('')+'</tbody></table>'; document.getElementById('staffLogsTable').innerHTML=html||'<p>No logs</p>'; }
+    // ===================== Staff Logs (now with mobile cards) =====================
+    async function loadStaffLogs(){
+        let snap=await staffLogsRef.orderByChild('timestamp').limitToLast(100).once('value');
+        let logs=[]; snap.forEach(c=>logs.unshift(c.val()));
+        let tableHtml='<table><thead><tr><th>Staff</th><th>Action</th><th>Booking</th><th>Details</th><th>Timestamp</th></tr></thead><tbody>'+logs.map(l=>`<tr><td>${l.staffEmail}</td><td>${l.action}</td><td>${l.bookingId||'—'}</td><td>${l.details||'—'}</td><td>${new Date(l.timestamp).toLocaleString()}</td></tr>`).join('')+'</tbody></table>';
+        document.getElementById('staffLogsTable').innerHTML=tableHtml||'<p>No logs</p>';
+        let cardsHtml=logs.map(l=>`<div class="data-card">
+            <div class="card-row"><span class="card-label">Staff</span><span>${l.staffEmail}</span></div>
+            <div class="card-row"><span class="card-label">Action</span><span>${l.action}</span></div>
+            <div class="card-row"><span class="card-label">Booking</span><span>${l.bookingId||'—'}</span></div>
+            <div class="card-row"><span class="card-label">Details</span><span>${l.details||'—'}</span></div>
+            <div class="card-row"><span class="card-label">Time</span><span>${new Date(l.timestamp).toLocaleString()}</span></div>
+        </div>`).join('');
+        document.getElementById('staffLogsCards').innerHTML=cardsHtml||'<p>No logs</p>';
+    }
 
-    // Sells, Deliveries, Inquiries, Housing
-    async function loadSells(){ let snap=await sellsRef.once('value'); let items=[]; snap.forEach(c=>items.push({key:c.key,...c.val()})); document.getElementById('sellsTableBody').innerHTML=items.map(s=>`<tr><td>${s.id}</td><td>${s.itemName}</td><td>${s.condition}</td><td>KES ${s.price}</td><td>${s.location}</td><td>${new Date(s.timestamp).toLocaleDateString()}</td><td><button class="action-btn whatsapp" onclick="sendWhatsApp('${s.phone}','Item: ${s.itemName}')">Chat</button><button class="action-btn delete" onclick="deleteSell('${s.key}')">Delete</button></td></tr>`).join(''); document.getElementById('sellsCardsContainer').innerHTML=items.map(s=>`<div class="data-card"><div><strong>${s.itemName}</strong> - KES ${s.price}</div><div class="card-actions"><button class="action-btn whatsapp" onclick="sendWhatsApp('${s.phone}','Item: ${s.itemName}')">Chat</button><button class="action-btn delete" onclick="deleteSell('${s.key}')">Delete</button></div></div>`).join('')||'<p>No submissions</p>'; }
+    // ===================== Sells, Deliveries, Inquiries, Housing (unchanged, already had mobile) =====================
+    async function loadSells(){
+        let snap=await sellsRef.once('value');
+        let items=[]; snap.forEach(c=>items.push({key:c.key,...c.val()}));
+        document.getElementById('sellsTableBody').innerHTML=items.map(s=>`
+            <tr>
+                <td>${s.id}</td>
+                <td>${s.itemName}</td>
+                <td>${s.condition}</td>
+                <td>KES ${s.price}</td>
+                <td>${s.location}</td>
+                <td>${new Date(s.timestamp).toLocaleDateString()}</td>
+                <td>
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${s.phone}', \`Hi, we have your listing: ${s.itemName} (${s.condition}) for KES ${s.price} in ${s.location}. Let's connect! - CampusVault\`)">Chat</button>
+                    <button class="action-btn delete" onclick="deleteSell('${s.key}')">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+        document.getElementById('sellsCardsContainer').innerHTML=items.map(s=>`
+            <div class="data-card">
+                <div><strong>${s.itemName}</strong> - KES ${s.price}</div>
+                <div class="card-actions">
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${s.phone}', \`Hi, your listing: ${s.itemName} (${s.condition}) KES ${s.price}, ${s.location}. - CampusVault\`)">Chat</button>
+                    <button class="action-btn delete" onclick="deleteSell('${s.key}')">Delete</button>
+                </div>
+            </div>
+        `).join('')||'<p>No submissions</p>';
+    }
     window.deleteSell=(key)=>{ if(confirm('Delete?')) sellsRef.child(key).remove(); };
-    async function loadDeliveries(){ let snap=await deliveriesRef.once('value'); let items=[]; snap.forEach(c=>items.push({key:c.key,...c.val()})); document.getElementById('deliveriesTableBody').innerHTML=items.map(d=>`<tr><td>${d.id}</td><td>${d.name}</td><td>${d.phone}</td><td>${d.service}</td><td>${d.details}</td><td>${new Date(d.timestamp).toLocaleString()}</td><td><button class="action-btn whatsapp" onclick="sendWhatsApp('${d.phone}','Delivery: ${d.service}')">Chat</button><button class="action-btn delete" onclick="deleteDelivery('${d.key}')">Delete</button></td></tr>`).join(''); document.getElementById('deliveriesCardsContainer').innerHTML=items.map(d=>`<div class="data-card"><div><strong>${d.name}</strong> - ${d.service}</div><div class="card-actions"><button class="action-btn whatsapp" onclick="sendWhatsApp('${d.phone}','Delivery: ${d.service}')">Chat</button><button class="action-btn delete" onclick="deleteDelivery('${d.key}')">Delete</button></div></div>`).join('')||'<p>No deliveries</p>'; }
+
+    async function loadDeliveries(){
+        let snap=await deliveriesRef.once('value');
+        let items=[]; snap.forEach(c=>items.push({key:c.key,...c.val()}));
+        document.getElementById('deliveriesTableBody').innerHTML=items.map(d=>`
+            <tr>
+                <td>${d.id}</td>
+                <td>${d.name}</td>
+                <td>${d.phone}</td>
+                <td>${d.service}</td>
+                <td>${d.details}</td>
+                <td>${new Date(d.timestamp).toLocaleString()}</td>
+                <td>
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${d.phone}', \`Hi ${d.name}, your delivery request for ${d.service} (${d.details}) has been received. We'll update you soon. - CampusVault\`)">Chat</button>
+                    <button class="action-btn delete" onclick="deleteDelivery('${d.key}')">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+        document.getElementById('deliveriesCardsContainer').innerHTML=items.map(d=>`
+            <div class="data-card">
+                <div><strong>${d.name}</strong> - ${d.service}</div>
+                <div class="card-actions">
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${d.phone}', \`Hi ${d.name}, delivery ${d.service}: ${d.details}. - CampusVault\`)">Chat</button>
+                    <button class="action-btn delete" onclick="deleteDelivery('${d.key}')">Delete</button>
+                </div>
+            </div>
+        `).join('')||'<p>No deliveries</p>';
+    }
     window.deleteDelivery=(key)=>{ if(confirm('Delete?')) deliveriesRef.child(key).remove(); };
-    async function loadInquiries(){ let snap=await inquiriesRef.once('value'); let items=[]; snap.forEach(c=>items.push({key:c.key,...c.val()})); document.getElementById('inquiriesTableBody').innerHTML=items.map(i=>`<tr><td>${i.id}</td><td>${i.name}</td><td>${i.phone}</td><td>${i.message}</td><td>${new Date(i.timestamp).toLocaleString()}</td><td><button class="action-btn whatsapp" onclick="sendWhatsApp('${i.phone}','Inquiry: ${i.message}')">Chat</button><button class="action-btn delete" onclick="deleteInquiry('${i.key}')">Delete</button></td></tr>`).join(''); document.getElementById('inquiriesCardsContainer').innerHTML=items.map(i=>`<div class="data-card"><div><strong>${i.name}</strong>: ${i.message.substring(0,50)}</div><div class="card-actions"><button class="action-btn whatsapp" onclick="sendWhatsApp('${i.phone}','Inquiry: ${i.message}')">Chat</button><button class="action-btn delete" onclick="deleteInquiry('${i.key}')">Delete</button></div></div>`).join('')||'<p>No inquiries</p>'; }
+
+    async function loadInquiries(){
+        let snap=await inquiriesRef.once('value');
+        let items=[]; snap.forEach(c=>items.push({key:c.key,...c.val()}));
+        document.getElementById('inquiriesTableBody').innerHTML=items.map(i=>`
+            <tr>
+                <td>${i.id}</td>
+                <td>${i.name}</td>
+                <td>${i.phone}</td>
+                <td>${i.message}</td>
+                <td>${new Date(i.timestamp).toLocaleString()}</td>
+                <td>
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${i.phone}', \`Hi ${i.name}, thank you for your inquiry: '${i.message}'. How can we assist you? - CampusVault\`)">Chat</button>
+                    <button class="action-btn delete" onclick="deleteInquiry('${i.key}')">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+        document.getElementById('inquiriesCardsContainer').innerHTML=items.map(i=>`
+            <div class="data-card">
+                <div><strong>${i.name}</strong>: ${i.message.substring(0,50)}</div>
+                <div class="card-actions">
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${i.phone}', \`Hi ${i.name}, thanks for your inquiry. Let's chat! - CampusVault\`)">Chat</button>
+                    <button class="action-btn delete" onclick="deleteInquiry('${i.key}')">Delete</button>
+                </div>
+            </div>
+        `).join('')||'<p>No inquiries</p>';
+    }
     window.deleteInquiry=(key)=>{ if(confirm('Delete?')) inquiriesRef.child(key).remove(); };
-    async function loadAccommodation(){ let snap=await accommodationRef.once('value'); let items=[]; snap.forEach(c=>items.push({key:c.key,...c.val()})); document.getElementById('accommodationTableBody').innerHTML=items.map(a=>`<tr><td>${a.id}</td><td>${a.name}</td><td>${a.phone}</td><td>${a.type}</td><td>${a.location}</td><td>${a.budget?`KES ${a.budget}`:'—'}</td><td>${new Date(a.timestamp).toLocaleDateString()}</td><td><button class="action-btn whatsapp" onclick="sendWhatsApp('${a.phone}','Housing: ${a.type} in ${a.location}')">Chat</button><button class="action-btn delete" onclick="deleteAccommodation('${a.key}')">Delete</button></td></tr>`).join(''); document.getElementById('accommodationCardsContainer').innerHTML=items.map(a=>`<div class="data-card"><div><strong>${a.name}</strong> - ${a.type} in ${a.location}</div><div class="card-actions"><button class="action-btn whatsapp" onclick="sendWhatsApp('${a.phone}','Housing: ${a.type}')">Chat</button><button class="action-btn delete" onclick="deleteAccommodation('${a.key}')">Delete</button></div></div>`).join('')||'<p>No housing requests</p>'; }
+
+    async function loadAccommodation(){
+        let snap=await accommodationRef.once('value');
+        let items=[]; snap.forEach(c=>items.push({key:c.key,...c.val()}));
+        document.getElementById('accommodationTableBody').innerHTML=items.map(a=>`
+            <tr>
+                <td>${a.id}</td>
+                <td>${a.name}</td>
+                <td>${a.phone}</td>
+                <td>${a.type}</td>
+                <td>${a.location}</td>
+                <td>${a.budget?`KES ${a.budget}`:'—'}</td>
+                <td>${new Date(a.timestamp).toLocaleDateString()}</td>
+                <td>
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${a.phone}', \`Hi ${a.name}, we received your housing request: ${a.type} in ${a.location}, budget KES ${a.budget||'Not specified'}. Let us help! - CampusVault\`)">Chat</button>
+                    <button class="action-btn delete" onclick="deleteAccommodation('${a.key}')">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+        document.getElementById('accommodationCardsContainer').innerHTML=items.map(a=>`
+            <div class="data-card">
+                <div><strong>${a.name}</strong> - ${a.type} in ${a.location}</div>
+                <div class="card-actions">
+                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${a.phone}', \`Hi ${a.name}, housing ${a.type} in ${a.location}. Budget: ${a.budget||'Not set'}. - CampusVault\`)">Chat</button>
+                    <button class="action-btn delete" onclick="deleteAccommodation('${a.key}')">Delete</button>
+                </div>
+            </div>
+        `).join('')||'<p>No housing requests</p>';
+    }
     window.deleteAccommodation=(key)=>{ if(confirm('Delete?')) accommodationRef.child(key).remove(); };
 
-    // Admins
+    // ===================== Admins =====================
     function renderAdminList(){ document.getElementById('adminList').innerHTML=Object.keys(currentAdmins).map(k=>`<div class="admin-item"><span>${k.replace(/\./g,'.')}</span><button onclick="removeAdmin('${k}')">Remove</button></div>`).join(''); }
     window.addAdmin=()=>{ let email=document.getElementById('newAdminEmail').value.trim(); if(email) adminsRef.child(email.replace(/\./g,',')).set(true), document.getElementById('newAdminEmail').value='', showToast(`Admin ${email} added`); };
     window.removeAdmin=(key)=>{ if(confirm('Remove admin?')) adminsRef.child(key).remove(); };
 
-    // PRODUCTS
+    // ===================== PRODUCTS (unchanged) =====================
     function renderProductsTable(products){
         let entries=Object.entries(products);
         let tbody=document.getElementById('productsTableBody');
@@ -526,7 +809,6 @@
         };
         if(image) data.image=image;
         if(key){
-            // preserve existing image if not provided
             if(!image && productsData[key] && productsData[key].image) data.image=productsData[key].image;
             await productsRef.child(key).update(data);
         } else {
@@ -559,7 +841,7 @@
         }
     }
 
-    // Real-time listeners
+    // ===================== Real-time listeners =====================
     function attachRealtime(){
         bookingsRef.on('value',snap=>{ let bkgs=[]; snap.forEach(c=>{ let val=c.val(); val._key=c.key; bkgs.push(val); }); allBookings=bkgs; renderStorageTable(bkgs); renderStorageCards(bkgs); updateMetrics(bkgs); });
         staffRef.on('value',()=>loadStaff());
@@ -577,7 +859,7 @@
     function updateMetrics(bookings){ let total=bookings.length, active=bookings.filter(b=>b.status==='active').length; document.getElementById('metricsContainer').innerHTML=`<div class="metric-card"><div class="metric-icon"><i class="fas fa-box"></i></div><div><div class="metric-value">${total}</div><div class="metric-label">Total Bookings</div></div></div><div class="metric-card"><div class="metric-icon"><i class="fas fa-circle-check"></i></div><div><div class="metric-value">${active}</div><div class="metric-label">Active</div></div></div><div class="metric-card"><div class="metric-icon"><i class="fas fa-users"></i></div><div><div class="metric-value">${Object.keys(currentAdmins).length}</div><div class="metric-label">Admins</div></div></div>`; }
     function loadDashboard(){ attachRealtime(); loadStaff(); loadEditRequests(); loadCollectionRequests(); loadDigitalRecords(); loadReviews(); loadStaffLogs(); loadSells(); loadDeliveries(); loadInquiries(); loadAccommodation(); }
 
-    // Backup functions
+    // ===================== Backup functions =====================
     window.openBackupModal=()=>{ document.getElementById('backupModal').style.display='flex'; };
     window.startBackup=async()=>{ let format=document.getElementById('backupFormat').value; let sections=Array.from(document.querySelectorAll('#backupSections input:checked')).map(cb=>cb.value); let btn=document.getElementById('backupStartBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Generating...'; try { if(format==='pdf') await backupToPDF(sections); else await backupToExcel(sections); showToast('Backup downloaded'); } catch(e){ showToast('Backup failed','❌'); } finally { btn.disabled=false; btn.innerHTML='Generate'; closeModal('backupModal'); } };
     async function backupToPDF(sections){ let {jsPDF}=window.jspdf; let doc=new jsPDF({orientation:'landscape'}); doc.text('CampusVault System Backup',10,10); doc.text(`Generated: ${new Date().toLocaleString()}`,10,20); let y=30; let refs={bookings:bookingsRef, sells:sellsRef, deliveries:deliveriesRef, inquiries:inquiriesRef, accommodation:accommodationRef, products:productsRef, admins:adminsRef}; let snapMap={}; for(let sec of sections) if(refs[sec]) snapMap[sec]=(await refs[sec].once('value')).val()||{}; if(sections.includes('bookings')){ let data=Object.values(snapMap.bookings||{}).map(b=>[b.bookingId,b.name,b.phone,`${b.itemCount} (${b.category})`,b.checkIn,b.collect]); doc.autoTable({head:[['ID','Customer','Phone','Items','Check-in','Due']],body:data,startY:y}); y=doc.lastAutoTable.finalY+10; } if(sections.includes('sells')){ let data=Object.values(snapMap.sells||{}).map(s=>[s.itemName,`KES ${s.price}`,s.condition,s.location]); doc.autoTable({head:[['Item','Price','Condition','Location']],body:data,startY:y}); } doc.save(`campusvault_backup_${Date.now()}.pdf`); }
@@ -591,61 +873,34 @@
     window.previewProductImage=previewProductImage;
     window.previewProductImageUrl=previewProductImageUrl;
 
-
-
-
-
-  // 1. Register the Service Worker
-   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker registered!', reg))
-        .catch(err => console.err('Service Worker failed: ', err));
-      });
-        }
-
-  // 2. Capture the Installation Prompt
-  let deferredPrompt;
-  const installBtn = document.getElementById('installBtn'); // Optional: Link to a button ID in your HTML
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent older Android Chrome from showing the generic bottom banner automatically
-    e.preventDefault();
-    // Save the event so it can be triggered later
-    deferredPrompt = e;
-    
-    // OPTIONAL: If you have an install button on your webpage, show it now
-    if (installBtn) {
-      installBtn.style.display = 'block';
+    // ===================== Service Worker & Install Prompt =====================
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered!', reg))
+                .catch(err => console.error('Service Worker failed: ', err));
+        });
     }
 
-    // ALTERNATIVE (Auto-Prompt): If you want to prompt them immediately on page load:
-    // Warning: Many modern browsers block immediate popups. Triggering via a button click is safer.
-    triggerInstall(); 
-  });
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBtn) installBtn.style.display = 'block';
+        triggerInstall();
+    });
 
-  function triggerInstall() {
-    if (deferredPrompt) {
-      // Show the browser's native installation dialog
-      deferredPrompt.prompt();
-      
-      // Wait for the user to respond to the prompt
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the install prompt');
-        } else {
-          console.log('User dismissed the install prompt');
+    function triggerInstall() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                console.log(choiceResult.outcome);
+                deferredPrompt = null;
+            });
         }
-        deferredPrompt = null;
-      });
     }
-  }
-
-  // Optional: Bind the trigger function to your custom web button
-  if (installBtn) {
-    installBtn.addEventListener('click', triggerInstall);
-  }
+    if (installBtn) installBtn.addEventListener('click', triggerInstall);
 </script>
-    
 </body>
 </html>
