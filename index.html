@@ -2,768 +2,174 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Admin Portal | CampusVault</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=yes">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="MobileOptimized" content="width">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0b1e33">
+    <title>Admin Portal | CampusVault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js">
-    </script>
+    <meta name="theme-color" content="#0b1e33">
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            --bg: #f1f5f9;
-            --surface: #ffffff;
-            --text: #0f172a;
-            --text-secondary: #475569;
-            --primary: #1e3a5f;
-            --accent: #0ea5e9;
-            --emerald: #10b981;
-            --rose: #f43f5e;
-            --border: #e2e8f0;
-            --shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.06);
-            --radius: 10px;
-            --radius-sm: 6px;
-            --transition: 0.2s ease;
-            --sidebar-width: 260px;
-            --font: 'Inter', sans-serif;
-            --amber: #f59e0b;
-            --violet: #8b5cf6;
-            --orange: #f97316;
+            --bg: #f8fafc; --surface: #ffffff; --text: #0f172a;
+            --text-secondary: #64748b; --primary: #1e40af;
+            --primary-light: #3b82f6; --accent: #06b6d4;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --border: #e2e8f0; --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --radius: 12px; --radius-sm: 8px; --sidebar-width: 280px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --transition: all 0.2s ease;
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
         }
         body.dark {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --text: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --primary: #38bdf8;
-            --accent: #0ea5e9;
-            --emerald: #34d399;
-            --rose: #fb7185;
-            --border: #475569;
-            --shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.3);
+            --bg: #0f172a; --surface: #1e293b; --text: #f1f5f9;
+            --text-secondary: #94a3b8; --primary: #60a5fa;
+            --primary-light: #3b82f6; --accent: #22d3ee;
+            --border: #334155;
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; font-size: 16px; }
         body {
-            font-family: var(--font);
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            transition: background 0.3s, color 0.3s;
-            -webkit-tap-highlight-color: transparent;
-            overscroll-behavior: none;
-        }
-        .login-overlay {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, #0b1e33, #1e3a5f);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            padding: 16px;
-        }
-        .login-card {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 32px 24px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-        }
-        .login-card h2 {
-            font-weight: 800;
-            font-size: 1.6rem;
-            color: var(--primary);
-        }
-        .google-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 30px;
-            border: 2px solid var(--border);
-            background: var(--surface);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 24px;
-            color: var(--text);
-            font-size: 0.95rem;
-        }
-        .login-error {
-            color: var(--rose);
-            margin-top: 12px;
-            display: none;
-        }
-        .dashboard {
-            display: none;
-        }
-        .dashboard.active {
-            display: flex;
-            min-height: 100vh;
-            min-height: 100dvh;
-        }
-        .sidebar {
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, #0b1e33, #1e293b);
-            color: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            height: 100dvh;
-            z-index: 200;
-            transition: transform 0.3s ease;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .sidebar .brand {
-            padding: 20px 16px;
-            font-weight: 800;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            flex-shrink: 0;
-        }
-        .sidebar nav {
-            padding: 12px 8px;
-            flex: 1;
-            overflow-y: auto;
-        }
-        .sidebar nav a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            color: #cbd5e1;
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            margin-bottom: 2px;
-            font-size: 0.88rem;
-        }
-        .sidebar nav a:hover,
-        .sidebar nav a.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-        .sidebar nav a i {
-            width: 18px;
-            text-align: center;
-        }
-        .sidebar nav a .nav-badge {
-            color: #fff;
-            border-radius: 10px;
-            padding: 1px 7px;
-            font-size: 0.68rem;
-            margin-left: auto;
-            min-width: 20px;
-            text-align: center;
-        }
-        .badge-pending {
-            background: var(--rose);
-        }
-        .badge-received {
-            background: var(--emerald);
-        }
-        .badge-logs {
-            background: var(--violet);
-        }
-        .badge-records {
-            background: var(--accent);
-        }
-        .badge-reviews {
-            background: var(--amber);
-        }
-        .badge-collected {
-            background: #8b5cf6;
-        }
-        .badge-trash {
-            background: var(--orange);
-        }
-        .sidebar-footer {
-            padding: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            flex-shrink: 0;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            object-fit: cover;
-        }
-        .logout-btn {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        .main {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            padding: 0;
-            transition: margin-left 0.3s ease;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .desktop-topbar {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 16px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-        .mobile-topbar {
-            display: none;
-            background: var(--surface);
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            box-shadow: var(--shadow);
-        }
-        .hamburger {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            color: var(--text);
-            cursor: pointer;
-            padding: 6px;
-        }
-        .theme-toggle {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 6px 12px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-        .content-area {
-            padding: 16px;
-            flex: 1;
-        }
-        @media (max-width:768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                z-index: 250;
-                width: 280px;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main {
-                margin-left: 0;
-            }
-            .desktop-topbar {
-                display: none;
-            }
-            .mobile-topbar {
-                display: flex;
-            }
-            .sidebar-overlay {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 200;
-            }
-            .sidebar-overlay.active {
-                display: block;
-            }
-            .content-area {
-                padding: 10px;
-            }
-            input,
-            select,
-            textarea {
-                font-size: 16px !important;
-            }
-        }
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .metric-card {
-            background: var(--surface);
-            border-radius: 10px;
-            padding: 12px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid var(--border);
-        }
-        .metric-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            color: #fff;
-            flex-shrink: 0;
-        }
-        .metric-value {
-            font-size: 1.3rem;
-            font-weight: 800;
-            line-height: 1.1;
-        }
-        .metric-label {
-            color: var(--text-secondary);
-            font-size: 0.6rem;
-            text-transform: uppercase;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-        }
-        .card {
-            background: var(--surface);
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-        .card-header {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            max-height: 50vh;
-            overflow-y: auto;
-        }
-        .desktop-table {
-            display: block;
-        }
-        .mobile-cards {
-            display: none;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            min-width: 600px;
-        }
-        th {
-            background: var(--bg);
-            padding: 10px 10px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text-secondary);
-            border-bottom: 2px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-        td {
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--border);
-        }
-        .badge {
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .badge-active {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        .badge-received {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .badge-collected {
-            background: #e0e7ff;
-            color: #3730a3;
-        }
-        .badge-deleted {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .action-btn {
-            padding: 5px 8px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            margin: 1px;
-            font-weight: 600;
-            white-space: nowrap;
-            min-height: 30px;
-            min-width: 30px;
-        }
-        .action-btn:active {
-            transform: scale(0.95);
-        }
-        .edit {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .delete {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .approve-btn {
-            background: var(--emerald);
-            color: #fff;
-        }
-        .reject-btn {
-            background: var(--rose);
-            color: #fff;
-        }
-        .receive-btn {
-            background: var(--emerald);
-            color: #fff;
-        }
-        .collect-btn {
-            background: var(--violet);
-            color: #fff;
-        }
-        .restore-btn {
-            background: var(--amber);
-            color: #000;
-        }
-        .view-btn {
-            background: var(--violet);
-            color: #fff;
-        }
-        .promote-btn {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        .demote-btn {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .data-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 8px;
-            box-shadow: var(--shadow);
-        }
-        .data-card .card-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-        .data-card .card-label {
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.65rem;
-            text-transform: uppercase;
-        }
-        .data-card .card-actions {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            margin-top: 6px;
-        }
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            z-index: 2000;
-        }
-        .modal-content {
-            background: var(--surface);
-            border-radius: 16px 16px 0 0;
-            padding: 16px;
-            width: 100%;
-            max-width: 600px;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-        @media (min-width:769px) {
-            .modal-overlay {
-                align-items: center;
-            }
-            .modal-content {
-                border-radius: 12px;
-            }
-        }
-        .form-group {
-            margin-bottom: 10px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
-            font-size: 0.9rem;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-        }
-        .btn {
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            border: none;
-            font-size: 0.8rem;
-            min-height: 36px;
-        }
-        .btn-primary {
-            background: var(--primary);
-            color: #fff;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-        }
-        .btn-success {
-            background: var(--emerald);
-            color: #fff;
-        }
-        .btn-warning {
-            background: var(--amber);
-            color: #000;
-        }
-        .toast {
-            position: fixed;
-            bottom: 16px;
-            right: 16px;
-            left: 16px;
-            background: var(--surface);
-            color: var(--text);
-            padding: 12px 20px;
-            border-radius: 10px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
-            font-weight: 500;
-            font-size: 0.85rem;
-            z-index: 9999;
-            animation: slideUp 0.3s ease, fadeOut 0.3s ease 3.2s forwards;
-            text-align: center;
-        }
-        @keyframes slideUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-        }
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-        }
-        .empty-state i {
-            font-size: 2.5rem;
-            opacity: 0.2;
-            margin-bottom: 10px;
-            display: block;
-        }
-        .empty-state p {
-            opacity: 0.5;
-        }
-        .log-action-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.65rem;
-            font-weight: 600;
-        }
-        .log-action-login {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        .log-action-collected {
-            background: #e0e7ff;
-            color: #3730a3;
-        }
-        .log-action-restored {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        .log-action-default {
-            background: #e2e8f0;
-            color: #475569;
-        }
-        .admin-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-            transition: background 0.2s;
-        }
-        .admin-item:hover {
-            background: var(--bg);
-        }
-        .admin-item:last-child {
-            border-bottom: none;
-        }
-        .admin-form {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-        .admin-form input {
-            flex: 1;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
-            font-size: 0.9rem;
-        }
-        .admin-form button {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .admin-form button:hover {
-            filter: brightness(1.1);
-        }
-        .admin-list {
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-        @media (max-width:768px) {
-            .desktop-table {
-                display: none;
-            }
-            .mobile-cards {
-                display: block;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+            font-family: var(--font); background: var(--bg); color: var(--text);
+            line-height: 1.5; font-size: 14px; min-height: 100vh;
+            overflow-x: hidden; padding-top: var(--safe-area-top);
+            padding-bottom: var(--safe-area-bottom);
+        }
+
+        .login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
+        .login-card { background: var(--surface); border-radius: 20px; padding: 32px 20px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.4); }
+        .login-card .logo { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.5rem; color: white; }
+        .login-card h2 { font-weight: 800; font-size: 1.3rem; margin-bottom: 4px; }
+        .login-card .subtitle { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 20px; }
+        .google-btn { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid var(--border); background: var(--surface); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font-size: 0.9rem; min-height: 48px; }
+        .login-error { color: var(--danger); margin-top: 12px; display: none; font-size: 0.8rem; }
+
+        .dashboard { display: none; }
+        .dashboard.active { display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); color: #fff; position: fixed; top: 0; left: 0; height: 100vh; z-index: 200; transition: transform 0.3s; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar .brand { padding: 20px 16px; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar nav { padding: 8px 10px; flex: 1; overflow-y: auto; }
+        .sidebar nav .nav-section { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); padding: 14px 10px 4px; font-weight: 700; }
+        .sidebar nav a { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px; color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 500; font-size: 0.8rem; cursor: pointer; min-height: 44px; }
+        .sidebar nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .sidebar nav a.active { background: rgba(59,130,246,0.3); color: #fff; }
+        .sidebar nav a .nav-badge { background: var(--danger); color: #fff; border-radius: 10px; padding: 2px 7px; font-size: 0.55rem; margin-left: auto; min-width: 20px; text-align: center; font-weight: 700; }
+        .sidebar-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+        .user-info { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); }
+        .logout-btn { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; min-height: 42px; }
+
+        .main { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; }
+        .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; min-height: 48px; }
+        .hamburger { display: none; background: none; border: none; font-size: 1.2rem; color: var(--text); cursor: pointer; padding: 8px; }
+        .content-area { padding: 12px; flex: 1; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 6px; margin-bottom: 10px; }
+        .metric-card { background: var(--surface); border-radius: var(--radius-sm); padding: 10px 8px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); cursor: pointer; }
+        .metric-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #fff; flex-shrink: 0; }
+        .metric-value { font-size: 1.1rem; font-weight: 800; }
+        .metric-label { color: var(--text-secondary); font-size: 0.55rem; text-transform: uppercase; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 10px; }
+        .card-header { padding: 10px 12px; border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+        .table-responsive { overflow-x: auto; max-height: 50vh; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.68rem; min-width: 500px; }
+        th { background: var(--bg); padding: 6px; text-align: left; font-weight: 600; color: var(--text-secondary); border-bottom: 2px solid var(--border); position: sticky; top: 0; font-size: 0.65rem; }
+        td { padding: 6px; border-bottom: 1px solid var(--border); font-size: 0.65rem; }
+        .badge { padding: 2px 6px; border-radius: 10px; font-size: 0.55rem; font-weight: 600; }
+        .badge-active { background: #d1fae5; color: #065f46; }
+        .action-btn { padding: 4px 6px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.6rem; margin: 1px; font-weight: 600; min-height: 26px; }
+        .btn-receive { background: var(--success); color: #fff; }
+        .btn-collect { background: #8b5cf6; color: #fff; }
+        .btn-reassign { background: #f59e0b; color: #fff; }
+        .btn-delete { background: #fee2e2; color: #991b1b; }
+        .btn-restore { background: #fef3c7; color: #92400e; }
+        .btn-kick { background: #f97316; color: #fff; }
+
+        .mobile-cards { display: none; }
+        .data-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; margin-bottom: 6px; }
+        .data-card .card-row { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.7rem; }
+        .data-card .card-label { font-weight: 600; color: var(--text-secondary); font-size: 0.55rem; }
+        .data-card .card-actions { display: flex; gap: 3px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+
+        .security-bot-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: var(--radius); border: 2px solid var(--primary-light); padding: 14px; margin-bottom: 14px; color: #f1f5f9; }
+        .security-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-bottom: 12px; }
+        .security-stat { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; text-align: center; }
+        .security-stat .stat-value { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .security-stat .stat-label { font-size: 0.55rem; color: #94a3b8; }
+        .bot-btn { padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #f1f5f9; cursor: pointer; font-size: 0.65rem; min-height: 32px; }
+
+        .insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 14px; }
+        .insight-card { background: var(--surface); border-radius: var(--radius-sm); padding: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .insight-card h4 { font-size: 0.75rem; margin-bottom: 8px; }
+        .performance-bar { height: 8px; background: var(--bg); border-radius: 4px; margin: 6px 0; overflow: hidden; }
+        .performance-fill { height: 100%; border-radius: 4px; }
+        .performance-fill.excellent { background: #10b981; }
+        .performance-fill.good { background: #3b82f6; }
+        .insight-metric { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.7rem; }
+        .insight-value { font-weight: 700; font-size: 0.85rem; }
+        .staff-rating { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; font-weight: 700; font-size: 0.7rem; }
+        .staff-rating.top { background: #d1fae5; color: #065f46; }
+        .staff-rating.good { background: #dbeafe; color: #1e40af; }
+        .streak-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 10px; font-size: 0.6rem; font-weight: 600; }
+        .streak-badge.hot { background: #fee2e2; color: #991b1b; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: var(--surface); border-radius: 16px; padding: 14px; width: 100%; max-width: 520px; max-height: 80vh; overflow-y: auto; }
+        .form-group { margin-bottom: 8px; }
+        .form-group label { display: block; font-size: 0.65rem; font-weight: 600; margin-bottom: 2px; color: var(--text-secondary); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 7px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 14px; }
+        .btn { padding: 7px 12px; border-radius: 5px; cursor: pointer; font-weight: 600; border: none; font-size: 0.75rem; min-height: 36px; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-sm { padding: 4px 8px; font-size: 0.65rem; min-height: 26px; }
+
+        .toast { position: fixed; bottom: 12px; right: 12px; left: 12px; background: var(--surface); color: var(--text); padding: 10px; border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 9999; font-size: 0.75rem; text-align: center; max-width: 400px; margin: 0 auto; }
+        .empty-state { text-align: center; padding: 20px; opacity: 0.5; font-size: 0.7rem; }
+        .security-alert-banner { background: var(--danger); color: #fff; padding: 6px; font-size: 0.65rem; text-align: center; display: none; }
+        .security-alert-banner.show { display: block; }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); z-index: 250; }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .hamburger { display: flex; }
+            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; }
+            .sidebar-overlay.active { display: block; }
+            .desktop-table { display: none; }
+            .mobile-cards { display: block; }
+            .content-area { padding: 8px; }
         }
     </style>
 </head>
 <body>
+    <div class="security-alert-banner" id="securityAlertBanner">⚠️ Security threat detected! Check Security Bot for details.</div>
+
     <div class="login-overlay" id="loginScreen">
         <div class="login-card">
-            <h2><i class="fas fa-shield-halved"></i> Admin Portal</h2>
-            <p>CampusVault • Full Control</p>
-            <button class="google-btn" id="googleSignInBtn"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google"> Sign in with Google</button>
-            <p class="login-error" id="loginError"></p>
+            <div class="logo"><i class="fas fa-shield-halved"></i></div>
+            <h2>Admin Portal</h2>
+            <p class="subtitle">CampusVault • Full Control Panel</p>
+            <button class="google-btn" id="googleSignInBtn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
+                Sign in with Google
+            </button>
+            <p class="login-error" id="loginError">❌ Access denied. Admin only.</p>
         </div>
     </div>
 
@@ -772,1256 +178,621 @@
         <aside class="sidebar" id="sidebar">
             <div class="brand"><i class="fas fa-shield-halved"></i> CampusVault</div>
             <nav>
-                <a href="#" class="active" data-tab="storage"><i class="fas fa-box-archive"></i> Bookings</a>
-                <a href="#" data-tab="received" id="navReceived"><i class="fas fa-box-check"></i> Received <span class="nav-badge badge-received" id="receivedBadge" style="display:none;">0</span></a>
-                <a href="#" data-tab="collected"><i class="fas fa-people-carry"></i> Collected <span class="nav-badge badge-collected" id="collectedBadge" style="display:none;">0</span></a>
-                <a href="#" data-tab="trash"><i class="fas fa-trash-restore"></i> Trash <span class="nav-badge badge-trash" id="trashBadge" style="display:none;">0</span></a>
+                <div class="nav-section">Security</div>
+                <a href="#" class="active" data-tab="security"><i class="fas fa-robot"></i> Security Bot</a>
+                <div class="nav-section">Bookings</div>
+                <a href="#" data-tab="storage"><i class="fas fa-box-archive"></i> Active Bookings</a>
+                <a href="#" data-tab="received"><i class="fas fa-box-check"></i> Received <span class="nav-badge" id="receivedBadge" style="display:none;">0</span></a>
+                <a href="#" data-tab="collected"><i class="fas fa-people-carry"></i> Collected <span class="nav-badge" id="collectedBadge" style="display:none;">0</span></a>
+                <a href="#" data-tab="trash"><i class="fas fa-trash-restore"></i> Trash <span class="nav-badge" id="trashBadge" style="display:none;">0</span></a>
+                <div class="nav-section">Management</div>
                 <a href="#" data-tab="staff"><i class="fas fa-users"></i> Staff</a>
-                <a href="#" data-tab="pending" id="navPending"><i class="fas fa-clock"></i> Pending <span class="nav-badge badge-pending" id="pendingBadge" style="display:none;">0</span></a>
-                <a href="#" data-tab="records"><i class="fas fa-file-pdf"></i> Records <span class="nav-badge badge-records" id="recordsBadge" style="display:none;">0</span></a>
-                <a href="#" data-tab="reviews"><i class="fas fa-star"></i> Reviews <span class="nav-badge badge-reviews" id="reviewsBadge" style="display:none;">0</span></a>
-                <a href="#" data-tab="logs"><i class="fas fa-history"></i> Staff Logs <span class="nav-badge badge-logs" id="logCountBadge" style="display:none;">0</span></a>
-                <a href="#" data-tab="sells"><i class="fas fa-tag"></i> Sells</a>
-                <a href="#" data-tab="deliveries"><i class="fas fa-truck-fast"></i> Deliveries</a>
-                <a href="#" data-tab="inquiries"><i class="fas fa-comment-dots"></i> Inquiries</a>
-                <a href="#" data-tab="accommodation"><i class="fas fa-house"></i> Housing</a>
-                <a href="#" data-tab="admins"><i class="fas fa-users-cog"></i> Admins</a>
-                <a href="#" data-tab="products"><i class="fas fa-store-alt"></i> Products</a>
                 <a href="#" data-tab="insights"><i class="fas fa-chart-line"></i> Insights</a>
-                <a href="#" data-tab="agreement"><i class="fas fa-file-contract"></i> Agreement</a>
+                <a href="#" data-tab="pending"><i class="fas fa-clock"></i> Approvals <span class="nav-badge" id="pendingBadge" style="display:none;">0</span></a>
+                <a href="#" data-tab="admins"><i class="fas fa-users-cog"></i> Admins</a>
+                <div class="nav-section">Data</div>
+                <a href="#" data-tab="records"><i class="fas fa-file-pdf"></i> Records</a>
+                <a href="#" data-tab="reviews"><i class="fas fa-star"></i> Reviews</a>
+                <a href="#" data-tab="logs"><i class="fas fa-history"></i> Logs</a>
             </nav>
             <div class="sidebar-footer">
-                <div class="user-info"><img class="user-avatar" id="userAvatar" src="" style="display:none;" alt=""><span id="userNameDisplay" style="font-size:0.85rem;">Admin</span></div>
+                <div class="user-info">
+                    <img class="user-avatar" id="userAvatar" src="" style="display:none;" alt="">
+                    <span id="userNameDisplay" style="font-size:0.75rem;">Admin</span>
+                </div>
                 <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </aside>
+
         <main class="main">
-            <div class="desktop-topbar">
-                <button onclick="openBackupModal()" style="background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 12px;display:flex;align-items:center;gap:5px;cursor:pointer;font-size:0.8rem;color:var(--text-secondary);"><i class="fas fa-download"></i> Backup</button>
-                <button class="theme-toggle" id="themeToggleDesktop"><i class="fas fa-moon"></i> <span>Dark</span></button>
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+                    <span style="font-weight:700;font-size:0.8rem;">🛡️ Admin Panel</span>
+                </div>
+                <div class="topbar-right">
+                    <button class="btn-icon" onclick="openBackupModal()"><i class="fas fa-download"></i> Backup</button>
+                    <button class="theme-toggle" id="themeToggleDesktop"><i class="fas fa-moon"></i> Dark</button>
+                </div>
             </div>
-            <div class="mobile-topbar">
-                <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
-                <span style="font-weight:600;font-size:0.85rem;">CampusVault Admin</span>
-                <div style="display:flex;gap:6px;"><button class="theme-toggle" id="themeToggleMobile" style="padding:5px 10px;font-size:0.75rem;"><i class="fas fa-moon"></i></button></div>
-            </div>
+
             <div class="content-area">
                 <div class="metrics-grid" id="metricsContainer"></div>
 
-                <div class="tab-content active" id="tab-storage">
-                    <div class="card">
-                        <div class="card-header"><span><i class="fas fa-box-archive"></i> Active Bookings</span></div>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Check‑in</th><th>Due</th><th>Staff</th><th>Status</th><th>Actions</th></tr></thead><tbody id="storageTableBody"></tbody></table></div>
+                <!-- Security Tab -->
+                <div class="tab-content active" id="tab-security">
+                    <div class="security-bot-panel">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                            <div style="width:40px;height:40px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;"><i class="fas fa-robot"></i></div>
+                            <div style="flex:1;">
+                                <h3 style="font-size:0.9rem;">Guardian AI Sentinel v3.0</h3>
+                                <p style="font-size:0.6rem;opacity:0.7;">Real-time Threat Detection & Auto-Response</p>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:4px;font-size:0.65rem;padding:3px 8px;border-radius:16px;background:rgba(16,185,129,0.2);color:#10b981;">
+                                <span style="width:7px;height:7px;background:#10b981;border-radius:50%;animation:pulse 2s infinite;"></span> Active
+                            </div>
                         </div>
+                        <div class="security-stats-grid">
+                            <div class="security-stat"><div class="stat-value" id="secBlockedToday">0</div><div class="stat-label">Blocked</div></div>
+                            <div class="security-stat"><div class="stat-value" id="secActiveSessions">0</div><div class="stat-label">Sessions</div></div>
+                            <div class="security-stat"><div class="stat-value" id="secFailedLogins">0</div><div class="stat-label">Failed 24h</div></div>
+                            <div class="security-stat"><div class="stat-value" id="secRiskLevel">Low</div><div class="stat-label">Risk</div></div>
+                            <div class="security-stat"><div class="stat-value" id="secThreatsDetected">0</div><div class="stat-label">Threats</div></div>
+                            <div class="security-stat"><div class="stat-value" id="secAutoBlocks">0</div><div class="stat-label">Auto-Blocks</div></div>
+                            <div class="security-stat"><div class="stat-value" id="secDevToolsOpened">0</div><div class="stat-label">DevTools</div></div>
+                            <div class="security-stat"><div class="stat-value" id="secConsoleInjections">0</div><div class="stat-label">Injects</div></div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                            <div><h4 style="font-size:0.7rem;color:#f1f5f9;">⚠️ Threats</h4><div id="activeThreatsList" style="max-height:120px;overflow-y:auto;"></div></div>
+                            <div><h4 style="font-size:0.7rem;color:#f1f5f9;">👥 Sessions</h4><div id="activeSessionsList" style="max-height:120px;overflow-y:auto;"></div></div>
+                        </div>
+                        <div style="max-height:120px;overflow-y:auto;background:rgba(0,0,0,0.2);border-radius:6px;padding:8px;font-size:0.55rem;" id="securityEventLog"></div>
+                        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:12px;">
+                            <button class="bot-btn" onclick="runDeepScan()"><i class="fas fa-search"></i> Scan</button>
+                            <button class="bot-btn" onclick="lockAllSessions()"><i class="fas fa-lock"></i> Lock</button>
+                            <button class="bot-btn" style="color:#ef4444;" onclick="terminateAllSessions()"><i class="fas fa-power-off"></i> Kill</button>
+                            <button class="bot-btn" onclick="exportSecurityReport()"><i class="fas fa-file-export"></i> Report</button>
+                            <button class="bot-btn" onclick="autoDefendToggle()"><i class="fas fa-shield"></i> Auto-Defend</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage Tab -->
+                <div class="tab-content" id="tab-storage">
+                    <div class="card"><div class="card-header"><span><i class="fas fa-box-archive"></i> Active Bookings</span><span class="badge badge-active" id="storageCount">0</span></div>
+                        <div class="desktop-table"><div class="table-responsive"><table><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Category</th><th>Check-in</th><th>Due</th><th>Staff</th><th>Actions</th></tr></thead><tbody id="storageTableBody"></tbody></table></div></div>
                         <div class="mobile-cards"><div id="storageCardsContainer"></div></div>
                     </div>
                 </div>
 
+                <!-- Received Tab -->
                 <div class="tab-content" id="tab-received">
-                    <div class="card">
-                        <div class="card-header"><span><i class="fas fa-box-check"></i> Received Items</span><span class="badge badge-received" id="receivedCount">0</span></div>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>Booking ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Location</th><th>Received By</th><th>Date</th><th>Actions</th></tr></thead><tbody id="receivedTableBody"></tbody></table></div>
-                        </div>
+                    <div class="card"><div class="card-header"><span><i class="fas fa-box-check"></i> Received</span><span class="badge badge-active" id="receivedCount">0</span></div>
+                        <div class="desktop-table"><div class="table-responsive"><table><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Location</th><th>By</th><th>Date</th><th>Act</th></tr></thead><tbody id="receivedTableBody"></tbody></table></div></div>
                         <div class="mobile-cards"><div id="receivedCardsContainer"></div></div>
                     </div>
                 </div>
 
+                <!-- Collected Tab -->
                 <div class="tab-content" id="tab-collected">
-                    <div class="card">
-                        <div class="card-header"><span><i class="fas fa-people-carry"></i> Collected Items</span><span class="badge badge-collected" id="collectedCount">0</span></div>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>Booking ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Collected By</th><th>Date</th><th>Signature</th><th>Actions</th></tr></thead><tbody id="collectedTableBody"></tbody></table></div>
-                        </div>
+                    <div class="card"><div class="card-header"><span><i class="fas fa-people-carry"></i> Collected</span><span class="badge badge-active" id="collectedCount">0</span></div>
+                        <div class="desktop-table"><div class="table-responsive"><table><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>By</th><th>Date</th><th>Act</th></tr></thead><tbody id="collectedTableBody"></tbody></table></div></div>
                         <div class="mobile-cards"><div id="collectedCardsContainer"></div></div>
                     </div>
                 </div>
 
+                <!-- Trash Tab -->
                 <div class="tab-content" id="tab-trash">
-                    <div class="card">
-                        <div class="card-header"><span><i class="fas fa-trash-restore"></i> Trash / Recovery</span><span class="badge badge-deleted" id="trashCount">0</span></div>
-                        <p style="padding:12px;font-size:0.8rem;opacity:0.6;">Deleted items are kept for 30 days before permanent removal.</p>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>Booking ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Deleted By</th><th>Deleted Date</th><th>Actions</th></tr></thead><tbody id="trashTableBody"></tbody></table></div>
-                        </div>
+                    <div class="card"><div class="card-header"><span><i class="fas fa-trash-restore"></i> Trash</span><span class="badge badge-active" id="trashCount">0</span></div>
+                        <div class="desktop-table"><div class="table-responsive"><table><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Deleted By</th><th>Date</th><th>Act</th></tr></thead><tbody id="trashTableBody"></tbody></table></div></div>
                         <div class="mobile-cards"><div id="trashCardsContainer"></div></div>
                     </div>
                 </div>
 
-                <div class="tab-content" id="tab-staff">
+                <!-- Insights Tab -->
+                <div class="tab-content" id="tab-insights">
+                    <div class="insights-grid">
+                        <div class="insight-card"><h4><i class="fas fa-trophy" style="color:#f59e0b;"></i> Top Performers</h4><div id="topPerformersList"></div></div>
+                        <div class="insight-card"><h4><i class="fas fa-clock" style="color:#3b82f6;"></i> Response Time</h4><div id="responseTimeStats"></div></div>
+                        <div class="insight-card"><h4><i class="fas fa-fire" style="color:#ef4444;"></i> Activity Streaks</h4><div id="activityStreaks"></div></div>
+                        <div class="insight-card"><h4><i class="fas fa-balance-scale" style="color:#8b5cf6;"></i> Workload</h4><div id="workloadDistribution"></div></div>
+                    </div>
                     <div class="card">
-                        <div class="card-header"><i class="fas fa-users"></i> Staff Management</div>
-                        <div style="padding:14px;">
-                            <div class="admin-form">
-                                <input type="email" id="newStaffEmail" placeholder="staff@example.com" required>
-                                <button onclick="addStaff()"><i class="fas fa-plus"></i> Add Staff</button>
-                            </div>
-                            <div id="staffList" class="admin-list"></div>
-                        </div>
+                        <div class="card-header"><span><i class="fas fa-users"></i> Staff Performance Matrix</span><button class="btn btn-sm" onclick="exportPerformanceReport()"><i class="fas fa-download"></i> Export</button></div>
+                        <div class="table-responsive"><table><thead><tr><th>Staff</th><th>Role</th><th>Items</th><th>Response</th><th>Accuracy</th><th>Rating</th><th>Streak</th><th>Status</th></tr></thead><tbody id="staffPerformanceTableBody"></tbody></table></div>
                     </div>
                 </div>
 
-                <div class="tab-content" id="tab-pending">
-                    <div class="approval-stats" id="approvalStats" style="display:flex;gap:8px;margin-bottom:12px;"></div>
-                    <div id="pendingApprovalsContainer"></div>
-                </div>
-                <div class="tab-content" id="tab-records">
-                    <div class="card">
-                        <div class="card-header"><span><i class="fas fa-file-pdf"></i> Digital Records</span><span class="badge badge-received" id="recordsCount">0</span></div>
-                        <div class="desktop-table"><div class="table-responsive" id="digitalRecordsTable"></div></div>
-                        <div class="mobile-cards"><div id="digitalRecordsCards"></div></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-reviews">
-                    <div class="card">
-                        <div class="card-header"><span><i class="fas fa-star"></i> Reviews</span><span class="badge" style="background:#fef3c7;color:#92400e;" id="reviewsCount">0</span></div>
-                        <div class="desktop-table"><div class="table-responsive" id="reviewsTable"></div></div>
-                        <div class="mobile-cards"><div id="reviewsCards"></div></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-logs">
-                    <div class="card">
-                        <div class="card-header"><span><i class="fas fa-history"></i> Staff Activity Logs</span></div>
-                        <div class="desktop-table"><div class="table-responsive" id="staffLogsTable"></div></div>
-                        <div class="mobile-cards"><div id="staffLogsCards"></div></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-sells">
-                    <div class="card">
-                        <div class="card-header">Seller Submissions</div>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>ID</th><th>Item</th><th>Condition</th><th>Price</th><th>Location</th><th>Date</th><th>Actions</th></tr></thead><tbody id="sellsTableBody"></tbody></table></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-deliveries">
-                    <div class="card">
-                        <div class="card-header">Deliveries</div>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>ID</th><th>Customer</th><th>Phone</th><th>Service</th><th>Details</th><th>Date</th><th>Actions</th></tr></thead><tbody id="deliveriesTableBody"></tbody></table></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-inquiries">
-                    <div class="card">
-                        <div class="card-header">Inquiries</div>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>ID</th><th>From</th><th>Phone</th><th>Message</th><th>Date</th><th>Actions</th></tr></thead><tbody id="inquiriesTableBody"></tbody></table></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-accommodation">
-                    <div class="card">
-                        <div class="card-header">Housing</div>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Type</th><th>Location</th><th>Budget</th><th>Date</th><th>Actions</th></tr></thead><tbody id="accommodationTableBody"></tbody></table></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-admins">
-                    <div class="card">
-                        <div class="card-header">Admin Emails</div>
-                        <div style="padding:14px;">
-                            <div class="admin-form"><input type="email" id="newAdminEmail" placeholder="admin@example.com"><button onclick="addAdmin()">Add</button></div>
-                            <div id="adminList" class="admin-list"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-products">
-                    <div class="card">
-                        <div class="card-header">Products <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ Add</button></div>
-                        <div class="desktop-table">
-                            <div class="table-responsive"><table><thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Condition</th><th>Price</th><th>Actions</th></tr></thead><tbody id="productsTableBody"></tbody></table></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-insights">
-                    <div class="card">
-                        <div class="card-header"><i class="fas fa-chart-line"></i> Overview</div>
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(110px,1fr)); gap:8px; padding:12px;" id="insightMetricsRow"></div>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-agreement">
-                    <div class="card">
-                        <div class="card-header"><i class="fas fa-file-contract"></i> User Agreement</div>
-                        <div style="padding:14px;">
-                            <textarea id="agreementText" style="width:100%; height:300px; padding:10px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-family:monospace; resize:vertical; font-size:0.8rem;"></textarea>
-                            <div style="margin-top:10px; display:flex; gap:6px;"><button class="btn btn-primary" onclick="saveAgreement()">Save</button><button class="btn btn-outline" onclick="loadAgreement()">Reload</button></div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Staff Tab -->
+                <div class="tab-content" id="tab-staff"><div class="card"><div class="card-header">Staff Management</div><div style="padding:10px;"><div style="display:flex;gap:6px;margin-bottom:10px;"><input type="email" id="newStaffEmail" placeholder="staff@example.com" style="flex:1;padding:7px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text);"><button class="btn btn-primary btn-sm" onclick="addStaff()">Add</button></div><div id="staffList"></div></div></div></div>
+
+                <!-- Pending Tab -->
+                <div class="tab-content" id="tab-pending"><div id="pendingApprovalsContainer"></div></div>
+
+                <!-- Admins Tab -->
+                <div class="tab-content" id="tab-admins"><div class="card"><div class="card-header">Admin Emails</div><div style="padding:10px;"><div style="display:flex;gap:6px;margin-bottom:10px;"><input type="email" id="newAdminEmail" placeholder="admin@example.com" style="flex:1;padding:7px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text);"><button class="btn btn-primary btn-sm" onclick="addAdmin()">Add</button></div><div id="adminList"></div></div></div></div>
+
+                <!-- Records, Reviews, Logs Tabs -->
+                <div class="tab-content" id="tab-records"><div class="card"><div class="card-header"><span>Records</span><button class="btn btn-sm btn-delete" onclick="trashAllRecords()">Clear</button></div><div class="table-responsive" id="digitalRecordsTable"></div></div></div>
+                <div class="tab-content" id="tab-reviews"><div class="card"><div class="card-header"><span>Reviews</span><button class="btn btn-sm btn-delete" onclick="trashAllReviews()">Clear</button></div><div class="table-responsive" id="reviewsTable"></div></div></div>
+                <div class="tab-content" id="tab-logs"><div class="card"><div class="card-header"><span>Logs</span><button class="btn btn-sm btn-delete" onclick="trashAllLogs()">Clear</button></div><div class="table-responsive" id="staffLogsTable"></div></div></div>
             </div>
         </main>
     </div>
 
-    <!-- Collection Modal -->
-    <div class="modal-overlay" id="collectionModal" style="display:none;" onclick="closeModalBg(event,'collectionModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 style="margin-bottom:12px;"><i class="fas fa-people-carry"></i> Customer Collection / Return Items</h3>
-            <form id="collectionForm" onsubmit="submitCollection(event)">
-                <input type="hidden" id="collectBookingKey">
-                <div class="form-group"><label>Booking ID</label><input type="text" id="collectBookingId" readonly style="background:var(--bg);font-family:monospace;"></div>
-                <div class="form-group"><label>Customer Name</label><input type="text" id="collectCustomerName" readonly style="background:var(--bg);"></div>
-                <div class="form-group"><label>Customer Phone</label><input type="text" id="collectCustomerPhone" readonly style="background:var(--bg);"></div>
-                <div class="form-group"><label>Items to Return</label><input type="text" id="collectItems" readonly style="background:var(--bg);"></div>
-                <div class="form-group"><label>Collection Notes</label><textarea id="collectNotes" rows="2" placeholder="Any notes about the collection..."></textarea></div>
-                <div class="form-group"><label>Customer Signature</label><canvas id="collectSignatureCanvas" style="border:2px solid var(--border);border-radius:8px;background:#fff;width:100%;height:120px;touch-action:none;"></canvas><button type="button" class="btn btn-outline btn-sm" onclick="clearCollectSignature()" style="margin-top:4px;">Clear Signature</button></div>
-                <div class="form-group"><label><input type="checkbox" id="collectSendReceipt"> Generate collection receipt</label></div>
-                <div class="flex-between"><button type="button" class="btn btn-outline" onclick="closeModal('collectionModal')">Cancel</button><button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Confirm Collection</button></div>
-            </form>
-        </div>
-    </div>
+    <!-- Modals -->
+    <div class="modal-overlay" id="receiveItemsModal"><div class="modal-content"><h3>Receive Items</h3><form onsubmit="submitReceivedItems(event)"><input type="hidden" id="receiveBookingKey"><div class="form-group"><label>Booking ID</label><input type="text" id="receiveBookingId" readonly></div><div class="form-group"><label>Customer</label><input type="text" id="receiveCustomerName" readonly></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"><div class="form-group"><label>Item Count *</label><input type="number" id="receiveItemCount" required min="1"></div><div class="form-group"><label>Category</label><select id="receiveCategory"><option>Electronics</option><option>Furniture</option><option>Clothing</option><option>Books</option><option>Other</option></select></div></div><div class="form-group"><label>Description *</label><textarea id="receiveDescription" rows="2" required></textarea></div><div style="display:flex;gap:6px;margin-top:10px;"><button type="button" class="btn btn-outline" onclick="closeModal('receiveItemsModal')">Cancel</button><button type="submit" class="btn btn-success">Confirm</button></div></form></div></div>
+    <div class="modal-overlay" id="collectionModal"><div class="modal-content"><h3>Collect Items</h3><form onsubmit="submitCollection(event)"><input type="hidden" id="collectBookingKey"><div class="form-group"><label>Booking ID</label><input type="text" id="collectBookingId" readonly></div><div class="form-group"><label>Customer</label><input type="text" id="collectCustomerName" readonly></div><div class="form-group"><label>Items</label><input type="text" id="collectItems" readonly></div><div class="form-group"><label>Notes</label><textarea id="collectNotes" rows="2"></textarea></div><div style="display:flex;gap:6px;margin-top:10px;"><button type="button" class="btn btn-outline" onclick="closeModal('collectionModal')">Cancel</button><button type="submit" class="btn btn-success">Confirm</button></div></form></div></div>
+    <div class="modal-overlay" id="backupModal"><div class="modal-content"><h3>Backup</h3><div class="form-group"><label>Format</label><select id="backupFormat"><option value="excel">Excel</option><option value="pdf">PDF</option></select></div><div style="display:flex;gap:6px;margin-top:10px;"><button class="btn btn-outline" onclick="closeModal('backupModal')">Cancel</button><button class="btn btn-primary" onclick="startBackup()">Generate</button></div></div></div>
 
-    <!-- Receive Items Modal -->
-    <div class="modal-overlay" id="receiveItemsModal" style="display:none;" onclick="closeModalBg(event,'receiveItemsModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 style="margin-bottom:12px;"><i class="fas fa-box-check"></i> Record & Move to Received</h3>
-            <form id="receiveItemsForm" onsubmit="submitReceivedItems(event)">
-                <input type="hidden" id="receiveBookingKey">
-                <div class="form-group"><label>Booking ID</label><input type="text" id="receiveBookingId" readonly style="background:var(--bg);font-family:monospace;"></div>
-                <div class="form-group"><label>Customer</label><input type="text" id="receiveCustomerName" readonly style="background:var(--bg);"></div>
-                <div class="form-row">
-                    <div class="form-group"><label>Item Count *</label><input type="number" id="receiveItemCount" required min="1"></div>
-                    <div class="form-group"><label>Category</label><select id="receiveCategory"><option>Electronics</option><option>Furniture</option><option>Clothing</option><option>Books</option><option>Kitchenware</option><option>Sports</option><option>Luggage</option><option>Other</option></select></div>
-                </div>
-                <div class="form-group"><label>Description *</label><textarea id="receiveDescription" rows="2" required></textarea></div>
-                <div class="form-row">
-                    <div class="form-group"><label>Condition</label><select id="receiveCondition"><option>Good</option><option>Fair</option><option>Excellent</option><option>Needs Attention</option></select></div>
-                    <div class="form-group"><label>Storage Location</label><input type="text" id="receiveLocation" placeholder="e.g., Shelf A3"></div>
-                </div>
-                <div class="form-group"><label>Tags</label>
-                    <div style="display:flex;gap:6px;"><input type="text" id="receiveTagInput" placeholder="Add tag..." style="flex:1;"><button type="button" class="btn btn-outline btn-sm" onclick="addReceiveTag()">+</button></div>
-                    <div class="tag-input-container" id="receiveTagsContainer"></div>
-                </div>
-                <div class="flex-between"><button type="button" class="btn btn-outline" onclick="closeModal('receiveItemsModal')">Cancel</button><button type="submit" class="btn btn-success"><i class="fas fa-arrow-right"></i> Move to Received</button></div>
-            </form>
-        </div>
-    </div>
+<script>
+// Anti-Console & Anti-DevTools Protection
+(function() {
+    let devToolsOpen = false, consoleInjectionCount = 0;
+    setInterval(function() {
+        const start = performance.now(); debugger; const end = performance.now();
+        if (end - start > 100 && !devToolsOpen) {
+            devToolsOpen = true;
+            if (typeof logSecurityEvent === 'function') logSecurityEvent('devtools_detected', 'Developer tools opened', 'critical');
+            const counter = document.getElementById('secDevToolsOpened');
+            if (counter) counter.textContent = parseInt(counter.textContent) + 1;
+        } else { devToolsOpen = false; }
+    }, 1000);
 
-    <div class="modal-overlay" id="approvalDetailModal" style="display:none;" onclick="closeModalBg(event,'approvalDetailModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="approvalDetailTitle">Details</h3>
-            <div id="approvalDetailBody"></div>
-            <div class="flex-between" id="approvalDetailActions"></div>
-        </div>
-    </div>
-    <div class="modal-overlay" id="productModal" style="display:none;" onclick="closeModalBg(event,'productModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3>Add Product</h3>
-            <form onsubmit="saveProduct(event)"><input type="hidden" id="editProductId">
-                <div class="form-group"><label>Name</label><input id="prodName" required></div>
-                <div class="form-group"><label>Category</label><select id="prodCategory"><option>Phones</option><option>Laptops</option><option>Furniture</option><option>Other</option></select></div>
-                <div class="form-group"><label>Condition</label><select id="prodCondition"><option>New</option><option>Used</option></select></div>
-                <div class="form-group"><label>Price (KES)</label><input type="number" id="prodPrice" required></div>
-                <div class="form-group"><label>Image URL</label><input id="prodImageUrl"></div>
-                <div class="flex-between"><button type="button" class="btn btn-outline" onclick="closeModal('productModal')">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
-            </form>
-        </div>
-    </div>
-    <div class="modal-overlay" id="backupModal" style="display:none;" onclick="closeModalBg(event,'backupModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3>Backup</h3>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"><label><input type="checkbox" checked value="bookings"> Bookings</label><label><input type="checkbox" checked value="received"> Received</label><label><input type="checkbox" checked value="collected"> Collected</label></div>
-            <div style="margin-bottom:12px;"><select id="backupFormat"><option value="pdf">PDF</option><option value="excel">Excel</option></select></div>
-            <div class="flex-between"><button class="btn btn-outline" onclick="closeModal('backupModal')">Cancel</button><button class="btn btn-primary" onclick="startBackup()">Generate</button></div>
-        </div>
-    </div>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCuCd89dawEHOGrKmcCimw3pBErKYJU_VI",
-            authDomain: "campusvault-connect.firebaseapp.com",
-            databaseURL: "https://campusvault-connect-default-rtdb.firebaseio.com",
-            projectId: "campusvault-connect",
-            storageBucket: "campusvault-connect.firebasestorage.app",
-            messagingSenderId: "185904648786",
-            appId: "1:185904648786:web:390764d552d388b6e2058b"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(),
-            db = firebase.database();
-        const adminsRef = db.ref('admins'),
-            staffRef = db.ref('staff'),
-            bookingsRef = db.ref('bookings');
-        const sellsRef = db.ref('sells'),
-            deliveriesRef = db.ref('deliveryRequests'),
-            inquiriesRef = db.ref('inquiries');
-        const accommodationRef = db.ref('accommodationRequests'),
-            productsRef = db.ref('products');
-        const pendingApprovalsRef = db.ref('pending_approvals'),
-            digitalRecordsRef = db.ref('digital_records');
-        const reviewsRef = db.ref('reviews'),
-            staffLogsRef = db.ref('staff_logs'),
-            settingsRef = db.ref('settings');
-        const receivedItemsRef = db.ref('received_items'),
-            collectedItemsRef = db.ref('collected_items');
-        const trashRef = db.ref('trash');
-
-        let currentUser = null,
-            allBookings = [],
-            productsData = {};
-        let allSells = [],
-            allDeliveries = [],
-            allInquiries = [],
-            allAccommodation = [],
-            allPendingApprovals = [];
-        let allReceivedItems = [],
-            allCollectedItems = [],
-            allTrashItems = [];
-        let receiveTags = [];
-
-        function setTheme(d) {
-            document.body.classList.toggle('dark', d);
-            localStorage.setItem('adminTheme', d ? 'dark' : 'light');
-            document.querySelectorAll('.theme-toggle i').forEach(i => i.className = d ? 'fas fa-sun' : 'fas fa-moon');
-        }
-        setTheme(localStorage.getItem('adminTheme') !== 'light');
-        document.getElementById('themeToggleDesktop').onclick = () => setTheme(!document.body.classList.contains('dark'));
-        document.getElementById('themeToggleMobile').onclick = () => setTheme(!document.body.classList.contains('dark'));
-
-        function showToast(msg, icon = '✅') {
-            const t = document.createElement('div');
-            t.className = 'toast';
-            t.innerHTML = icon + ' ' + msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3500);
-        }
-
-        function closeModal(id) {
-            const el = document.getElementById(id);
-            if (el) el.style.display = 'none';
-        }
-
-        function closeModalBg(e, id) {
-            if (e.target === e.currentTarget) closeModal(id);
-        }
-
-        function logStaffAction(action, bookingId, details) {
-            staffLogsRef.push({
-                staffEmail: currentUser?.email || 'unknown',
-                action,
-                bookingId: bookingId || null,
-                details: details || '',
-                timestamp: new Date().toISOString()
-            });
-        }
-
-        document.getElementById('googleSignInBtn').onclick = () => {
-            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(r => {
-                adminsRef.child(r.user.email.replace(/\./g, ',')).once('value').then(s => {
-                    if (s.exists()) showDashboard(r.user);
-                    else {
-                        auth.signOut();
-                        document.getElementById('loginError').style.display = 'block';
-                    }
-                });
-            });
-        };
-
-        function showDashboard(user) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboard').classList.add('active');
-            currentUser = user;
-            document.getElementById('userNameDisplay').textContent = user.displayName || user.email;
-            if (user.photoURL) {
-                document.getElementById('userAvatar').src = user.photoURL;
-                document.getElementById('userAvatar').style.display = 'block';
+    const originalConsole = { log: console.log, warn: console.warn, error: console.error };
+    Object.keys(originalConsole).forEach(method => {
+        console[method] = function(...args) {
+            if (args.length && typeof args[0] === 'string') {
+                const suspicious = ['inject','hack','bypass','override','delete','drop','alter','firebase','database','auth'];
+                if (suspicious.some(p => args.join(' ').toLowerCase().includes(p))) {
+                    consoleInjectionCount++;
+                    if (typeof logSecurityEvent === 'function') logSecurityEvent('console_injection', 'Suspicious console activity', 'critical');
+                    const counter = document.getElementById('secConsoleInjections');
+                    if (counter) counter.textContent = consoleInjectionCount;
+                }
             }
-            logStaffAction('admin_login', null, 'Admin logged in');
-            loadDashboard();
-        }
-
-        function logout() {
-            if (currentUser) logStaffAction('admin_logout', null, 'Admin logged out');
-            auth.signOut().then(() => location.reload());
-        }
-
-        const sidebar = document.getElementById('sidebar'),
-            overlay = document.getElementById('sidebarOverlay');
-        document.getElementById('hamburgerBtn').onclick = () => {
-            sidebar.classList.add('open');
-            overlay.classList.add('active');
+            originalConsole[method].apply(console, args);
         };
-        window.closeSidebar = () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        };
-        document.querySelectorAll('.sidebar nav a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                const tabEl = document.getElementById(`tab-${this.dataset.tab}`);
-                if (tabEl) tabEl.classList.add('active');
-                document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
-                this.classList.add('active');
-                if (window.innerWidth <= 768) closeSidebar();
-                if (this.dataset.tab === 'insights') renderInsights();
-                if (this.dataset.tab === 'agreement') loadAgreement();
-            });
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key === 'U')) {
+            if (typeof logSecurityEvent === 'function') logSecurityEvent('devtools_shortcut', 'DevTools shortcut detected', 'critical');
+            e.preventDefault();
+        }
+    });
+})();
+
+// Firebase Init
+const firebaseConfig = {
+    apiKey: "AIzaSyCuCd89dawEHOGrKmcCimw3pBErKYJU_VI",
+    authDomain: "campusvault-connect.firebaseapp.com",
+    databaseURL: "https://campusvault-connect-default-rtdb.firebaseio.com",
+    projectId: "campusvault-connect",
+    storageBucket: "campusvault-connect.firebasestorage.app",
+    messagingSenderId: "185904648786",
+    appId: "1:185904648786:web:390764d552d388b6e2058b"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(), db = firebase.database();
+
+const adminsRef = db.ref('admins'), staffRef = db.ref('staff'), bookingsRef = db.ref('bookings');
+const pendingApprovalsRef = db.ref('pending_approvals'), digitalRecordsRef = db.ref('digital_records');
+const reviewsRef = db.ref('reviews'), staffLogsRef = db.ref('staff_logs');
+const receivedItemsRef = db.ref('received_items'), collectedItemsRef = db.ref('collected_items'), trashRef = db.ref('trash');
+const securityRef = db.ref('security'), blockedIPsRef = db.ref('blocked_ips');
+const securityLogsRef = db.ref('security_logs'), staffStatusRef = db.ref('staff_status');
+
+let currentUser = null, autoDefendActive = true;
+let allBookings = [], allReceivedItems = [], allCollectedItems = [], allTrashItems = [];
+let allPendingApprovals = [], allStaffList = [], staffPerformanceData = {};
+
+// Theme
+function setTheme(d) { document.body.classList.toggle('dark', d); localStorage.setItem('adminTheme', d ? 'dark' : 'light'); }
+setTheme(localStorage.getItem('adminTheme') !== 'light');
+document.getElementById('themeToggleDesktop').onclick = () => setTheme(!document.body.classList.contains('dark'));
+
+function showToast(msg, icon = '✅') {
+    const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = icon + ' ' + msg;
+    document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+
+function openModal(id) { document.getElementById(id)?.classList.add('show'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('show'); }
+window.closeModal = closeModal;
+
+function logSecurityEvent(type, details, severity = 'info') {
+    securityLogsRef.push({ type, details, severity, timestamp: new Date().toISOString(), adminEmail: currentUser?.email || 'system' });
+    if (autoDefendActive && severity === 'critical') autoBlock(details);
+}
+
+function autoBlock(details) {
+    const target = details?.match(/[\w.]+@[\w.]+/) || details?.match(/\d+\.\d+\.\d+\.\d+/) || ['auto-detected'];
+    blockedIPsRef.push({ reason: 'Auto-blocked by AI', target: target[0], blockedAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 86400000).toISOString() });
+    const counter = document.getElementById('secAutoBlocks');
+    if (counter) counter.textContent = parseInt(counter.textContent) + 1;
+}
+
+window.autoDefendToggle = () => { autoDefendActive = !autoDefendActive; showToast(`Auto-Defend ${autoDefendActive ? 'ON' : 'OFF'}`, autoDefendActive ? '🛡️' : '⚠️'); };
+window.runDeepScan = async () => {
+    const threats = [];
+    const sessionsSnap = await staffStatusRef.once('value');
+    const sessions = sessionsSnap.val() || {};
+    Object.entries(sessions).forEach(([key, data]) => {
+        if (data.failedAttempts > 3) threats.push({ type: 'Brute Force', target: key.replace(/,/g, '.'), severity: 'critical' });
+    });
+    document.getElementById('secThreatsDetected').textContent = threats.length;
+    document.getElementById('activeThreatsList').innerHTML = threats.length ? threats.map(t => `<div style="padding:6px;margin:2px 0;background:rgba(239,68,68,0.1);border-left:3px solid #ef4444;font-size:0.7rem;">${t.type}: ${t.target}</div>`).join('') : '<div class="empty-state"><p style="color:#94a3b8;">✅ No threats</p></div>';
+};
+window.lockAllSessions = () => { if (confirm('Lock all?')) { staffStatusRef.once('value').then(s => { Object.keys(s.val() || {}).forEach(k => staffStatusRef.child(k).update({ online: false, locked: true })); }); showToast('Locked!', '🔒'); } };
+window.terminateAllSessions = () => { if (confirm('TERMINATE all?')) { staffStatusRef.remove(); showToast('Terminated!', '☠️'); } };
+window.exportSecurityReport = () => { securityLogsRef.limitToLast(500).once('value').then(s => { const logs = []; s.forEach(c => logs.unshift(c.val())); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Time','Type','Details']].concat(logs.map(l => [l.timestamp,l.type,l.details]))), 'Security'); XLSX.writeFile(wb, `security_${Date.now()}.xlsx`); showToast('Exported!'); }); };
+window.kickSession = (key) => { if (confirm('Kick?')) { staffStatusRef.child(key).update({ online: false, kicked: true }); showToast('Kicked'); } };
+
+// Auth
+document.getElementById('googleSignInBtn').onclick = () => {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(r => {
+        adminsRef.child(r.user.email.replace(/\./g, ',')).once('value').then(s => {
+            if (s.exists()) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                currentUser = r.user;
+                document.getElementById('userNameDisplay').textContent = r.user.displayName || r.user.email;
+                if (r.user.photoURL) { document.getElementById('userAvatar').src = r.user.photoURL; document.getElementById('userAvatar').style.display = 'block'; }
+                logStaffAction('admin_login');
+                updateAdminOnlineStatus();
+                loadAllData();
+            } else { auth.signOut(); document.getElementById('loginError').style.display = 'block'; }
         });
+    }).catch(() => { document.getElementById('loginError').style.display = 'block'; });
+};
 
-        // ============ STAFF MANAGEMENT (SYNCED WITH STAFF PORTAL) ============
-        async function loadStaff() {
-            const snap = await staffRef.once('value');
-            const staff = snap.val() || {};
-            document.getElementById('staffList').innerHTML = Object.keys(staff).length ?
-                Object.keys(staff).map(k => {
-                    const staffData = staff[k];
-                    const email = k.replace(/\,/g, '.');
-                    const isAdmin = staffData.isAdmin === true || staffData.role === 'admin';
-                    const role = isAdmin ? 'Admin' : 'Staff';
-                    const addedAt = staffData.addedAt ? new Date(staffData.addedAt).toLocaleDateString() :
-                        'Unknown';
-                    const addedBy = staffData.addedBy ? ` by ${staffData.addedBy.split('@')[0]}` : '';
-                    return `<div class="admin-item">
-                    <div style="flex:1;">
-                        <div style="font-weight:600;">${email}</div>
-                        <div style="font-size:0.75rem; color:var(--text-secondary);">
-                            <span class="badge ${isAdmin ? 'badge-active' : 'badge-received'}">${role}</span>
-                            <span style="margin-left:8px;">Added: ${addedAt}${addedBy}</span>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:4px;">
-                        <button class="action-btn ${isAdmin ? 'demote-btn' : 'promote-btn'}" 
-                            onclick="toggleStaffRole('${k}', ${!isAdmin})" 
-                            title="${isAdmin ? 'Demote to Staff' : 'Promote to Admin'}">
-                            ${isAdmin ? '⏬ Demote' : '⏫ Promote'}
-                        </button>
-                        <button class="action-btn delete" onclick="removeStaff('${k}')" title="Remove">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>`;
-                }).join('') :
-                '<div class="empty-state"><i class="fas fa-users"></i><p>No staff members added yet</p></div>';
+function logout() { if (currentUser) staffStatusRef.child(currentUser.email.replace(/\./g, ',')).remove(); auth.signOut().then(() => location.reload()); }
+function updateAdminOnlineStatus() {
+    if (!currentUser) return;
+    const key = currentUser.email.replace(/\./g, ',');
+    staffStatusRef.child(key).set({ online: true, lastSeen: firebase.database.ServerValue.TIMESTAMP, email: currentUser.email });
+    staffStatusRef.child(key).onDisconnect().set({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+}
+
+// Staff Management
+async function loadStaff() {
+    const snap = await staffRef.once('value');
+    const staff = snap.val() || {};
+    allStaffList = Object.entries(staff).map(([k, d]) => ({ email: k.replace(/,/g, '.'), isAdmin: d.isAdmin }));
+    document.getElementById('staffList').innerHTML = Object.keys(staff).length ? Object.entries(staff).map(([k, d]) => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:6px;margin-bottom:4px;"><span style="font-size:0.75rem;">${k.replace(/,/g, '.')}</span><div style="display:flex;gap:4px;"><button class="action-btn ${d.isAdmin ? 'btn-delete' : ''}" onclick="toggleStaffRole('${k}',${!d.isAdmin})">${d.isAdmin ? 'Demote' : 'Promote'}</button><button class="action-btn btn-delete" onclick="removeStaff('${k}')"><i class="fas fa-trash"></i></button></div></div>`).join('') : '<div class="empty-state"><p>No staff</p></div>';
+}
+window.addStaff = async () => {
+    const email = document.getElementById('newStaffEmail').value.trim();
+    if (!email) return;
+    const key = email.replace(/\./g, ',');
+    if ((await staffRef.child(key).once('value')).exists()) { showToast('Already exists'); return; }
+    await staffRef.child(key).set({ addedAt: new Date().toISOString(), isAdmin: false });
+    document.getElementById('newStaffEmail').value = '';
+    logStaffAction('add_staff', null, email);
+    showToast('Staff added!');
+};
+window.toggleStaffRole = async (key, makeAdmin) => { await staffRef.child(key).update({ isAdmin: makeAdmin }); showToast('Updated!'); };
+window.removeStaff = async (key) => { if (confirm('Remove?')) { await staffRef.child(key).remove(); showToast('Removed!'); } };
+
+// Booking Actions
+window.openReceiveItemsModal = (key) => {
+    const b = allBookings.find(x => x._key === key);
+    if (!b) return;
+    document.getElementById('receiveBookingKey').value = key;
+    document.getElementById('receiveBookingId').value = b.bookingId || key.slice(-6);
+    document.getElementById('receiveCustomerName').value = b.name || '';
+    openModal('receiveItemsModal');
+};
+window.submitReceivedItems = async (e) => {
+    e.preventDefault();
+    const key = document.getElementById('receiveBookingKey').value;
+    await receivedItemsRef.push({
+        bookingKey: key, bookingId: document.getElementById('receiveBookingId').value,
+        customerName: document.getElementById('receiveCustomerName').value,
+        itemCount: parseInt(document.getElementById('receiveItemCount').value),
+        category: document.getElementById('receiveCategory').value,
+        description: document.getElementById('receiveDescription').value,
+        receivedBy: currentUser?.email, timestamp: new Date().toISOString()
+    });
+    await bookingsRef.child(key).update({ status: 'received', received_at: new Date().toISOString() });
+    logStaffAction('items_received', key);
+    closeModal('receiveItemsModal');
+    showToast('Items received!');
+};
+
+window.openCollectionModal = (key) => {
+    const item = allReceivedItems.find(r => r.bookingKey === key);
+    if (!item) return;
+    document.getElementById('collectBookingKey').value = key;
+    document.getElementById('collectBookingId').value = item.bookingId || key.slice(-6);
+    document.getElementById('collectCustomerName').value = item.customerName || '';
+    document.getElementById('collectItems').value = `${item.itemCount} ${item.category || ''}`;
+    openModal('collectionModal');
+};
+window.submitCollection = async (e) => {
+    e.preventDefault();
+    const key = document.getElementById('collectBookingKey').value;
+    await collectedItemsRef.push({
+        bookingKey: key, bookingId: document.getElementById('collectBookingId').value,
+        customerName: document.getElementById('collectCustomerName').value,
+        items: document.getElementById('collectItems').value,
+        notes: document.getElementById('collectNotes').value,
+        collectedBy: currentUser?.email, timestamp: new Date().toISOString()
+    });
+    await bookingsRef.child(key).update({ status: 'collected', collected_at: new Date().toISOString() });
+    const rItem = allReceivedItems.find(r => r.bookingKey === key);
+    if (rItem) await receivedItemsRef.child(rItem.key).remove();
+    logStaffAction('items_collected', key);
+    closeModal('collectionModal');
+    showToast('Collected!');
+};
+
+// Trash Operations
+window.deleteBooking = (key) => {
+    if (!confirm('Move to trash?')) return;
+    const b = allBookings.find(x => x._key === key);
+    if (!b) return;
+    trashRef.push({ bookingKey: key, bookingId: b.bookingId || key.slice(-6), customerName: b.name || '', items: `${b.itemCount} ${b.category || ''}`, deletedBy: currentUser?.email, deletedAt: new Date().toISOString() });
+    bookingsRef.child(key).remove();
+    showToast('Moved to trash');
+};
+window.restoreBooking = async (trashKey) => {
+    if (!confirm('Restore?')) return;
+    const item = allTrashItems.find(t => t.key === trashKey);
+    if (!item) return;
+    await bookingsRef.child(item.bookingKey).set({ status: 'active', restored_at: new Date().toISOString() });
+    await trashRef.child(trashKey).remove();
+    showToast('Restored!');
+};
+window.permanentlyDelete = (trashKey) => { if (confirm('Delete permanently?')) { trashRef.child(trashKey).remove(); showToast('Deleted'); } };
+window.emptyTrash = () => { if (confirm('Empty trash?')) { allTrashItems.forEach(t => trashRef.child(t.key).remove()); showToast('Emptied'); } };
+window.trashAllReceived = () => { if (confirm('Trash all received?')) { allReceivedItems.forEach(i => { trashRef.push({ bookingKey: i.bookingKey, bookingId: i.bookingId, customerName: i.customerName, items: `${i.itemCount} ${i.category || ''}`, deletedBy: currentUser?.email, deletedAt: new Date().toISOString() }); receivedItemsRef.child(i.key).remove(); }); showToast('Trashed'); } };
+window.trashAllCollected = () => { if (confirm('Trash all collected?')) { allCollectedItems.forEach(i => { trashRef.push({ bookingKey: i.bookingKey, bookingId: i.bookingId, customerName: i.customerName, items: i.items, deletedBy: currentUser?.email, deletedAt: new Date().toISOString() }); collectedItemsRef.child(i.key).remove(); }); showToast('Trashed'); } };
+window.trashAllRecords = () => { if (confirm('Delete all records?')) { digitalRecordsRef.remove(); showToast('Deleted'); } };
+window.trashAllReviews = () => { if (confirm('Delete all reviews?')) { reviewsRef.remove(); showToast('Deleted'); } };
+window.trashAllLogs = () => { if (confirm('Clear all logs?')) { staffLogsRef.remove(); showToast('Cleared'); } };
+
+function logStaffAction(action, bookingId, details) { staffLogsRef.push({ staffEmail: currentUser?.email || 'unknown', action, bookingId: bookingId || null, details: details || '', timestamp: new Date().toISOString() }); }
+
+// Rendering Functions
+function renderStorageTable(bookings) {
+    const active = bookings.filter(b => b.status !== 'received' && b.status !== 'collected');
+    document.getElementById('storageCount').textContent = active.length;
+    document.getElementById('storageTableBody').innerHTML = active.length ? active.map(b => `<tr><td><strong>${b.bookingId || b._key?.slice(-6)}</strong></td><td>${b.name || '—'}</td><td>${b.phone || '—'}</td><td>${b.itemCount || '?'} ${b.category || ''}</td><td>${b.category || '—'}</td><td>${b.checkIn || '—'}</td><td>${b.collect || '—'}</td><td>${b.assigned_to ? b.assigned_to.split('@')[0] : '<span style="color:var(--danger);">Unassigned</span>'}</td><td><button class="action-btn btn-receive" onclick="openReceiveItemsModal('${b._key}')">Recv</button><button class="action-btn btn-reassign" onclick="openReassignModal('${b._key}')"><i class="fas fa-user-pen"></i></button><button class="action-btn btn-delete" onclick="deleteBooking('${b._key}')"><i class="fas fa-trash"></i></button></td></tr>`).join('') : '<tr><td colspan="9"><div class="empty-state"><p>No active bookings</p></div></td></tr>';
+    document.getElementById('storageCardsContainer').innerHTML = active.length ? active.map(b => `<div class="data-card"><div class="card-row"><span class="card-label">ID</span><span><strong>${b.bookingId || b._key?.slice(-6)}</strong></span></div><div class="card-row"><span class="card-label">Customer</span><span>${b.name || '—'}</span></div><div class="card-row"><span class="card-label">Staff</span><span>${b.assigned_to ? b.assigned_to.split('@')[0] : 'Unassigned'}</span></div><div class="card-actions"><button class="action-btn btn-receive" onclick="openReceiveItemsModal('${b._key}')">Receive</button><button class="action-btn btn-reassign" onclick="openReassignModal('${b._key}')">Reassign</button><button class="action-btn btn-delete" onclick="deleteBooking('${b._key}')">Delete</button></div></div>`).join('') : '<div class="empty-state"><p>No active bookings</p></div>';
+}
+
+function renderReceivedTable(items) {
+    document.getElementById('receivedCount').textContent = items.length;
+    document.getElementById('receivedBadge').textContent = items.length;
+    document.getElementById('receivedBadge').style.display = items.length ? 'inline-block' : 'none';
+    document.getElementById('receivedTableBody').innerHTML = items.length ? items.map(r => `<tr><td><strong>${r.bookingId || r.bookingKey?.slice(-6)}</strong></td><td>${r.customerName || '—'}</td><td>${r.itemCount} ${r.category || ''}</td><td>${r.location || '—'}</td><td>${(r.receivedBy || '').split('@')[0]}</td><td>${new Date(r.timestamp).toLocaleDateString()}</td><td><button class="action-btn btn-collect" onclick="openCollectionModal('${r.bookingKey}')">Collect</button></td></tr>`).join('') : '<tr><td colspan="7"><div class="empty-state"><p>No items</p></div></td></tr>';
+    document.getElementById('receivedCardsContainer').innerHTML = items.length ? items.map(r => `<div class="data-card"><div class="card-row"><span class="card-label">ID</span><span><strong>${r.bookingId || r.bookingKey?.slice(-6)}</strong></span></div><div class="card-row"><span class="card-label">Customer</span><span>${r.customerName || '—'}</span></div><div class="card-actions"><button class="action-btn btn-collect" onclick="openCollectionModal('${r.bookingKey}')">Collect</button></div></div>`).join('') : '<div class="empty-state"><p>No items</p></div>';
+}
+
+function renderCollectedTable(items) {
+    document.getElementById('collectedCount').textContent = items.length;
+    document.getElementById('collectedBadge').textContent = items.length;
+    document.getElementById('collectedBadge').style.display = items.length ? 'inline-block' : 'none';
+    document.getElementById('collectedTableBody').innerHTML = items.length ? items.map(c => `<tr><td><strong>${c.bookingId || c.bookingKey?.slice(-6)}</strong></td><td>${c.customerName || '—'}</td><td>${c.items || '—'}</td><td>${(c.collectedBy || '').split('@')[0]}</td><td>${new Date(c.timestamp).toLocaleDateString()}</td><td><button class="action-btn btn-receive" onclick="viewDetail('${c.key}')">View</button></td></tr>`).join('') : '<tr><td colspan="6"><div class="empty-state"><p>No items</p></div></td></tr>';
+    document.getElementById('collectedCardsContainer').innerHTML = items.length ? items.map(c => `<div class="data-card"><div class="card-row"><span class="card-label">ID</span><span><strong>${c.bookingId || c.bookingKey?.slice(-6)}</strong></span></div><div class="card-row"><span class="card-label">Customer</span><span>${c.customerName || '—'}</span></div><div class="card-actions"><button class="action-btn btn-receive" onclick="viewDetail('${c.key}')">View</button></div></div>`).join('') : '<div class="empty-state"><p>No items</p></div>';
+}
+
+function renderTrashTable(items) {
+    document.getElementById('trashCount').textContent = items.length;
+    document.getElementById('trashBadge').textContent = items.length;
+    document.getElementById('trashBadge').style.display = items.length ? 'inline-block' : 'none';
+    document.getElementById('trashTableBody').innerHTML = items.length ? items.map(t => `<tr><td><strong>${t.bookingId || t.bookingKey?.slice(-6)}</strong></td><td>${t.customerName || '—'}</td><td>${t.items || '—'}</td><td>${(t.deletedBy || '').split('@')[0]}</td><td>${new Date(t.deletedAt).toLocaleDateString()}</td><td><button class="action-btn btn-restore" onclick="restoreBooking('${t.key}')">Restore</button><button class="action-btn btn-delete" onclick="permanentlyDelete('${t.key}')">Del</button></td></tr>`).join('') : '<tr><td colspan="6"><div class="empty-state"><p>Empty</p></div></td></tr>';
+    document.getElementById('trashCardsContainer').innerHTML = items.length ? items.map(t => `<div class="data-card" style="border-left:3px solid var(--danger);"><div class="card-row"><span class="card-label">ID</span><span><strong>${t.bookingId || t.bookingKey?.slice(-6)}</strong></span></div><div class="card-row"><span class="card-label">Customer</span><span>${t.customerName || '—'}</span></div><div class="card-actions"><button class="action-btn btn-restore" onclick="restoreBooking('${t.key}')">Restore</button><button class="action-btn btn-delete" onclick="permanentlyDelete('${t.key}')">Delete</button></div></div>`).join('') : '<div class="empty-state"><p>Empty</p></div>';
+}
+window.viewDetail = (key) => { const item = allCollectedItems.find(c => c.key === key); if (item) alert(`Collected\nBooking: ${item.bookingId}\nCustomer: ${item.customerName}\nItems: ${item.items}`); };
+
+// Staff Performance Insights
+function calculateStaffPerformance() {
+    const performance = {};
+    allStaffList.forEach(staff => {
+        performance[staff.email] = { email: staff.email, role: staff.isAdmin ? 'Admin' : 'Staff', itemsReceived: 0, itemsCollected: 0, totalItems: 0, avgResponseTime: 0, accuracy: 100, activeDays: new Set(), streak: 0, rating: 'N/A', errors: 0, status: 'inactive' };
+    });
+    allReceivedItems.forEach(item => {
+        if (item.receivedBy && performance[item.receivedBy]) {
+            performance[item.receivedBy].itemsReceived++;
+            performance[item.receivedBy].totalItems += item.itemCount || 0;
+            if (item.timestamp) performance[item.receivedBy].activeDays.add(new Date(item.timestamp).toISOString().split('T')[0]);
         }
-
-        window.addStaff = async () => {
-            const email = document.getElementById('newStaffEmail').value.trim();
-            if (!email) {
-                showToast('Please enter an email address', '⚠️');
-                return;
+    });
+    allCollectedItems.forEach(item => {
+        if (item.collectedBy && performance[item.collectedBy]) {
+            performance[item.collectedBy].itemsCollected++;
+            performance[item.collectedBy].totalItems += parseInt(item.items) || 0;
+            if (item.timestamp) performance[item.collectedBy].activeDays.add(new Date(item.timestamp).toISOString().split('T')[0]);
+        }
+    });
+    Object.values(performance).forEach(s => {
+        const totalActions = s.itemsReceived + s.itemsCollected;
+        if (totalActions > 0) s.accuracy = Math.round(((totalActions - s.errors) / totalActions) * 100);
+        const sortedDays = Array.from(s.activeDays).sort().reverse();
+        let streak = 0;
+        if (sortedDays.length) {
+            streak = 1;
+            for (let i = 0; i < sortedDays.length - 1; i++) {
+                if ((new Date(sortedDays[i]) - new Date(sortedDays[i + 1])) / 86400000 === 1) streak++;
+                else break;
             }
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showToast('Please enter a valid email address', '⚠️');
-                return;
-            }
-
-            const sanitizedEmail = email.replace(/\./g, ',');
-
-            try {
-                const existingStaff = await staffRef.child(sanitizedEmail).once('value');
-                if (existingStaff.exists()) {
-                    showToast('This staff member already exists', '⚠️');
-                    return;
-                }
-
-                await staffRef.child(sanitizedEmail).set({
-                    addedAt: new Date().toISOString(),
-                    addedBy: currentUser?.email || 'admin',
-                    role: 'staff',
-                    isAdmin: false
-                });
-
-                document.getElementById('newStaffEmail').value = '';
-                logStaffAction('add_staff', null, `Added staff: ${email}`);
-                showToast(`Staff ${email} added successfully!`);
-            } catch (error) {
-                showToast('Error adding staff: ' + error.message, '❌');
-            }
-        };
-
-        window.toggleStaffRole = async (staffKey, makeAdmin) => {
-            const email = staffKey.replace(/\,/g, '.');
-            const action = makeAdmin ? 'promote to Admin' : 'demote to Staff';
-
-            if (!confirm(`Are you sure you want to ${action} ${email}?`)) return;
-
-            try {
-                await staffRef.child(staffKey).update({
-                    isAdmin: makeAdmin,
-                    role: makeAdmin ? 'admin' : 'staff',
-                    modifiedAt: new Date().toISOString(),
-                    modifiedBy: currentUser?.email || 'admin'
-                });
-
-                logStaffAction('update_staff_role', null, `${action}: ${email}`);
-                showToast(`Staff ${email} ${action}d successfully!`);
-            } catch (error) {
-                showToast('Error updating role: ' + error.message, '❌');
-            }
-        };
-
-        window.removeStaff = async (staffKey) => {
-            const email = staffKey.replace(/\,/g, '.');
-
-            if (!confirm(
-                    `Are you sure you want to remove ${email} from staff? This action cannot be undone.`)) return;
-
-            try {
-                const activeBookings = allBookings.filter(b =>
-                    b.assigned_to === email &&
-                    b.status === 'active'
-                );
-
-                if (activeBookings.length > 0) {
-                    if (!confirm(
-                            `${email} has ${activeBookings.length} active booking(s). These will become unassigned. Continue?`
-                            )) {
-                        return;
-                    }
-
-                    const unassignPromises = activeBookings.map(booking =>
-                        bookingsRef.child(booking._key).update({
-                            assigned_to: null,
-                            unassigned_at: new Date().toISOString(),
-                            unassigned_by: currentUser?.email || 'admin'
-                        })
-                    );
-                    await Promise.all(unassignPromises);
-                }
-
-                await staffRef.child(staffKey).remove();
-
-                logStaffAction('remove_staff', null,
-                    `Removed staff: ${email}${activeBookings.length > 0 ? ` (unassigned ${activeBookings.length} bookings)` : ''}`
-                    );
-                showToast(`Staff ${email} removed successfully!`);
-            } catch (error) {
-                showToast('Error removing staff: ' + error.message, '❌');
-            }
-        };
-
-        // ============ COLLECTION / RETURN FEATURE ============
-        function initCollectionSignature() {
-            const canvas = document.getElementById('collectSignatureCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            let drawing = false;
-            const getPos = e => {
-                const r = canvas.getBoundingClientRect();
-                return {
-                    x: (e.touches ? e.touches[0] : e).clientX - r.left,
-                    y: (e.touches ? e.touches[0] : e).clientY - r.top
-                };
-            };
-            canvas.addEventListener('mousedown', e => {
-                drawing = true;
-                const p = getPos(e);
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-            });
-            canvas.addEventListener('mousemove', e => {
-                if (drawing) {
-                    const p = getPos(e);
-                    ctx.lineTo(p.x, p.y);
-                    ctx.stroke();
-                }
-            });
-            canvas.addEventListener('mouseup', () => drawing = false);
-            canvas.addEventListener('mouseleave', () => drawing = false);
-            canvas.addEventListener('touchstart', e => {
-                e.preventDefault();
-                drawing = true;
-                const p = getPos(e);
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-            }, { passive: false });
-            canvas.addEventListener('touchmove', e => {
-                e.preventDefault();
-                if (drawing) {
-                    const p = getPos(e);
-                    ctx.lineTo(p.x, p.y);
-                    ctx.stroke();
-                }
-            }, { passive: false });
-            canvas.addEventListener('touchend', () => drawing = false);
         }
-        window.clearCollectSignature = () => {
-            const c = document.getElementById('collectSignatureCanvas');
-            if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
-        };
+        s.streak = streak;
+        const score = s.totalItems * 2 + s.accuracy + streak * 10;
+        if (score > 200) s.rating = 'Top Performer';
+        else if (score > 100) s.rating = 'Good';
+        else if (score > 50) s.rating = 'Average';
+        else s.rating = 'Needs Improvement';
+        s.status = s.activeDays.has(new Date().toISOString().split('T')[0]) ? 'online' : 'inactive';
+    });
+    staffPerformanceData = performance;
+    renderStaffPerformance();
+}
 
-        window.openCollectionModal = (key) => {
-            const item = allReceivedItems.find(r => r.bookingKey === key) || allBookings.find(b => b._key ===
-                key);
-            if (!item) return;
-            const booking = allBookings.find(b => b._key === key) || {};
-            document.getElementById('collectBookingKey').value = key;
-            document.getElementById('collectBookingId').value = item.bookingId || key.slice(-6);
-            document.getElementById('collectCustomerName').value = item.customerName || booking.name || 'Unknown';
-            document.getElementById('collectCustomerPhone').value = item.customerPhone || booking.phone || '';
-            document.getElementById('collectItems').value =
-                `${item.itemCount || booking.itemCount || '?'} ${item.category || booking.category || 'items'}`;
-            document.getElementById('collectNotes').value = '';
-            document.getElementById('collectSendReceipt').checked = true;
-            clearCollectSignature();
-            document.getElementById('collectionModal').style.display = 'flex';
-            setTimeout(initCollectionSignature, 200);
-        };
+function renderStaffPerformance() {
+    const staffArray = Object.values(staffPerformanceData);
+    const topPerformers = staffArray.filter(s => s.totalItems > 0).sort((a, b) => b.totalItems - a.totalItems).slice(0, 3);
+    document.getElementById('topPerformersList').innerHTML = topPerformers.length ? topPerformers.map((s, i) => `<div class="insight-metric"><span>${i + 1}. ${s.email.split('@')[0]}</span><span class="insight-value" style="color:#10b981;">${s.totalItems} items</span></div><div class="performance-bar"><div class="performance-fill excellent" style="width:${Math.min(s.totalItems * 5, 100)}%"></div></div>`).join('') : '<div class="empty-state"><p>No data</p></div>';
+    
+    const avgResponse = staffArray.length ? Math.round(staffArray.reduce((a, b) => a + b.avgResponseTime, 0) / staffArray.length) : 0;
+    document.getElementById('responseTimeStats').innerHTML = `<div class="insight-metric"><span>Avg Response</span><span class="insight-value">${avgResponse} min</span></div>`;
+    
+    const streaks = staffArray.filter(s => s.streak > 0).sort((a, b) => b.streak - a.streak).slice(0, 5);
+    document.getElementById('activityStreaks').innerHTML = streaks.length ? streaks.map(s => `<div class="insight-metric"><span>${s.email.split('@')[0]}</span><span class="streak-badge ${s.streak > 7 ? 'hot' : s.streak > 3 ? '' : ''}">🔥 ${s.streak}d</span></div>`).join('') : '<div class="empty-state"><p>No streaks</p></div>';
+    
+    const totalItems = staffArray.reduce((a, b) => a + b.totalItems, 0);
+    document.getElementById('workloadDistribution').innerHTML = staffArray.filter(s => s.totalItems > 0).sort((a, b) => b.totalItems - a.totalItems).slice(0, 5).map(s => `<div class="insight-metric"><span>${s.email.split('@')[0]}</span><span>${Math.round((s.totalItems / totalItems) * 100)}%</span></div><div class="performance-bar"><div class="performance-fill good" style="width:${(s.totalItems / totalItems) * 100}%"></div></div>`).join('') || '<div class="empty-state"><p>No data</p></div>';
+    
+    document.getElementById('staffPerformanceTableBody').innerHTML = staffArray.length ? staffArray.map(s => {
+        let ratingClass = s.rating === 'Top Performer' ? 'top' : s.rating === 'Good' ? 'good' : '';
+        return `<tr><td><strong>${s.email.split('@')[0]}</strong></td><td>${s.role}</td><td>${s.totalItems}</td><td>${s.avgResponseTime > 0 ? s.avgResponseTime + ' min' : 'N/A'}</td><td><div class="performance-bar" style="width:60px;display:inline-block;margin-right:4px;"><div class="performance-fill ${s.accuracy > 90 ? 'excellent' : 'good'}" style="width:${s.accuracy}%"></div></div>${s.accuracy}%</td><td><span class="staff-rating ${ratingClass}">${s.rating}</span></td><td>${s.streak > 0 ? `<span class="streak-badge ${s.streak > 7 ? 'hot' : ''}">🔥 ${s.streak}d</span>` : '—'}</td><td>${s.status === 'online' ? '🟢' : '⚪'} ${s.status}</td></tr>`;
+    }).join('') : '<tr><td colspan="8"><div class="empty-state"><p>No data</p></div></td></tr>';
+}
+window.exportPerformanceReport = () => {
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Staff','Role','Items','Response','Accuracy','Rating','Streak','Status']].concat(Object.values(staffPerformanceData).map(s => [s.email,s.role,s.totalItems,s.avgResponseTime,s.accuracy,s.rating,s.streak,s.status]))), 'Performance');
+    XLSX.writeFile(wb, `performance_${Date.now()}.xlsx`);
+    showToast('Exported!');
+};
 
-        window.submitCollection = async (e) => {
-            e.preventDefault();
-            const key = document.getElementById('collectBookingKey').value;
-            const item = allReceivedItems.find(r => r.bookingKey === key);
-            const booking = allBookings.find(b => b._key === key);
-            if (!item && !booking) return;
+// Staff Reassign Prompt
+function showStaffAssignmentPrompt(bookingKey, currentStaff) {
+    const existing = document.querySelector('.custom-prompt-overlay');
+    if (existing) existing.remove();
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:3000;';
+    overlay.innerHTML = `<div style="background:var(--surface);border-radius:16px;padding:20px;width:100%;max-width:400px;"><h3><i class="fas fa-user-plus"></i> Assign Staff</h3><p style="font-size:0.7rem;color:var(--text-secondary);margin-bottom:10px;">Select staff for booking <strong>${bookingKey?.slice(-6)}</strong></p><div style="max-height:150px;overflow-y:auto;margin-bottom:10px;">${allStaffList.length ? allStaffList.map(s => `<div onclick="quickAssign('${s.email}','${bookingKey}')" style="padding:8px;cursor:pointer;border-radius:6px;margin:2px 0;background:var(--bg);">${s.email} ${s.isAdmin ? '👑' : '👤'}</div>`).join('') : '<p>No staff</p>'}</div><input type="email" id="customStaffEmail" placeholder="Or type email..." value="${currentStaff || ''}" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);margin-bottom:10px;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button class="btn btn-outline btn-sm" onclick="this.closest('.custom-prompt-overlay')?.remove()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmStaffAssignment('${bookingKey}')">Assign</button></div></div>`;
+    overlay.classList.add('custom-prompt-overlay');
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+window.quickAssign = (email, bookingKey) => { const input = document.getElementById('customStaffEmail'); if (input) input.value = email; confirmStaffAssignment(bookingKey); };
+window.confirmStaffAssignment = async (bookingKey) => {
+    const email = document.getElementById('customStaffEmail')?.value.trim();
+    if (!email || !email.includes('@')) return;
+    const key = email.replace(/\./g, ',');
+    if (!(await staffRef.child(key).once('value')).exists()) {
+        if (confirm(`Add ${email} to staff?`)) await staffRef.child(key).set({ email, addedAt: new Date().toISOString(), isAdmin: false });
+        else return;
+    }
+    await bookingsRef.child(bookingKey).update({ assigned_to: email, assigned_at: new Date().toISOString() });
+    document.querySelector('.custom-prompt-overlay')?.remove();
+    showToast(`Assigned to ${email.split('@')[0]}`);
+};
+window.openReassignModal = (bookingKey) => { const b = allBookings.find(x => x._key === bookingKey); showStaffAssignmentPrompt(bookingKey, b?.assigned_to || ''); };
 
-            const signatureCanvas = document.getElementById('collectSignatureCanvas');
-            const signatureData = signatureCanvas ? signatureCanvas.toDataURL() : '';
+// Approvals
+function loadPendingApprovalsRealtime() {
+    pendingApprovalsRef.on('value', snap => {
+        const approvals = []; snap.forEach(c => { const a = c.val(); a._key = c.key; if (a.status === 'pending') approvals.push(a); });
+        allPendingApprovals = approvals;
+        document.getElementById('pendingBadge').textContent = approvals.length;
+        document.getElementById('pendingBadge').style.display = approvals.length ? 'inline-block' : 'none';
+        document.getElementById('pendingApprovalsContainer').innerHTML = approvals.length ? approvals.map(a => `<div class="card" style="margin-bottom:6px;"><div style="padding:8px;"><h4 style="font-size:0.75rem;">${a.proposed ? 'Edit' : 'Collection'} - ${(allBookings.find(b => b._key === a.bookingKey) || {}).name || a.bookingKey?.slice(-6)}</h4><div style="display:flex;gap:4px;margin-top:4px;"><button class="action-btn btn-receive" onclick="approveApproval('${a._key}','${a.proposed ? 'edit' : 'collection'}')">Approve</button><button class="action-btn btn-delete" onclick="rejectApproval('${a._key}','${a.proposed ? 'edit' : 'collection'}')">Reject</button></div></div></div>`).join('') : '<div class="card"><div class="empty-state"><p>No pending</p></div></div>';
+    });
+}
+window.approveApproval = async (key, type) => {
+    const a = allPendingApprovals.find(x => x._key === key);
+    if (!a) return;
+    if (type === 'edit') await bookingsRef.child(a.bookingKey).update({ ...a.proposed, pending_edit: false });
+    else await bookingsRef.child(a.bookingKey).update({ status: 'collected', collection_approved: true });
+    await pendingApprovalsRef.child(key).update({ status: 'approved' });
+    showToast('Approved!');
+};
+window.rejectApproval = async (key, type) => {
+    const a = allPendingApprovals.find(x => x._key === key);
+    if (!a) return;
+    if (type === 'edit') await bookingsRef.child(a.bookingKey).update({ pending_edit: false });
+    else await bookingsRef.child(a.bookingKey).update({ pending_collection: false });
+    await pendingApprovalsRef.child(key).update({ status: 'rejected' });
+    showToast('Rejected');
+};
 
-            const collectionData = {
-                bookingKey: key,
-                bookingId: document.getElementById('collectBookingId').value,
-                customerName: document.getElementById('collectCustomerName').value,
-                customerPhone: document.getElementById('collectCustomerPhone').value,
-                items: document.getElementById('collectItems').value,
-                notes: document.getElementById('collectNotes').value,
-                signature: signatureData,
-                collectedBy: currentUser?.email || 'admin',
-                collectedByName: currentUser?.displayName || 'Admin',
-                timestamp: new Date().toISOString()
-            };
+// Data Tables
+function loadDigitalRecordsRealtime() { digitalRecordsRef.on('value', snap => { const records = []; snap.forEach(c => records.unshift({ key: c.key, ...c.val() })); document.getElementById('digitalRecordsTable').innerHTML = records.length ? `<table><thead><tr><th>ID</th><th>Type</th><th>Booking</th><th>Date</th></tr></thead><tbody>${records.map(r => `<tr><td>${r.key?.slice(-8)}</td><td>${r.type}</td><td>${r.bookingId?.slice(-6)}</td><td>${new Date(r.timestamp).toLocaleDateString()}</td></tr>`).join('')}</tbody></table>` : '<div class="empty-state"><p>No records</p></div>'; }); }
+function loadReviewsRealtime() { reviewsRef.on('value', snap => { const reviews = []; snap.forEach(c => reviews.unshift({ key: c.key, ...c.val() })); document.getElementById('reviewsTable').innerHTML = reviews.length ? `<table><thead><tr><th>Customer</th><th>Rating</th><th>Comment</th></tr></thead><tbody>${reviews.map(r => `<tr><td>${r.name || 'Anon'}</td><td>${'⭐'.repeat(r.rating || 0)}</td><td>${r.comment || ''}</td></tr>`).join('')}</tbody></table>` : '<div class="empty-state"><p>No reviews</p></div>'; }); }
+function loadStaffLogsRealtime() { staffLogsRef.orderByChild('timestamp').limitToLast(200).on('value', snap => { const logs = []; snap.forEach(c => logs.unshift({ key: c.key, ...c.val() })); document.getElementById('staffLogsTable').innerHTML = logs.length ? `<table><thead><tr><th>Staff</th><th>Action</th><th>Time</th></tr></thead><tbody>${logs.map(l => `<tr><td>${(l.staffEmail || '').split('@')[0]}</td><td>${l.action}</td><td>${new Date(l.timestamp).toLocaleString()}</td></tr>`).join('')}</tbody></table>` : '<div class="empty-state"><p>No logs</p></div>'; }); }
 
-            try {
-                await collectedItemsRef.push(collectionData);
-                await bookingsRef.child(key).update({
-                    status: 'collected',
-                    collected_at: new Date().toISOString(),
-                    collected_by: currentUser?.email || 'admin',
-                    collection_signature: signatureData,
-                    collection_notes: document.getElementById('collectNotes').value
-                });
+async function loadAdmins() { const snap = await adminsRef.once('value'); const admins = snap.val() || {}; document.getElementById('adminList').innerHTML = Object.keys(admins).length ? Object.keys(admins).map(k => `<div style="display:flex;justify-content:space-between;padding:8px;background:var(--bg);border-radius:6px;margin-bottom:4px;"><span style="font-size:0.75rem;">${k.replace(/,/g, '.')}</span><button class="action-btn btn-delete" onclick="adminsRef.child('${k}').remove()">Remove</button></div>`).join('') : '<div class="empty-state"><p>No admins</p></div>'; }
+window.addAdmin = async () => { const email = document.getElementById('newAdminEmail').value.trim(); if (!email) return; await adminsRef.child(email.replace(/\./g, ',')).set({ addedAt: new Date().toISOString() }); document.getElementById('newAdminEmail').value = ''; showToast('Admin added!'); };
 
-                if (item) {
-                    const receivedKey = allReceivedItems.find(r => r.bookingKey === key)?.key;
-                    if (receivedKey) await receivedItemsRef.child(receivedKey).remove();
-                }
+window.openBackupModal = () => openModal('backupModal');
+window.startBackup = async () => { const format = document.getElementById('backupFormat').value; if (format === 'excel') { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['ID','Customer','Status']].concat(allBookings.map(b => [b.bookingId,b.name,b.status]))), 'Bookings'); XLSX.writeFile(wb, `backup_${Date.now()}.xlsx`); } else { const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.text('CampusVault Backup', 10, 10); doc.save(`backup_${Date.now()}.pdf`); } showToast('Backup generated!'); closeModal('backupModal'); };
 
-                logStaffAction('items_collected', key, `Customer collected: ${collectionData.items}`);
+function updateMetrics() {
+    document.getElementById('metricsContainer').innerHTML = `
+        <div class="metric-card"><div class="metric-icon" style="background:var(--primary-light);"><i class="fas fa-box"></i></div><div class="metric-content"><div class="metric-value">${allBookings.length}</div><div class="metric-label">Total</div></div></div>
+        <div class="metric-card"><div class="metric-icon" style="background:var(--success);"><i class="fas fa-spinner"></i></div><div class="metric-content"><div class="metric-value">${allBookings.filter(b => b.status === 'active').length}</div><div class="metric-label">Active</div></div></div>
+        <div class="metric-card"><div class="metric-icon" style="background:#3b82f6;"><i class="fas fa-box-check"></i></div><div class="metric-content"><div class="metric-value">${allReceivedItems.length}</div><div class="metric-label">Received</div></div></div>
+        <div class="metric-card"><div class="metric-icon" style="background:#8b5cf6;"><i class="fas fa-people-carry"></i></div><div class="metric-content"><div class="metric-value">${allCollectedItems.length}</div><div class="metric-label">Collected</div></div></div>
+        <div class="metric-card"><div class="metric-icon" style="background:#f97316;"><i class="fas fa-trash"></i></div><div class="metric-content"><div class="metric-value">${allTrashItems.length}</div><div class="metric-label">Trash</div></div></div>`;
+}
 
-                if (document.getElementById('collectSendReceipt').checked) {
-                    await generateCollectionReceipt(collectionData);
-                }
+// Sidebar
+const sidebar = document.getElementById('sidebar'), overlay = document.getElementById('sidebarOverlay');
+document.getElementById('hamburgerBtn').onclick = () => { sidebar.classList.add('open'); overlay.classList.add('active'); };
+function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
+window.closeSidebar = closeSidebar;
+overlay.addEventListener('click', closeSidebar);
 
-                closeModal('collectionModal');
-                showToast('Items collected & returned to customer!');
-            } catch (error) { showToast('Error: ' + error.message, '❌'); }
-        };
+document.querySelectorAll('.sidebar nav a[data-tab]').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById('tab-' + this.dataset.tab)?.classList.add('active');
+        if (window.innerWidth <= 768) closeSidebar();
+    });
+});
 
-        async function generateCollectionReceipt(data) {
-            const record = {
-                type: 'collection_receipt',
-                bookingId: data.bookingId,
-                customerName: data.customerName,
-                customerPhone: data.customerPhone,
-                items: data.items,
-                notes: data.notes,
-                signature: data.signature,
-                collectedBy: data.collectedBy,
-                timestamp: data.timestamp
-            };
-            await digitalRecordsRef.push(record);
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(16);
-            doc.text('CAMPUS VAULT - COLLECTION RECEIPT', 10, 15);
-            doc.setFontSize(10);
-            doc.text(`Booking ID: ${data.bookingId}`, 10, 30);
-            doc.text(`Customer: ${data.customerName}`, 10, 38);
-            doc.text(`Phone: ${data.customerPhone}`, 10, 46);
-            doc.text(`Items: ${data.items}`, 10, 54);
-            doc.text(`Collected by: ${data.collectedByName || data.collectedBy}`, 10, 62);
-            doc.text(`Date: ${new Date(data.timestamp).toLocaleString()}`, 10, 70);
-            if (data.notes) doc.text(`Notes: ${data.notes}`, 10, 78);
-            if (data.signature) {
-                doc.text('Customer Signature:', 10, 90);
-                doc.addImage(data.signature, 'PNG', 10, 95, 60, 25);
-            }
-            doc.save(`receipt_${data.bookingId}_${Date.now()}.pdf`);
-        }
+// Data Loading
+function loadSecurityData() {
+    securityLogsRef.orderByChild('timestamp').limitToLast(500).on('value', snap => {
+        const logs = []; snap.forEach(c => logs.push(c.val()));
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('secBlockedToday').textContent = logs.filter(l => l.type === 'ip_blocked' && l.timestamp?.startsWith(today)).length;
+        document.getElementById('secFailedLogins').textContent = logs.filter(l => l.type?.includes('failed') && (Date.now() - new Date(l.timestamp).getTime()) < 86400000).length;
+        document.getElementById('secRiskLevel').textContent = logs.filter(l => l.severity === 'critical' && l.timestamp?.startsWith(today)).length > 5 ? 'Critical' : 'Low';
+        document.getElementById('securityEventLog').innerHTML = logs.slice(-20).reverse().map(l => `<div style="font-size:0.55rem;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.05);">[${new Date(l.timestamp).toLocaleTimeString()}] <span style="color:${l.severity==='critical'?'#ef4444':'#94a3b8'};">${l.type?.toUpperCase()}</span> ${l.details || ''}</div>`).join('') || '<p style="color:#64748b;">No events</p>';
+    });
+    staffStatusRef.on('value', snap => {
+        const sessions = snap.val() || {};
+        const sessionList = Object.entries(sessions).filter(([_, d]) => d.online);
+        document.getElementById('secActiveSessions').textContent = sessionList.length;
+        document.getElementById('activeSessionsList').innerHTML = sessionList.length ? sessionList.map(([key, data]) => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;margin-bottom:4px;font-size:0.7rem;"><span>${key.replace(/,/g, '.')}</span><button class="action-btn btn-kick" onclick="kickSession('${key}')">Kick</button></div>`).join('') : '<div class="empty-state"><p style="color:#94a3b8;">No sessions</p></div>';
+    });
+}
 
-        // ============ RECOVERY / TRASH FEATURE ============
-        window.deleteBooking = (key) => {
-            if (!confirm('Move this booking to trash? (Can be recovered within 30 days)')) return;
-            const booking = allBookings.find(b => b._key === key);
-            if (!booking) return;
-            const trashData = {
-                bookingKey: key,
-                bookingId: booking.bookingId || key.slice(-6),
-                customerName: booking.name || 'Unknown',
-                customerPhone: booking.phone || '',
-                items: `${booking.itemCount || '?'} ${booking.category || ''}`,
-                originalData: booking,
-                deletedBy: currentUser?.email || 'admin',
-                deletedAt: new Date().toISOString(),
-                expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-            };
-            trashRef.push(trashData).then(() => {
-                bookingsRef.child(key).remove();
-                logStaffAction('move_to_trash', key, 'Booking moved to trash');
-                showToast('Moved to trash');
-            });
-        };
-
-        window.restoreBooking = async (trashKey) => {
-            if (!confirm('Restore this booking from trash?')) return;
-            const trashItem = allTrashItems.find(t => t.key === trashKey);
-            if (!trashItem) return;
-            try {
-                const restoredData = { ...trashItem.originalData, status: 'active', restored_at: new Date()
-                        .toISOString(), restored_by: currentUser?.email };
-                await bookingsRef.child(trashItem.bookingKey).set(restoredData);
-                await trashRef.child(trashKey).remove();
-                logStaffAction('restore_booking', trashItem.bookingKey, 'Restored from trash');
-                showToast('Booking restored!');
-            } catch (error) { showToast('Error: ' + error.message, '❌'); }
-        };
-
-        window.permanentlyDelete = (trashKey) => {
-            if (!confirm('PERMANENTLY delete this booking? This cannot be undone!')) return;
-            trashRef.child(trashKey).remove();
-            logStaffAction('permanent_delete', null, 'Permanently deleted from trash');
-            showToast('Permanently deleted');
-        };
-
-        window.emptyTrash = () => {
-            if (!confirm('Permanently delete ALL items in trash? This cannot be undone!')) return;
-            allTrashItems.forEach(t => trashRef.child(t.key).remove());
-            logStaffAction('empty_trash', null, 'Trash emptied');
-            showToast('Trash emptied');
-        };
-
-        // ============ RECEIVED ITEMS ============
-        window.openReceiveItemsModal = (key) => {
-            const booking = allBookings.find(b => b._key === key);
-            if (!booking) return;
-            document.getElementById('receiveBookingKey').value = key;
-            document.getElementById('receiveBookingId').value = booking.bookingId || key.slice(-6);
-            document.getElementById('receiveCustomerName').value = booking.name || 'Unknown';
-            document.getElementById('receiveItemCount').value = booking.itemCount || '';
-            document.getElementById('receiveCategory').value = booking.category || 'Other';
-            document.getElementById('receiveDescription').value = '';
-            document.getElementById('receiveCondition').value = 'Good';
-            document.getElementById('receiveLocation').value = '';
-            receiveTags = [];
-            document.getElementById('receiveTagsContainer').innerHTML = '';
-            document.getElementById('receiveItemsModal').style.display = 'flex';
-        };
-        window.addReceiveTag = () => {
-            const input = document.getElementById('receiveTagInput');
-            const tag = input.value.trim();
-            if (tag && !receiveTags.includes(tag)) {
-                receiveTags.push(tag);
-                document.getElementById('receiveTagsContainer').innerHTML = receiveTags.map((t, i) =>
-                    `<span class="tag" style="background:var(--accent);color:#fff;padding:3px 8px;border-radius:12px;font-size:0.7rem;">${t} <span onclick="receiveTags.splice(${i},1);document.getElementById('receiveTagInput').dispatchEvent(new Event('input'));" style="cursor:pointer;">&times;</span></span>`
-                    ).join('');
-            }
-            input.value = '';
-        };
-        window.submitReceivedItems = async (e) => {
-            e.preventDefault();
-            const key = document.getElementById('receiveBookingKey').value;
-            const booking = allBookings.find(b => b._key === key);
-            if (!booking) return;
-            const data = {
-                bookingKey: key,
-                bookingId: booking.bookingId || key.slice(-6),
-                customerName: booking.name || 'Unknown',
-                customerPhone: booking.phone || '',
-                itemCount: parseInt(document.getElementById('receiveItemCount').value),
-                category: document.getElementById('receiveCategory').value,
-                description: document.getElementById('receiveDescription').value,
-                condition: document.getElementById('receiveCondition').value,
-                location: document.getElementById('receiveLocation').value,
-                tags: receiveTags,
-                receivedBy: currentUser?.email || 'admin',
-                receivedByName: currentUser?.displayName || 'Admin',
-                timestamp: new Date().toISOString()
-            };
-            try {
-                await receivedItemsRef.push(data);
-                await bookingsRef.child(key).update({
-                    status: 'received',
-                    items_received: true,
-                    received_at: new Date().toISOString(),
-                    received_by: currentUser?.email || 'admin'
-                });
-                logStaffAction('items_received', key, 'Moved to received');
-                closeModal('receiveItemsModal');
-                showToast('Items received!');
-            } catch (error) { showToast('Error: ' + error.message, '❌'); }
-        };
-
-        window.quickReceiveItems = async (key) => {
-            if (!confirm('Quick receive?')) return;
-            const booking = allBookings.find(b => b._key === key);
-            if (!booking) return;
-            const data = {
-                bookingKey: key,
-                bookingId: booking.bookingId || key.slice(-6),
-                customerName: booking.name || 'Unknown',
-                customerPhone: booking.phone || '',
-                itemCount: booking.itemCount || 0,
-                category: booking.category || 'Other',
-                description: 'Quick receive',
-                condition: 'Good',
-                location: 'Main Storage',
-                tags: [],
-                receivedBy: currentUser?.email || 'admin',
-                timestamp: new Date().toISOString()
-            };
-            await receivedItemsRef.push(data);
-            await bookingsRef.child(key).update({
-                status: 'received',
-                items_received: true,
-                received_at: new Date().toISOString()
-            });
-            logStaffAction('quick_receive', key, 'Quick received');
-            showToast('Received!');
-        };
-
-        // ============ RENDER FUNCTIONS ============
-        function renderStorageTable(bookings) {
-            const active = bookings.filter(b => b.status !== 'received' && b.status !== 'collected' && !b
-                .items_received);
-            document.getElementById('storageTableBody').innerHTML = active.length ? active.map(b =>
-                `<tr><td><strong>${b.bookingId || b._key?.slice(-6)}</strong></td><td>${b.name || '—'}</td><td>${b.phone || '—'}</td><td>${b.itemCount || '?'} ${b.category || ''}</td><td>${b.checkIn || '—'}</td><td>${b.collect || '—'}</td><td>${b.assigned_to ? b.assigned_to.split('@')[0] : '—'}</td><td><span class="badge badge-active">active</span></td><td><button class="action-btn receive-btn" onclick="openReceiveItemsModal('${b._key}')">Receive</button><button class="action-btn" style="background:var(--amber);color:#000;" onclick="quickReceiveItems('${b._key}')">Quick</button><button class="action-btn edit" onclick="reassignBooking('${b._key}')">Reassign</button><button class="action-btn delete" onclick="deleteBooking('${b._key}')">Trash</button></td></tr>`
-                ).join('') :
-                '<tr><td colspan="9"><div class="empty-state"><i class="fas fa-inbox"></i><p>No active bookings</p></div></td></tr>';
-            document.getElementById('storageCardsContainer').innerHTML = active.length ? active.map(b => `
-            <div class="data-card">
-                <div class="card-row"><span class="card-label">ID</span><span><strong>${b.bookingId || b._key?.slice(-6)}</strong></span></div>
-                <div class="card-row"><span class="card-label">Customer</span><span>${b.name || '—'}</span></div>
-                <div class="card-row"><span class="card-label">Phone</span><span>${b.phone || '—'}</span></div>
-                <div class="card-row"><span class="card-label">Items</span><span>${b.itemCount || '?'} ${b.category || ''}</span></div>
-                <div class="card-row"><span class="card-label">Check-in</span><span>${b.checkIn || '—'}</span></div>
-                <div class="card-row"><span class="card-label">Due</span><span>${b.collect || '—'}</span></div>
-                <div class="card-row"><span class="card-label">Staff</span><span>${b.assigned_to ? b.assigned_to.split('@')[0] : '—'}</span></div>
-                <div class="card-actions">
-                    <button class="action-btn receive-btn" onclick="openReceiveItemsModal('${b._key}')">Receive</button>
-                    <button class="action-btn" style="background:var(--amber);color:#000;" onclick="quickReceiveItems('${b._key}')">Quick</button>
-                    <button class="action-btn edit" onclick="reassignBooking('${b._key}')">Reassign</button>
-                    <button class="action-btn delete" onclick="deleteBooking('${b._key}')">Trash</button>
-                </div>
-            </div>`).join('') : '<div class="empty-state"><p>No active bookings</p></div>';
-        }
-
-        function renderReceivedTable(items) {
-            document.getElementById('receivedTableBody').innerHTML = items.length ? items.map(r =>
-                `<tr><td><strong>${r.bookingId || r.bookingKey?.slice(-6)}</strong></td><td>${r.customerName || '—'}</td><td>${r.customerPhone || '—'}</td><td>${r.itemCount} ${r.category || ''}</td><td>${r.location || '—'}</td><td>${r.receivedByName || (r.receivedBy || '').split('@')[0]}</td><td>${new Date(r.timestamp).toLocaleDateString()}</td><td><button class="action-btn collect-btn" onclick="openCollectionModal('${r.bookingKey}')">Collect</button><button class="action-btn view-btn" onclick="viewReceivedDetail('${r.key}')">View</button><button class="action-btn edit" onclick="returnToBookings('${r.bookingKey}')">Return</button></td></tr>`
-                ).join('') :
-                '<tr><td colspan="8"><div class="empty-state"><i class="fas fa-box-open"></i><p>No items received</p></div></td></tr>';
-        }
-
-        function renderCollectedTable(items) {
-            document.getElementById('collectedTableBody').innerHTML = items.length ? items.map(c =>
-                `<tr><td><strong>${c.bookingId || c.bookingKey?.slice(-6)}</strong></td><td>${c.customerName || '—'}</td><td>${c.customerPhone || '—'}</td><td>${c.items || '—'}</td><td>${c.collectedByName || (c.collectedBy || '').split('@')[0]}</td><td>${new Date(c.timestamp).toLocaleDateString()}</td><td>${c.signature ? '✅ Signed' : '—'}</td><td><button class="action-btn view-btn" onclick="viewCollectedDetail('${c.key}')">View</button></td></tr>`
-                ).join('') :
-                '<tr><td colspan="8"><div class="empty-state"><i class="fas fa-people-carry"></i><p>No collections yet</p></div></td></tr>';
-        }
-
-        function renderTrashTable(items) {
-            document.getElementById('trashTableBody').innerHTML = items.length ? items.map(t =>
-                `<tr><td><strong>${t.bookingId || t.bookingKey?.slice(-6)}</strong></td><td>${t.customerName || '—'}</td><td>${t.customerPhone || '—'}</td><td>${t.items || '—'}</td><td>${(t.deletedBy || '').split('@')[0]}</td><td>${new Date(t.deletedAt).toLocaleDateString()}</td><td><button class="action-btn restore-btn" onclick="restoreBooking('${t.key}')">Restore</button><button class="action-btn delete" onclick="permanentlyDelete('${t.key}')">Perm Del</button></td></tr>`
-                ).join('') :
-                '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-trash-restore"></i><p>Trash is empty</p></div></td></tr>';
-        }
-
-        function renderReceivedCards(items) {
-            document.getElementById('receivedCardsContainer').innerHTML = items.length ? items.map(r =>
-                `<div class="data-card"><div class="card-row"><span class="card-label">Booking</span><span>${r.bookingId || r.bookingKey?.slice(-6)}</span></div><div class="card-row"><span class="card-label">Customer</span><span>${r.customerName}</span></div><div class="card-row"><span class="card-label">Items</span><span>${r.itemCount} ${r.category}</span></div><div class="card-actions"><button class="action-btn collect-btn" onclick="openCollectionModal('${r.bookingKey}')">Collect</button><button class="action-btn view-btn" onclick="viewReceivedDetail('${r.key}')">View</button></div></div>`
-                ).join('') : '<div class="empty-state"><p>No items</p></div>';
-        }
-
-        function renderCollectedCards(items) {
-            document.getElementById('collectedCardsContainer').innerHTML = items.length ? items.map(c =>
-                `<div class="data-card"><div class="card-row"><span class="card-label">Booking</span><span>${c.bookingId || c.bookingKey?.slice(-6)}</span></div><div class="card-row"><span class="card-label">Customer</span><span>${c.customerName}</span></div><div class="card-row"><span class="card-label">Items</span><span>${c.items}</span></div></div>`
-                ).join('') : '<div class="empty-state"><p>No collections</p></div>';
-        }
-
-        function renderTrashCards(items) {
-            document.getElementById('trashCardsContainer').innerHTML = items.length ? items.map(t =>
-                `<div class="data-card"><div class="card-row"><span class="card-label">Booking</span><span>${t.bookingId || t.bookingKey?.slice(-6)}</span></div><div class="card-row"><span class="card-label">Customer</span><span>${t.customerName}</span></div><div class="card-actions"><button class="action-btn restore-btn" onclick="restoreBooking('${t.key}')">Restore</button><button class="action-btn delete" onclick="permanentlyDelete('${t.key}')">Delete</button></div></div>`
-                ).join('') : '<div class="empty-state"><p>Trash empty</p></div>';
-        }
-
-        window.viewReceivedDetail = (key) => {
-            const item = allReceivedItems.find(r => r.key === key);
-            if (item) alert(
-                `RECEIVED\n\nBooking: ${item.bookingId}\nCustomer: ${item.customerName}\nItems: ${item.itemCount} ${item.category}\nDescription: ${item.description}\nLocation: ${item.location}\nCondition: ${item.condition}\nTags: ${item.tags?.join(', ') || 'None'}\nReceived: ${new Date(item.timestamp).toLocaleString()}`
-                );
-        };
-        window.viewCollectedDetail = (key) => {
-            const item = allCollectedItems.find(c => c.key === key);
-            if (item) alert(
-                `COLLECTED\n\nBooking: ${item.bookingId}\nCustomer: ${item.customerName}\nItems: ${item.items}\nNotes: ${item.notes || 'None'}\nCollected: ${new Date(item.timestamp).toLocaleString()}`
-                );
-        };
-        window.returnToBookings = async (bookingKey) => {
-            if (!confirm('Return to active?')) return;
-            await bookingsRef.child(bookingKey).update({ status: 'active', items_received: false, received_at: null });
-            logStaffAction('return_to_bookings', bookingKey);
-            showToast('Returned');
-        };
-        window.reassignBooking = (key) => {
-            const staff = prompt('Staff email:');
-            if (staff) {
-                bookingsRef.child(key).update({ assigned_to: staff });
-                logStaffAction('reassign', key, staff);
-                showToast('Reassigned');
-            }
-        };
-
-        // ============ REAL-TIME LISTENERS ============
-        function loadReceivedItemsRealtime() {
-            receivedItemsRef.orderByChild('timestamp').limitToLast(200).on('value', snap => {
-                const items = [];
-                snap.forEach(c => items.unshift({ key: c.key, ...c.val() }));
-                allReceivedItems = items;
-                const count = items.length;
-                document.getElementById('receivedCount').textContent = count;
-                const badge = document.getElementById('receivedBadge');
-                if (badge) { badge.textContent = count;
-                    badge.style.display = count > 0 ? 'inline-block' : 'none'; }
-                renderReceivedTable(items);
-                renderReceivedCards(items);
-            });
-        }
-
-        function loadCollectedItemsRealtime() {
-            collectedItemsRef.orderByChild('timestamp').limitToLast(200).on('value', snap => {
-                const items = [];
-                snap.forEach(c => items.unshift({ key: c.key, ...c.val() }));
-                allCollectedItems = items;
-                const count = items.length;
-                document.getElementById('collectedCount').textContent = count;
-                const badge = document.getElementById('collectedBadge');
-                if (badge) { badge.textContent = count;
-                    badge.style.display = count > 0 ? 'inline-block' : 'none'; }
-                renderCollectedTable(items);
-                renderCollectedCards(items);
-            });
-        }
-
-        function loadTrashRealtime() {
-            trashRef.on('value', snap => {
-                const items = [];
-                snap.forEach(c => items.unshift({ key: c.key, ...c.val() }));
-                allTrashItems = items;
-                const count = items.length;
-                document.getElementById('trashCount').textContent = count;
-                const badge = document.getElementById('trashBadge');
-                if (badge) { badge.textContent = count;
-                    badge.style.display = count > 0 ? 'inline-block' : 'none'; }
-                renderTrashTable(items);
-                renderTrashCards(items);
-            });
-        }
-
-        function loadDigitalRecordsRealtime() {
-            digitalRecordsRef.on('value', snap => {
-                const records = [];
-                snap.forEach(c => records.unshift({ key: c.key, ...c.val() }));
-                const count = records.length;
-                document.getElementById('recordsCount').textContent = count;
-                document.getElementById('recordsBadge').textContent = count;
-                document.getElementById('recordsBadge').style.display = count > 0 ? 'inline-block' : 'none';
-                document.getElementById('digitalRecordsTable').innerHTML = records.length ?
-                    '<table><thead><tr><th>ID</th><th>Type</th><th>Booking</th><th>Customer</th><th>Date</th></tr></thead><tbody>' +
-                    records.map(r =>
-                        `<tr><td>${r.key?.slice(-8)}</td><td>${r.type}</td><td>${r.bookingId?.slice(-6)}</td><td>${r.customerName || '—'}</td><td>${new Date(r.timestamp).toLocaleString()}</td></tr>`
-                        ).join('') + '</tbody></table>' :
-                    '<div class="empty-state"><p>No records</p></div>';
-            });
-        }
-
-        function loadReviewsRealtime() {
-            reviewsRef.on('value', snap => {
-                const reviews = [];
-                snap.forEach(c => reviews.unshift({ key: c.key, ...c.val() }));
-                document.getElementById('reviewsCount').textContent = reviews.length;
-                document.getElementById('reviewsBadge').textContent = reviews.length;
-                document.getElementById('reviewsBadge').style.display = reviews.length > 0 ? 'inline-block' :
-                    'none';
-                document.getElementById('reviewsTable').innerHTML = reviews.length ?
-                    '<table><thead><tr><th>Customer</th><th>Rating</th><th>Comment</th></tr></thead><tbody>' + reviews
-                    .map(r =>
-                        `<tr><td>${r.name || 'Anon'}</td><td>${'⭐'.repeat(r.rating || 0)}</td><td>${r.comment}</td></tr>`
-                        ).join('') + '</tbody></table>' :
-                    '<div class="empty-state"><p>No reviews</p></div>';
-            });
-        }
-
-        function loadStaffLogsRealtime() {
-            staffLogsRef.orderByChild('timestamp').limitToLast(200).on('value', snap => {
-                const logs = [];
-                snap.forEach(c => logs.unshift({ key: c.key, ...c.val() }));
-                const count = logs.length;
-                document.getElementById('logCountBadge').textContent = count;
-                document.getElementById('logCountBadge').style.display = count > 0 ? 'inline-block' : 'none';
-                document.getElementById('staffLogsTable').innerHTML = logs.length ?
-                    '<table><thead><tr><th>Staff</th><th>Action</th><th>Details</th><th>Time</th></tr></thead><tbody>' +
-                    logs.map(l =>
-                        `<tr><td>${(l.staffEmail || '').split('@')[0]}</td><td><span class="log-action-badge ${l.action?.includes('login') ? 'log-action-login' : l.action?.includes('collected') ? 'log-action-collected' : l.action?.includes('restor') ? 'log-action-restored' : 'log-action-default'}">${l.action}</span></td><td>${l.details || '—'}</td><td style="font-size:0.7rem;">${new Date(l.timestamp).toLocaleString()}</td></tr>`
-                        ).join('') + '</tbody></table>' :
-                    '<div class="empty-state"><p>No logs</p></div>';
-            });
-        }
-
-        function loadPendingApprovalsRealtime() {
-            pendingApprovalsRef.on('value', snap => {
-                const approvals = [];
-                snap.forEach(c => { const a = c.val();
-                    a._key = c.key; if (a.status === 'pending') approvals.push(a); });
-                allPendingApprovals = approvals;
-                document.getElementById('pendingBadge').textContent = approvals.length;
-                document.getElementById('pendingBadge').style.display = approvals.length > 0 ? 'inline-block' :
-                    'none';
-                document.getElementById('approvalStats').innerHTML =
-                    `<div class="approval-stat" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;flex:1;"><div style="font-size:1.5rem;font-weight:800;">${approvals.length}</div><div style="font-size:0.65rem;">Total</div></div>`;
-                document.getElementById('pendingApprovalsContainer').innerHTML = approvals.length ? approvals
-                    .map(a =>
-                        `<div class="approval-detail-card" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;"><h4>${a.proposed ? '📝 Edit' : '📄 Collection'} - ${(allBookings.find(b => b._key === a.bookingKey) || {}).name || a.bookingKey?.slice(-6)}</h4><p style="font-size:0.8rem;">By: ${a.requestedBy || 'Staff'}</p><div style="display:flex;gap:6px;margin-top:8px;"><button class="action-btn view-btn" onclick="viewApprovalDetail('${a._key}')">View</button><button class="action-btn approve-btn" onclick="${a.proposed ? `approveEdit('${a._key}')` : `approveCollection('${a._key}')`}">Approve</button><button class="action-btn reject-btn" onclick="${a.proposed ? `rejectEdit('${a._key}')` : `rejectCollection('${a._key}')`}">Reject</button></div></div>`
-                        ).join('') :
-                    '<div class="card"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No pending</p></div></div>';
-            });
-        }
-
-        window.viewApprovalDetail = (key) => {
-            const a = allPendingApprovals.find(x => x._key === key);
-            if (!a) return;
-            document.getElementById('approvalDetailTitle').innerHTML = a.proposed ? 'Edit Request' :
-                'Collection Request';
-            document.getElementById('approvalDetailBody').innerHTML =
-                `<p>By: ${a.requestedBy || 'Staff'}</p>` + (a.proposed ? Object.entries(a.proposed).map(([k, v]) =>
-                    `<div>${k}: <strong>${v}</strong></div>`).join('') : '') + (a.staffSignature ?
-                    `<img src="${a.staffSignature}" style="max-width:200px;">` : '') + (a.customerSignature ?
-                    `<img src="${a.customerSignature}" style="max-width:200px;">` : '<p>No signature</p>');
-            document.getElementById('approvalDetailActions').innerHTML =
-                `<button class="btn btn-outline" onclick="closeModal('approvalDetailModal')">Close</button><button class="btn btn-success" onclick="${a.proposed ? `approveEdit('${key}')` : `approveCollection('${key}')`};closeModal('approvalDetailModal')">Approve</button>`;
-            document.getElementById('approvalDetailModal').style.display = 'flex';
-        };
-        window.approveEdit = async (key) => {
-            const a = allPendingApprovals.find(x => x._key === key);
-            if (!a) return;
-            await bookingsRef.child(a.bookingKey).update({ ...a.proposed, pending_edit: false });
-            await pendingApprovalsRef.child(key).update({ status: 'approved' });
-            logStaffAction('approve_edit', a.bookingKey);
-            showToast('Approved');
-        };
-        window.rejectEdit = async (key) => {
-            const a = allPendingApprovals.find(x => x._key === key);
-            if (!a) return;
-            await bookingsRef.child(a.bookingKey).update({ pending_edit: false });
-            await pendingApprovalsRef.child(key).update({ status: 'rejected' });
-            showToast('Rejected');
-        };
-        window.approveCollection = async (key) => {
-            const a = allPendingApprovals.find(x => x._key === key);
-            if (!a) return;
-            await bookingsRef.child(a.bookingKey).update({ status: 'collected', collectedAt: new Date()
-                    .toISOString(), collection_approved: true });
-            await pendingApprovalsRef.child(key).update({ status: 'approved' });
-            logStaffAction('approve_collection', a.bookingKey);
-            showToast('Approved');
-        };
-        window.rejectCollection = async (key) => {
-            const a = allPendingApprovals.find(x => x._key === key);
-            if (!a) return;
-            await bookingsRef.child(a.bookingKey).update({ pending_collection: false });
-            await pendingApprovalsRef.child(key).update({ status: 'rejected' });
-            showToast('Rejected');
-        };
-
-        function loadSellsContent() {
-            document.getElementById('sellsTableBody').innerHTML = allSells.length ? allSells.map(s =>
-                `<tr><td>${s.id || s.key?.slice(-6)}</td><td>${s.itemName}</td><td>${s.condition}</td><td>KES ${s.price}</td><td>${s.location}</td><td>${new Date(s.timestamp).toLocaleDateString()}</td><td><button class="action-btn delete" onclick="sellsRef.child('${s.key}').remove()">Del</button></td></tr>`
-                ).join('') :
-                '<tr><td colspan="7"><div class="empty-state"><p>No submissions</p></div></td></tr>';
-        }
-
-        function loadDeliveriesContent() {
-            document.getElementById('deliveriesTableBody').innerHTML = allDeliveries.length ? allDeliveries.map(d =>
-                `<tr><td>${d.id || d.key?.slice(-6)}</td><td>${d.name}</td><td>${d.phone}</td><td>${d.service}</td><td>${d.details}</td><td>${new Date(d.timestamp).toLocaleString()}</td><td><button class="action-btn delete" onclick="deliveriesRef.child('${d.key}').remove()">Del</button></td></tr>`
-                ).join('') :
-                '<tr><td colspan="7"><div class="empty-state"><p>No deliveries</p></div></td></tr>';
-        }
-
-        function loadInquiriesContent() {
-            document.getElementById('inquiriesTableBody').innerHTML = allInquiries.length ? allInquiries.map(i =>
-                `<tr><td>${i.id || i.key?.slice(-6)}</td><td>${i.name}</td><td>${i.phone}</td><td>${(i.message || '').substring(0, 40)}...</td><td>${new Date(i.timestamp).toLocaleString()}</td><td><button class="action-btn delete" onclick="inquiriesRef.child('${i.key}').remove()">Del</button></td></tr>`
-                ).join('') :
-                '<tr><td colspan="6"><div class="empty-state"><p>No inquiries</p></div></td></tr>';
-        }
-
-        function loadAccommodationContent() {
-            document.getElementById('accommodationTableBody').innerHTML = allAccommodation.length ? allAccommodation
-                .map(a =>
-                    `<tr><td>${a.id || a.key?.slice(-6)}</td><td>${a.name}</td><td>${a.phone}</td><td>${a.type}</td><td>${a.location}</td><td>${a.budget ? 'KES ' + a.budget : '—'}</td><td>${new Date(a.timestamp).toLocaleDateString()}</td><td><button class="action-btn delete" onclick="accommodationRef.child('${a.key}').remove()">Del</button></td></tr>`
-                    ).join('') :
-                '<tr><td colspan="8"><div class="empty-state"><p>No requests</p></div></td></tr>';
-        }
-
-        function renderProductsTable(products) {
-            const entries = Object.entries(products);
-            document.getElementById('productsTableBody').innerHTML = entries.length ? entries.map(([k, p]) =>
-                `<tr><td>${p.image ? `<img src="${p.image}" width="30" height="30" style="object-fit:cover;border-radius:4px;">` : '📦'}</td><td>${p.name}</td><td>${p.category || '—'}</td><td>${p.condition || '—'}</td><td>KES ${p.price?.toLocaleString() || 0}</td><td><button class="action-btn edit" onclick="openProductModal('${k}')">Edit</button><button class="action-btn delete" onclick="productsRef.child('${k}').remove()">Del</button></td></tr>`
-                ).join('') : '<tr><td colspan="6"><div class="empty-state"><p>No products</p></div></td></tr>';
-        }
-        window.openProductModal = (key = null) => {
-            if (key) {
-                const p = productsData[key] || {};
-                document.getElementById('editProductId').value = key;
-                document.getElementById('prodName').value = p.name || '';
-                document.getElementById('prodCategory').value = p.category || 'Phones';
-                document.getElementById('prodCondition').value = p.condition || 'New';
-                document.getElementById('prodPrice').value = p.price || '';
-                document.getElementById('prodImageUrl').value = p.image || '';
-            } else {
-                document.getElementById('productForm').reset();
-                document.getElementById('editProductId').value = '';
-            }
-            document.getElementById('productModal').style.display = 'flex';
-        };
-        window.saveProduct = (e) => {
-            e.preventDefault();
-            const key = document.getElementById('editProductId').value;
-            const data = {
-                name: document.getElementById('prodName').value,
-                category: document.getElementById('prodCategory').value,
-                condition: document.getElementById('prodCondition').value,
-                price: parseInt(document.getElementById('prodPrice').value),
-                image: document.getElementById('prodImageUrl').value.trim(),
-                timestamp: new Date().toISOString()
-            };
-            if (key) productsRef.child(key).update(data);
-            else productsRef.push(data);
-            closeModal('productModal');
-            showToast('Saved');
-        };
-
-        function updateMetrics(bookings) {
-            const active = bookings.filter(b => b.status !== 'received' && b.status !== 'collected').length;
-            document.getElementById('metricsContainer').innerHTML = `
-            <div class="metric-card"><div class="metric-icon" style="background:var(--accent);"><i class="fas fa-box"></i></div><div><div class="metric-value">${bookings.length}</div><div class="metric-label">Total</div></div></div>
-            <div class="metric-card"><div class="metric-icon" style="background:var(--emerald);"><i class="fas fa-spinner"></i></div><div><div class="metric-value">${active}</div><div class="metric-label">Active</div></div></div>
-            <div class="metric-card"><div class="metric-icon" style="background:#3b82f6;"><i class="fas fa-box-check"></i></div><div><div class="metric-value">${allReceivedItems.length}</div><div class="metric-label">Received</div></div></div>
-            <div class="metric-card"><div class="metric-icon" style="background:#8b5cf6;"><i class="fas fa-people-carry"></i></div><div><div class="metric-value">${allCollectedItems.length}</div><div class="metric-label">Collected</div></div></div>
-            <div class="metric-card"><div class="metric-icon" style="background:var(--orange);"><i class="fas fa-trash"></i></div><div><div class="metric-value">${allTrashItems.length}</div><div class="metric-label">Trash</div></div></div>`;
-        }
-
-        function renderInsights() {
-            const total = allBookings.length;
-            const active = allBookings.filter(b => b.status === 'active').length;
-            const received = allReceivedItems.length;
-            const collected = allCollectedItems.length;
-            document.getElementById('insightMetricsRow').innerHTML = `
-            <div class="metric-card"><div class="metric-value">${total}</div><div class="metric-label">Total</div></div>
-            <div class="metric-card"><div class="metric-value">${active}</div><div class="metric-label">Active</div></div>
-            <div class="metric-card"><div class="metric-value">${received}</div><div class="metric-label">Received</div></div>
-            <div class="metric-card"><div class="metric-value">${collected}</div><div class="metric-label">Collected</div></div>`;
-        }
-
-        async function loadAgreement() {
-            const snap = await settingsRef.child('userAgreement').once('value');
-            document.getElementById('agreementText').value = snap.val() ||
-                'CAMPUS VAULT STORAGE AGREEMENT\n...';
-        }
-        window.saveAgreement = () => {
-            settingsRef.child('userAgreement').set(document.getElementById('agreementText').value);
-            showToast('Saved');
-        };
-        window.openBackupModal = () => { document.getElementById('backupModal').style.display = 'flex'; };
-        window.startBackup = async () => {
-            const format = document.getElementById('backupFormat').value;
-            try {
-                if (format === 'excel') {
-                    const wb = XLSX.utils.book_new();
-                    const data = [
-                        ['ID', 'Customer', 'Phone', 'Items', 'Status']
-                    ];
-                    allBookings.filter(b => b.status !== 'received' && b.status !== 'collected').forEach(b =>
-                        data.push([b.bookingId, b.name, b.phone, `${b.itemCount} ${b.category}`, b
-                            .status
-                        ]));
-                    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), 'Active');
-                    XLSX.writeFile(wb, `backup_${Date.now()}.xlsx`);
-                } else {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF({ orientation: 'landscape' });
-                    doc.text('Backup', 10, 10);
-                    doc.save(`backup_${Date.now()}.pdf`);
-                }
-                showToast('Backup done');
-                closeModal('backupModal');
-            } catch (e) { showToast('Failed', '❌'); }
-        };
-        window.addAdmin = () => {
-            const email = document.getElementById('newAdminEmail').value.trim();
-            if (email) {
-                adminsRef.child(email.replace(/\./g, ',')).set({ addedAt: new Date().toISOString() });
-                document.getElementById('newAdminEmail').value = '';
-                showToast('Admin added');
-            }
-        };
-
-        function attachRealtime() {
-            bookingsRef.on('value', snap => {
-                allBookings = [];
-                snap.forEach(c => { const v = c.val();
-                    v._key = c.key;
-                    allBookings.push(v); });
-                renderStorageTable(allBookings);
-                updateMetrics(allBookings);
-            });
-            sellsRef.on('value', snap => {
-                allSells = [];
-                snap.forEach(c => allSells.push({ key: c.key, ...c.val() }));
-                loadSellsContent();
-            });
-            deliveriesRef.on('value', snap => {
-                allDeliveries = [];
-                snap.forEach(c => allDeliveries.push({ key: c.key, ...c.val() }));
-                loadDeliveriesContent();
-            });
-            inquiriesRef.on('value', snap => {
-                allInquiries = [];
-                snap.forEach(c => allInquiries.push({ key: c.key, ...c.val() }));
-                loadInquiriesContent();
-            });
-            accommodationRef.on('value', snap => {
-                allAccommodation = [];
-                snap.forEach(c => allAccommodation.push({ key: c.key, ...c.val() }));
-                loadAccommodationContent();
-            });
-            staffRef.on('value', () => loadStaff());
-            loadPendingApprovalsRealtime();
-            loadReceivedItemsRealtime();
-            loadCollectedItemsRealtime();
-            loadTrashRealtime();
-            loadDigitalRecordsRealtime();
-            loadReviewsRealtime();
-            loadStaffLogsRealtime();
-            productsRef.on('value', snap => { productsData = snap.val() || {};
-                renderProductsTable(productsData); });
-        }
-
-        function loadDashboard() { attachRealtime();
-            loadStaff();
-            loadSellsContent();
-            loadDeliveriesContent();
-            loadInquiriesContent();
-            loadAccommodationContent(); }
-
-        window.closeModal = closeModal;
-        window.closeModalBg = closeModalBg;
-    </script>
+function loadAllData() {
+    bookingsRef.on('value', snap => {
+        allBookings = []; snap.forEach(c => { const v = c.val(); v._key = c.key; allBookings.push(v); });
+        renderStorageTable(allBookings); updateMetrics(); calculateStaffPerformance();
+    });
+    receivedItemsRef.orderByChild('timestamp').limitToLast(200).on('value', snap => {
+        allReceivedItems = []; snap.forEach(c => allReceivedItems.unshift({ key: c.key, ...c.val() }));
+        renderReceivedTable(allReceivedItems); updateMetrics(); calculateStaffPerformance();
+    });
+    collectedItemsRef.orderByChild('timestamp').limitToLast(200).on('value', snap => {
+        allCollectedItems = []; snap.forEach(c => allCollectedItems.unshift({ key: c.key, ...c.val() }));
+        renderCollectedTable(allCollectedItems); updateMetrics(); calculateStaffPerformance();
+    });
+    trashRef.on('value', snap => {
+        allTrashItems = []; snap.forEach(c => allTrashItems.unshift({ key: c.key, ...c.val() }));
+        renderTrashTable(allTrashItems); updateMetrics();
+    });
+    loadPendingApprovalsRealtime();
+    loadDigitalRecordsRealtime();
+    loadReviewsRealtime();
+    loadStaffLogsRealtime();
+    loadSecurityData();
+    staffRef.on('value', () => { loadStaff(); calculateStaffPerformance(); });
+    adminsRef.on('value', () => loadAdmins());
+    loadStaff(); loadAdmins();
+}
+</script>
 </body>
 </html>
